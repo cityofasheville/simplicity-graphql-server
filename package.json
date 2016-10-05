@@ -1,7 +1,7 @@
 {
-  "name": "apollo-starter-kit",
-  "version": "0.1.0",
-  "description": "Minimal set of code to write a GraphQL server with Apollo graphql-tools",
+  "name": "simplicity-graphql-server",
+  "version": "1.0.0",
+  "description": "GraphQL server for SimpliCity II",
   "scripts": {
     "start": "nodemon ./server.js --exec babel-node",
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -9,22 +9,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/apollostack/apollo-starter-kit.git"
+    "url": "git+https://github.com/cityofasheville/simplicity-graphql-server.git"
   },
   "keywords": [
-    "Node.js",
-    "Javascript",
-    "GraphQL",
-    "Express",
-    "Apollo",
-    "Meteor"
+    "SimpliCity",
+    "GraphQL"
   ],
-  "author": "Jonas Helfer <jonas@helfer.email>",
+  "author": "Eric Jackson <ejackson@ashevillenc.gov>",
+  "author": "Cameron Carlyle <ccarlyle@ashevillenc.gov>",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/apollostack/apollo-starter-kit/issues"
-  },
-  "homepage": "https://github.com/apollostack/apollo-starter-kit#readme",
+  "homepage": "https://github.com/cityofasheville/simplicity-graphql-server",
   "dependencies": {
     "apollo-server": "^0.2.0",
     "body-parser": "^1.15.2",

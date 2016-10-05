@@ -1,10 +1,6 @@
-# Hello World server
+# SimpliCity II GraphQL Server
 
-The server that is used for the examples on dev.apollodata.com.
-
-This is a really simple GraphQL server that uses [Apollo Server](https://github.com/apollostack/apollo-server) and [GraphQL Tools](https://github.com/apollostack/graphql-tools) to serve a simple schema.
-
-It uses a very simple in-memory database, so if you restart the server or change the code, the data will reset.
+GraphQL Server for the new SimpliCity II system
 
 ## Installation
 
@@ -23,3 +19,6 @@ npm start
 ```
 
 The server will run on port 8080. You can change this by editing `server.js`.
+
+## Acknowledgements
+Based on the Apollo [Hello World](https://github.com/apollostack/frontpage-server) example server.
