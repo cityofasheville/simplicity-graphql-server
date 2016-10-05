@@ -17,9 +17,30 @@ type Post {
   votes: Int
 }
 
+type Address {
+  civic_address_id: ID!
+  full_address: String!
+  pin: ID!
+  owner: String
+  is_in_city: Boolean
+}
+
+type SearchResult {
+  id: ID!
+  text: String!
+  score: Int
+}
+
+type TypedSearchResult {
+  type: String!
+  results: [SearchResult]
+}
+
 # the schema allows the following query:
 type Query {
   posts: [Post]
+  search ( searchString: String! ): [TypedSearchResult]!
+  address ( id: ID! ): Address
 }
 
 # this schema allows the following mutation:
@@ -34,7 +55,14 @@ type Subscription {
 }
 
 `;
+/*
 
+type Query {
+  place (value: String, type: String = 'address') {
+
+  }
+}
+*/
 export default makeExecutableSchema({
   typeDefs: schema,
   resolvers
