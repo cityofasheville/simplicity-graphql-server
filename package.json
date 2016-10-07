@@ -15,7 +15,6 @@
     "SimpliCity",
     "GraphQL"
   ],
-  "author": "Eric Jackson <ejackson@ashevillenc.gov>",
   "author": "Cameron Carlyle <ccarlyle@ashevillenc.gov>",
   "license": "MIT",
   "homepage": "https://github.com/cityofasheville/simplicity-graphql-server",
@@ -28,6 +27,7 @@
     "graphql-subscriptions": "^0.1.5",
     "graphql-tools": "^0.6.5",
     "lodash": "^4.15.0",
+    "pg": "6.1.0",
     "subscriptions-transport-ws": "^0.2.2"
   },
   "devDependencies": {

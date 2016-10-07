@@ -56,12 +56,28 @@ const resolveFunctions = {
       }];
     },
 
-    address (id) {
+    address (obj, args, context) {
+      const id = args.id;
+      const pool = context.pool;
+      console.log("Damn! I'm in the address thingy");
       let result = null;
-      addresses.reduce((previousValue, currentAddress) => {
-        return (!previousValue && currentAddress.civic_address_id === id)?
-               currentAddress: null;
-      }, null);
+      return pool.query(`SELECT civicaddress_id, property_pin, jurisdiction_type, address_full, owner_name from coa_bc_address_master where civicaddress_id = ${id}  limit 1`)
+        .then( (result) => {
+          console.log("Result: " + JSON.stringify(result.rows));
+          const address = result.rows[0];
+          return {
+            civic_address_id: address.civicaddress_id,
+            full_address: address.address_full,
+            pin: address.property_pin,
+            owner: address.owner_name,
+            is_in_city: (address.jurisdiction_type == 'Asheville Corporate Limits')
+          };
+        })
+        .catch((err) => {
+          if (err) {
+            console.log("Got an error: " + JSON.stringify(err));
+          }
+        });
     }
   },
 
