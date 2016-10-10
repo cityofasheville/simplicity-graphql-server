@@ -59,11 +59,10 @@ const resolveFunctions = {
     address (obj, args, context) {
       const id = args.id;
       const pool = context.pool;
-      console.log("Damn! I'm in the address thingy");
       let result = null;
       return pool.query(`SELECT civicaddress_id, property_pin, jurisdiction_type, address_full, owner_name from coa_bc_address_master where civicaddress_id = ${id}  limit 1`)
         .then( (result) => {
-          console.log("Result: " + JSON.stringify(result.rows));
+          if (result.rows.length == 0) return null;
           const address = result.rows[0];
           return {
             civic_address_id: address.civicaddress_id,
