@@ -27,13 +27,15 @@ const WS_PORT = 8090;
 
 const graphQLServer = express().use('*', cors());
 
-graphQLServer.use('/graphql', bodyParser.json(), apolloExpress({
-  schema,
-  context: {
-    pool
-  },
+graphQLServer.use('/graphql', bodyParser.json(), apolloExpress( (req, res) => {
+  return {
+    schema,
+    context: {
+      pool,
+      token: req.headers.authorization,
+    },
+  };
 }));
-
 
 graphQLServer.use('/graphiql', graphiqlExpress({
   endpointURL: '/graphql',
