@@ -7,6 +7,10 @@ import { SubscriptionServer } from 'subscriptions-transport-ws';
 var pg = require('pg');
 const Pool = pg.Pool;
 
+import Groups from './data/groups';
+import MySimpliCity from './data/mysimplicity';
+
+
 import { subscriptionManager } from './data/subscriptions';
 import schema from './data/schema';
 
@@ -57,7 +61,7 @@ const graphQLServer = express().use('*', cors());
 //   "uid":"B9ewtFNqm0a9yOu2ljdHSEwkRS92"
 // }
 graphQLServer.use('/graphql', bodyParser.json(), apolloExpress( (req, res) => {
-  if (!req.headers.authorization) {
+  if (!req.headers.authorization || req.headers.authorization === 'null') {
     return {
       schema,
       context: {
@@ -67,10 +71,15 @@ graphQLServer.use('/graphql', bodyParser.json(), apolloExpress( (req, res) => {
         uid: null,
         name: null,
         email: null,
+        groups: [],
+        subscriptions: null
       },
     };
   }
   return firebase.auth().verifyIdToken(req.headers.authorization).then (function (decodedToken) {
+    const groups = Groups.getGroupsByEmail(decodedToken.email);
+    const ss = MySimpliCity.getSubscriptions(decodedToken.email, groups);
+    const subscriptions = JSON.stringify(ss);
     return {
       schema,
       context: {
@@ -80,10 +89,14 @@ graphQLServer.use('/graphql', bodyParser.json(), apolloExpress( (req, res) => {
         uid: decodedToken.uid,
         name: decodedToken.name,
         email: decodedToken.email,
+        groups,
+        subscriptions
       },
     };
   }).catch (function(error) {
-    console.log("Error decoding firebase token: " + JSON.stringify(error));
+    if (req.headers.authorization !== 'null') {
+      console.log("Error decoding firebase token: " + JSON.stringify(error));
+    }
     return {
       schema,
       context: {
@@ -93,6 +106,8 @@ graphQLServer.use('/graphql', bodyParser.json(), apolloExpress( (req, res) => {
         uid: null,
         name: null,
         email: null,
+        groups: [],
+        subscriptions: null
       },
     };
   });
