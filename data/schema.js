@@ -36,11 +36,18 @@ type TypedSearchResult {
   results: [SearchResult]
 }
 
+type UserDashboards {
+  email: String!
+  groups: [String]
+  subscriptions: String
+}
+
 # the schema allows the following query:
 type Query {
   posts: [Post]
   search ( searchString: String! ): [TypedSearchResult]!
   address ( id: ID! ): Address
+  my_simplicity: UserDashboards
 }
 
 # this schema allows the following mutation:
@@ -55,14 +62,7 @@ type Subscription {
 }
 
 `;
-/*
 
-type Query {
-  place (value: String, type: String = 'address') {
-
-  }
-}
-*/
 export default makeExecutableSchema({
   typeDefs: schema,
   resolvers

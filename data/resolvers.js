@@ -56,10 +56,26 @@ const resolveFunctions = {
       }];
     },
 
+    my_simplicity (obj, args, context) {
+      if (context.loggedin) {
+        return {
+          email: context.email,
+          groups: context.groups,
+          subscriptions: context.subscriptions
+        };
+      }
+      else {
+        return {
+          email: 'none',
+          groups: [],
+          subscriptions: JSON.stringify({})
+        };
+      }
+    },
+
     address (obj, args, context) {
       const id = args.id;
       const pool = context.pool;
-      //console.log("AddressContext: " + JSON.stringify(context));
 
       let result = null;
       return pool.query(`SELECT civicaddress_id, property_pin, jurisdiction_type, address_full, owner_name from coa_bc_address_master where civicaddress_id = ${id}  limit 1`)
