@@ -29,6 +29,33 @@ const addresses = [
   },
 ];
 
+var performSearch = function (searchString, searchContext) {
+  console.log("Peform search with context " + searchContext);
+  if (searchContext === 'civicAddressId') {
+    return Promise.resolve({
+      type: searchContext,
+      results: [
+        {
+          id: 1,
+          text: "search by civic address id",
+          score: 22
+        }
+      ]
+    });
+  }
+  else {
+    return Promise.resolve({
+      type: searchContext,
+      results: [
+        {
+          id: 1,
+          text: "search by " + searchContext,
+          score: 22
+        }
+      ]
+    });
+  }
+}
 const resolveFunctions = {
   Query: {
     posts() {
@@ -36,8 +63,15 @@ const resolveFunctions = {
     },
     search (obj, args, context) {
       let searchString = args.searchString;
+      let searchContexts = args.searchContexts;
       console.log("The search string is: " + searchString);
-      let results = [];
+      console.log("SearchContexts length: " + args.searchContexts.length);
+      console.log("The searchContexts are: " + args.searchContexts);
+      //let results = [];
+      let results = Promise.all(searchContexts.map( (searchContext) => {
+        return performSearch(searchString, searchContext);
+      }));
+      return results;
       const s = searchString.toLowerCase();
       addresses.forEach( item => {
         const full = item.full_address.toLowerCase();
@@ -57,6 +91,7 @@ const resolveFunctions = {
     },
 
     my_simplicity (obj, args, context) {
+      console.log("I am in my_simplicity");
       if (context.loggedin) {
         return {
           email: context.email,
@@ -76,7 +111,7 @@ const resolveFunctions = {
     address (obj, args, context) {
       const id = args.id;
       const pool = context.pool;
-
+      console.log("I am in address");
       let result = null;
       return pool.query(`SELECT civicaddress_id, property_pin, jurisdiction_type, address_full, owner_name from coa_bc_address_master where civicaddress_id = ${id}  limit 1`)
         .then( (result) => {

@@ -45,7 +45,7 @@ type UserDashboards {
 # the schema allows the following query:
 type Query {
   posts: [Post]
-  search ( searchString: String! ): [TypedSearchResult]!
+  search ( searchString: String!, searchContexts: [String] ): [TypedSearchResult]!
   address ( id: ID! ): Address
   my_simplicity: UserDashboards
 }

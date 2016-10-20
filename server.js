@@ -61,6 +61,7 @@ const graphQLServer = express().use('*', cors());
 //   "uid":"B9ewtFNqm0a9yOu2ljdHSEwkRS92"
 // }
 graphQLServer.use('/graphql', bodyParser.json(), apolloExpress( (req, res) => {
+  console.log("Here");
   if (!req.headers.authorization || req.headers.authorization === 'null') {
     return {
       schema,
@@ -76,10 +77,12 @@ graphQLServer.use('/graphql', bodyParser.json(), apolloExpress( (req, res) => {
       },
     };
   }
+  console.log("Ya!");
   return firebase.auth().verifyIdToken(req.headers.authorization).then (function (decodedToken) {
     const groups = Groups.getGroupsByEmail(decodedToken.email);
     const ss = MySimpliCity.getSubscriptions(decodedToken.email, groups);
     const subscriptions = JSON.stringify(ss);
+    console.log("auth-verify");
     return {
       schema,
       context: {
