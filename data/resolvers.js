@@ -29,19 +29,53 @@ const addresses = [
   },
 ];
 
-var performSearch = function (searchString, searchContext) {
+var searchCivicAddressId = function (searchString, context) {
+  const pool = context.pool;
+  console.log("I am in searchCAId with searchString " + searchString);
+  let result = null;
+  const myQuery = `SELECT civicaddress_id, property_pin, jurisdiction_type, address_full, owner_name from coa_bc_address_master where cast(civicaddress_id as TEXT) LIKE '${searchString}%'  limit 5`;
+  console.log("Here is my query: " + myQuery);
+  return pool.query(myQuery)
+    .then( (result) => {
+      console.log("In the result - yay");
+      console.log("Row count = " + result.rows.length);
+      if (result.rows.length == 0) return {
+        type: 'civicAddressId',
+        results: [],
+      };
+      console.log("Now doit");
+
+      let finalResult = {
+        type: 'civicAddressId',
+        results: result.rows.map( (address) => {
+          console.log("Mapping address: " + JSON.stringify(address));
+          return {
+            id: address.civicaddress_id,
+            text: JSON.stringify({
+              civic_address_id: address.civicaddress_id,
+              full_address: address.address_full,
+              pin: address.property_pin,
+              owner: address.owner_name,
+              is_in_city: (address.jurisdiction_type == 'Asheville Corporate Limits')
+            }),
+            score: 33,
+          }
+        }),
+      };
+      console.log("Final result = " + JSON.stringify(finalResult));
+      return finalResult;
+    })
+    .catch((err) => {
+      if (err) {
+        console.log("Got an error in searchCivicAddressID: " + JSON.stringify(err));
+      }
+    });
+}
+
+var performSearch = function (searchString, searchContext, context) {
   console.log("Peform search with context " + searchContext);
   if (searchContext === 'civicAddressId') {
-    return Promise.resolve({
-      type: searchContext,
-      results: [
-        {
-          id: 1,
-          text: "search by civic address id",
-          score: 22
-        }
-      ]
-    });
+    return searchCivicAddressId(searchString, context);
   }
   else {
     return Promise.resolve({
@@ -52,10 +86,11 @@ var performSearch = function (searchString, searchContext) {
           text: "search by " + searchContext,
           score: 22
         }
-      ]
-    });
+      ]}
+    );
   }
 }
+
 const resolveFunctions = {
   Query: {
     posts() {
@@ -64,30 +99,12 @@ const resolveFunctions = {
     search (obj, args, context) {
       let searchString = args.searchString;
       let searchContexts = args.searchContexts;
+      console.log("In search: " + JSON.stringify(args));
       console.log("The search string is: " + searchString);
-      console.log("SearchContexts length: " + args.searchContexts.length);
-      console.log("The searchContexts are: " + args.searchContexts);
-      //let results = [];
-      let results = Promise.all(searchContexts.map( (searchContext) => {
-        return performSearch(searchString, searchContext);
+      console.log("The search contexts is " + JSON.stringify(searchContexts));
+      return Promise.all(searchContexts.map( (searchContext) => {
+        return performSearch(searchString, searchContext, context);
       }));
-      return results;
-      const s = searchString.toLowerCase();
-      addresses.forEach( item => {
-        const full = item.full_address.toLowerCase();
-        console.log("Check against full address: " + full);
-        if (full.indexOf(s) >= 0) {
-          results.push({
-            id: item.civic_address_id,
-            text: item.full_address,
-            score: 100
-          });
-        }
-      });
-      return [{
-        type: 'address',
-        results
-      }];
     },
 
     my_simplicity (obj, args, context) {
@@ -127,7 +144,7 @@ const resolveFunctions = {
         })
         .catch((err) => {
           if (err) {
-            console.log("Got an error: " + JSON.stringify(err));
+            console.log("Got an error in address: " + JSON.stringify(err));
           }
         });
     }
