@@ -20,24 +20,18 @@ const addresses = [
 
 var searchCivicAddressId = function (searchString, context) {
   const pool = context.pool;
-  console.log("I am in searchCAId with searchString " + searchString);
   let result = null;
   const myQuery = `SELECT civicaddress_id, property_pin, jurisdiction_type, address_full, owner_name from coa_bc_address_master where cast(civicaddress_id as TEXT) LIKE '${searchString}%'  limit 5`;
-  console.log("Here is my query: " + myQuery);
   return pool.query(myQuery)
     .then( (result) => {
-      console.log("In the result - yay");
-      console.log("Row count = " + result.rows.length);
       if (result.rows.length == 0) return {
         type: 'civicAddressId',
         results: [],
       };
-      console.log("Now doit");
 
       let finalResult = {
         type: 'civicAddressId',
         results: result.rows.map( (address) => {
-          console.log("Mapping address: " + JSON.stringify(address));
           return {
             score: 33,
             type: 'civicAddressId',
@@ -50,7 +44,6 @@ var searchCivicAddressId = function (searchString, context) {
           }
         }),
       };
-      console.log("Final result = " + JSON.stringify(finalResult));
       return finalResult;
     })
     .catch((err) => {
@@ -61,7 +54,6 @@ var searchCivicAddressId = function (searchString, context) {
 }
 
 var performSearch = function (searchString, searchContext, context) {
-  console.log("Peform search with context " + searchContext);
   if (searchContext === 'civicAddressId') {
     return searchCivicAddressId(searchString, context);
   }
@@ -146,11 +138,9 @@ const resolveFunctions = {
   SearchResult: {
     __resolveType(data, context, info) {
       if (data.type == 'civicAddressId') {
-        console.log("__resolveType returning AddressResult");
         return info.schema.getType('AddressResult');
       }
       else {
-        console.log("__resolveType returning SillyResult");
         return info.schema.getType('SillyResult');
       }
     }
