@@ -1,17 +1,6 @@
 import { find, filter } from 'lodash';
 import { pubsub } from './subscriptions';
 
-const authors = [
-  { id: 1, firstName: 'Tom', lastName: 'Coleman' },
-  { id: 2, firstName: 'Sashko', lastName: 'Stubailo' },
-];
-
-const posts = [
-  { id: 1, authorId: 1, title: 'Introduction to GraphQL', votes: 2 },
-  { id: 2, authorId: 2, title: 'GraphQL Rocks', votes: 3 },
-  { id: 3, authorId: 2, title: 'Advanced GraphQL', votes: 1 },
-];
-
 const addresses = [
   {
     civic_address_id: 230126,
@@ -50,15 +39,14 @@ var searchCivicAddressId = function (searchString, context) {
         results: result.rows.map( (address) => {
           console.log("Mapping address: " + JSON.stringify(address));
           return {
-            id: address.civicaddress_id,
-            text: JSON.stringify({
-              civic_address_id: address.civicaddress_id,
-              full_address: address.address_full,
-              pin: address.property_pin,
-              owner: address.owner_name,
-              is_in_city: (address.jurisdiction_type == 'Asheville Corporate Limits')
-            }),
             score: 33,
+            type: 'civicAddressId',
+            id: address.civicaddress_id,
+            civic_address_id: address.civicaddress_id,
+            full_address: address.address_full,
+            pin: address.property_pin,
+            owner: address.owner_name,
+            is_in_city: (address.jurisdiction_type == 'Asheville Corporate Limits'),
           }
         }),
       };
@@ -82,9 +70,10 @@ var performSearch = function (searchString, searchContext, context) {
       type: searchContext,
       results: [
         {
+          score: 22,
+          type: 'silly',
           id: 1,
           text: "search by " + searchContext,
-          score: 22
         }
       ]}
     );
@@ -93,9 +82,6 @@ var performSearch = function (searchString, searchContext, context) {
 
 const resolveFunctions = {
   Query: {
-    posts() {
-      return posts;
-    },
     search (obj, args, context) {
       let searchString = args.searchString;
       let searchContexts = args.searchContexts;
@@ -158,37 +144,18 @@ const resolveFunctions = {
   },
 
   SearchResult: {
-    id(obj) { return obj.id; },
-    text(obj) { return obj.text;},
-    score(obj) { return obj.score; }
+    __resolveType(data, context, info) {
+      if (data.type == 'civicAddressId') {
+        console.log("__resolveType returning AddressResult");
+        return info.schema.getType('AddressResult');
+      }
+      else {
+        console.log("__resolveType returning SillyResult");
+        return info.schema.getType('SillyResult');
+      }
+    }
   },
 
-  Mutation: {
-    upvotePost(_, { postId }) {
-      const post = find(posts, { id: postId });
-      if (!post) {
-        throw new Error(`Couldn't find post with id ${postId}`);
-      }
-      post.votes += 1;
-      pubsub.publish('postUpvoted', post);
-      return post;
-    },
-  },
-  Subscription: {
-    postUpvoted(post) {
-      return post;
-    },
-  },
-  Author: {
-    posts(author) {
-      return filter(posts, { authorId: author.id });
-    },
-  },
-  Post: {
-    author(post) {
-      return find(authors, { id: post.authorId });
-    },
-  },
 };
 
 export default resolveFunctions;

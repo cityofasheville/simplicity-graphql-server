@@ -3,20 +3,6 @@ import { makeExecutableSchema } from 'graphql-tools';
 import resolvers from './resolvers';
 
 const schema = `
-type Author {
-  id: Int! # the ! means that every author object _must_ have an id
-  firstName: String
-  lastName: String
-  posts: [Post] # the list of Posts by this author
-}
-
-type Post {
-  id: Int!
-  title: String
-  author: Author
-  votes: Int
-}
-
 type Address {
   civic_address_id: ID!
   full_address: String!
@@ -25,10 +11,27 @@ type Address {
   is_in_city: Boolean
 }
 
-type SearchResult {
+type SillyResult implements SearchResult {
+  score: Int!
+  type: String!
   id: ID!
   text: String!
-  score: Int
+}
+
+type AddressResult implements SearchResult {
+  score: Int!
+  type: String!
+  id: ID!
+  civic_address_id: String
+  full_address: String
+  pin: String
+  owner: String
+  is_in_city: Boolean
+}
+
+interface SearchResult {
+  type: String!
+  score: Int!
 }
 
 type TypedSearchResult {
@@ -44,21 +47,9 @@ type UserDashboards {
 
 # the schema allows the following query:
 type Query {
-  posts: [Post]
   search ( searchString: String!, searchContexts: [String] ): [TypedSearchResult]!
   address ( id: ID! ): Address
   my_simplicity: UserDashboards
-}
-
-# this schema allows the following mutation:
-type Mutation {
-  upvotePost (
-    postId: Int!
-  ): Post
-}
-
-type Subscription {
-  postUpvoted: Post
 }
 
 `;
