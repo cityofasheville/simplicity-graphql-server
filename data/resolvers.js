@@ -103,6 +103,55 @@ const resolveFunctions = {
       }
     },
 
+    permits (obj, args, context) {
+      /*
+       * Sample query:
+       query {
+          permits (type: "Residential", violated: true, limit: 500) {
+             permit_id
+             type
+             subtype
+             sla
+             violation
+          }
+        }
+      */
+      console.log("I am resolving permits with args " + JSON.stringify(args));
+      const pool = context.pool;
+      let result = null;
+      let where = [], whereClause = '';
+      if ('type' in args) {
+        where.push(`type = '${args.type}'`);
+      }
+      if ('violated' in args) {
+        where.push(`violation = ${args.violated}`);
+      }
+      if (where.length > 0) {
+        whereClause = ' where ' + where.join(' AND ');
+      }
+
+      let query = `SELECT * from permits ${whereClause}`;
+      if ('limit' in args) {
+        if (args.limit > 0) {
+          query += ` limit ${args.limit}`;
+        }
+      }
+      console.log("Permits query: " + query);
+      return pool.query(query)
+        .then( (result) => {
+          if (result.rows.length == 0) return null;
+          let permits = result.rows.map ( (permit, index) => {
+              return {...permit};
+          });
+          return permits;
+        })
+        .catch((err) => {
+          if (err) {
+            console.log("Got an error in permits: " + JSON.stringify(err));
+          }
+        });
+    },
+
     address (obj, args, context) {
       const id = args.id;
       const pool = context.pool;

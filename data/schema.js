@@ -45,11 +45,31 @@ type UserDashboards {
   subscriptions: String
 }
 
+type Permit {
+  permit_id: ID!
+  type: String
+  subtype: String
+  category: String
+  app_date: String
+  app_status: String
+  app_status_date: String
+  trips: Int!
+  violation: Boolean!
+  violation_count: Int!
+  violation_days: Int!
+  sla: Int!
+  building: Int!
+  fire: Int!
+  zoning: Int!
+  addressing: Int!
+}
+
 # the schema allows the following query:
 type Query {
   search ( searchString: String!, searchContexts: [String] ): [TypedSearchResult]!
   address ( id: ID! ): Address
   my_simplicity: UserDashboards
+  permits (type: String, violated: Boolean, limit: Int): [Permit]!
 }
 
 `;
