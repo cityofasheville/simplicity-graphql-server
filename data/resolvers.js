@@ -129,8 +129,14 @@ const resolveFunctions = {
       if (where.length > 0) {
         whereClause = ' where ' + where.join(' AND ');
       }
+      let query = 'SELECT permit_id, type, subtype, category,';
+      query += `to_char(app_date,'YYYY-MM-DD"T"HH24:MI:SS') as app_date,`;
+      query += 'app_status,';
+      query += `to_char(app_status_date,'YYYY-MM-DD"T"HH24:MI:SS') as app_status_date,`;
+      query += 'trips, violation, violation_count,';
+      query += 'violation_days, sla, building, fire, zoning, addressing';
+      query += ` from permits ${whereClause}`;
 
-      let query = `SELECT * from permits ${whereClause}`;
       if ('limit' in args) {
         if (args.limit > 0) {
           query += ` limit ${args.limit}`;
@@ -141,7 +147,7 @@ const resolveFunctions = {
         .then( (result) => {
           if (result.rows.length == 0) return null;
           let permits = result.rows.map ( (permit, index) => {
-              return {...permit};
+            return {...permit};
           });
           return permits;
         })
