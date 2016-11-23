@@ -45,6 +45,16 @@ type UserDashboards {
   subscriptions: String
 }
 
+type PermitTrip {
+  trip: Int!
+  start_date: String
+  end_date: String
+  due_date: String
+  trip_violation_days: Int!
+  trip_sla: Int!
+  division: String!
+}
+
 type Permit {
   permit_id: ID!
   type: String
@@ -53,7 +63,7 @@ type Permit {
   app_date: String
   app_status: String
   app_status_date: String
-  trips: Int!
+  ntrips: Int!
   violation: Boolean!
   violation_count: Int!
   violation_days: Int!
@@ -62,6 +72,7 @@ type Permit {
   fire: Int!
   zoning: Int!
   addressing: Int!
+  trips: [PermitTrip]!
 }
 
 # the schema allows the following query:

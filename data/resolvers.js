@@ -72,8 +72,90 @@ var performSearch = function (searchString, searchContext, context) {
   }
 }
 
+const permitsHandler = function (result) {
+  if (result.rows.length == 0) return [];
+  let trips = result.rows.map ( (permit, index) => {
+    return {...permit};
+  });
+  // Now let's bundle up the trips into the permits
+  let permits = [];
+  if (trips.length > 0) {
+    let i = 0, cur = null;
+    while (i < trips.length) {
+      let t = trips[i];
+      if (!cur || t.permit_id != cur.permit_id) {
+        cur = {
+          permit_id: t.permit_id,
+          type: t.type,
+          subtype: t.subtype,
+          category: t.category,
+          app_date: t.app_date,
+          app_status: t.app_status,
+          app_status_date: t.app_status_date,
+          ntrips: t.ntrips,
+          violation: t.violation,
+          violation_count: t.violation_count,
+          violation_days: t.violation_days,
+          sla: t.sla,
+          building: t.building,
+          fire: t.fire,
+          zoning: t.zoning,
+          addressing: t.addressing,
+          trips: [],
+        };
+        if (t.trip) {
+          cur.trips.push({
+            trip: t.trip,
+            start_date: t.start_date,
+            end_date: t.end_date,
+            due_date: t.due_date,
+            trip_violation_days: t.trip_violation_days,
+            trip_sla: t.trip_sla,
+            division: t.division,
+          });
+        }
+        permits.push(cur);
+      }
+      ++i;
+    }
+  }
+  return permits;
+}
+
+const queryPermits = function (pool, obj, args, context) {
+  let where = [], whereClause = '';
+  if ('type' in args) where.push(`p.type ILIKE '${args.type}'`);
+  if ('violated' in args) where.push(`p.violation = ${args.violated}`);
+  if (where.length > 0) whereClause = ' where ' + where.join(' AND ');
+  let query = 'SELECT p.permit_id as permit_id, p.type as type, p.subtype as subtype, p.category as category,'
+            + `to_char(p.app_date,'YYYY-MM-DD"T"HH24:MI:SS') as app_date,`
+            + 'p.app_status as app_status,'
+            + `to_char(p.app_status_date,'YYYY-MM-DD"T"HH24:MI:SS') as app_status_date,`
+            + 't.trip as trip,'
+            + 'p.trips as ntrips, p.violation as violation, p.violation_count as violation_count,'
+            + 'p.violation_days as violation_days, p.sla as sla,'
+            + 'p.building as building, p.fire as fire, p.zoning as zoning, p.addressing as addressing, '
+            + 't.start_date as start_date, t.end_date as end_date, t.violation_days as trip_violation_days,'
+            + 't.sla as trip_sla, t.division as division'
+            + ' from permits as p left outer join permit_trips as t on p.permit_id = t.permit_id'
+            + ` ${whereClause} `
+            + ' order by p.permit_id, t.trip, t.start_date, t.end_date';
+  if ('limit' in args && args.limit > 0) query += ` limit ${args.limit}`;
+  console.log("Permits query: " + query);
+  return pool.query(query).then(permitsHandler).catch((err) => {
+    if (err) {
+      console.log("Got an error in permits: " + JSON.stringify(err));
+    }
+  });
+}
+
 const resolveFunctions = {
   Query: {
+    permits (obj, args, context) {
+      const pool = context.pool;
+      return queryPermits(pool, obj, args, context);
+    },
+
     search (obj, args, context) {
       let searchString = args.searchString;
       let searchContexts = args.searchContexts;
@@ -101,61 +183,6 @@ const resolveFunctions = {
           subscriptions: JSON.stringify({})
         };
       }
-    },
-
-    permits (obj, args, context) {
-      /*
-       * Sample query:
-       query {
-          permits (type: "Residential", violated: true, limit: 500) {
-             permit_id
-             type
-             subtype
-             sla
-             violation
-          }
-        }
-      */
-      console.log("I am resolving permits with args " + JSON.stringify(args));
-      const pool = context.pool;
-      let result = null;
-      let where = [], whereClause = '';
-      if ('type' in args) {
-        where.push(`type = '${args.type}'`);
-      }
-      if ('violated' in args) {
-        where.push(`violation = ${args.violated}`);
-      }
-      if (where.length > 0) {
-        whereClause = ' where ' + where.join(' AND ');
-      }
-      let query = 'SELECT permit_id, type, subtype, category,';
-      query += `to_char(app_date,'YYYY-MM-DD"T"HH24:MI:SS') as app_date,`;
-      query += 'app_status,';
-      query += `to_char(app_status_date,'YYYY-MM-DD"T"HH24:MI:SS') as app_status_date,`;
-      query += 'trips, violation, violation_count,';
-      query += 'violation_days, sla, building, fire, zoning, addressing';
-      query += ` from permits ${whereClause}`;
-
-      if ('limit' in args) {
-        if (args.limit > 0) {
-          query += ` limit ${args.limit}`;
-        }
-      }
-      console.log("Permits query: " + query);
-      return pool.query(query)
-        .then( (result) => {
-          if (result.rows.length == 0) return null;
-          let permits = result.rows.map ( (permit, index) => {
-            return {...permit};
-          });
-          return permits;
-        })
-        .catch((err) => {
-          if (err) {
-            console.log("Got an error in permits: " + JSON.stringify(err));
-          }
-        });
     },
 
     address (obj, args, context) {
@@ -187,6 +214,15 @@ const resolveFunctions = {
     type(obj) {return obj.type},
     results (obj, args, context) {
       return obj.results;
+    }
+  },
+
+  Permit: {
+    // The other fields are trivial & Apollo knows how to deal with them.
+    trips (obj, args, context) {
+      return obj.trips.map ((t) => {
+        return {...t};
+      });
     }
   },
 
