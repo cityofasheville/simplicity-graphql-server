@@ -103,18 +103,18 @@ const permitsHandler = function (result) {
           addressing: t.addressing,
           trips: [],
         };
-        if (t.trip) {
-          cur.trips.push({
-            trip: t.trip,
-            start_date: t.start_date,
-            end_date: t.end_date,
-            due_date: t.due_date,
-            trip_violation_days: t.trip_violation_days,
-            trip_sla: t.trip_sla,
-            division: t.division,
-          });
-        }
         permits.push(cur);
+      }
+      if (t.trip) {
+        cur.trips.push({
+          trip: t.trip,
+          start_date: t.start_date,
+          end_date: t.end_date,
+          due_date: t.due_date,
+          trip_violation_days: t.trip_violation_days,
+          trip_sla: t.trip_sla,
+          division: t.division,
+        });
       }
       ++i;
     }
