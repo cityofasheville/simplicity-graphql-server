@@ -20,4 +20,4 @@ CREATE TABLE permit_trips
 );
 CREATE INDEX ON permit_trips (lower(permit_id));
 CREATE INDEX ON permit_trips (app_date);
-\COPY permit_trips(permit_id, type, subtype, category, app_date, app_status, app_status_date, trip, start_date, end_date, due_date, violation_days, sla, division) FROM '/Users/ericjackson/Google Drive/Projects/Permitting/DSD_Dashboard_Data/t_trips.csv' DELIMITER E',' CSV HEADER;
+\COPY permit_trips(permit_id, type, subtype, category, app_date, app_status, app_status_date, trip, start_date, end_date, due_date, violation_days, sla, division) FROM '/Users/ericjackson/Google Drive/Projects/DSD/SLA/DSD_Dashboard_Data/t_trips.csv' DELIMITER E',' CSV HEADER;
