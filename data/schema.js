@@ -1,15 +1,12 @@
 import { makeExecutableSchema } from 'graphql-tools';
 
 import resolvers from './resolvers';
+import mdaTypes from './mda/mda_types';
+import mdaEndpoints from './mda/mda_endpoints';
 
 const schema = `
-type Address {
-  civic_address_id: ID!
-  full_address: String!
-  pin: ID!
-  owner: String
-  is_in_city: Boolean
-}
+
+${mdaTypes}
 
 type SillyResult implements SearchResult {
   score: Int!
@@ -78,7 +75,7 @@ type Permit {
 # the schema allows the following query:
 type Query {
   search ( searchString: String!, searchContexts: [String] ): [TypedSearchResult]!
-  address ( id: ID! ): Address
+  ${mdaEndpoints}
   my_simplicity: UserDashboards
   permits (type: String, violated: Boolean, limit: Int): [Permit]!
 }
