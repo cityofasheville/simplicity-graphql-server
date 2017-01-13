@@ -19,6 +19,9 @@
   "license": "MIT",
   "homepage": "https://github.com/cityofasheville/simplicity-graphql-server",
   "dependencies": {
+    "coa-node-logging": "^1.0.1",
+    "coa-command-line-args": "^1.0.1",
+    "dotenv": "^2.0.0",
     "apollo-server": "^0.2.0",
     "body-parser": "^1.15.2",
     "cors": "^2.8.0",

@@ -20,9 +20,8 @@ type AddressResult implements SearchResult {
   type: String!
   id: ID!
   civic_address_id: String
-  full_address: String
-  pin: String
-  owner: String
+  address: String
+  pinnum: String
   is_in_city: Boolean
 }
 
@@ -84,5 +83,5 @@ type Query {
 
 export default makeExecutableSchema({
   typeDefs: schema,
-  resolvers
+  resolvers,
 });

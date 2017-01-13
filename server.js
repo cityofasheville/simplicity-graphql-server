@@ -4,7 +4,8 @@ import bodyParser from 'body-parser';
 import cors from 'cors';
 import { createServer } from 'http';
 import { SubscriptionServer } from 'subscriptions-transport-ws';
-var pg = require('pg');
+require('dotenv').config();
+const pg = require('pg');
 const Pool = pg.Pool;
 
 import Groups from './data/groups';
@@ -20,19 +21,42 @@ import schema from './data/schema';
 const firebase = require('firebase');
 
 firebase.initializeApp({
-  serviceAccount: "./SimpliCityII-284f9d0ebb83.json",
-  databaseURL: "https://simplicityii-878be.firebaseio.com"
+  serviceAccount: './SimpliCityII-284f9d0ebb83.json',
+  databaseURL: 'https://simplicityii-878be.firebaseio.com',
 });
 
-var dbConfig = {
-  host: 'ec2-54-235-65-139.compute-1.amazonaws.com',
-  user: 'jluztmsoizdhar',
-  password: 'bWkhrp2UQSX2bJGcH4Zzgy_PY1',
-  database: 'd324d1u5enjpd',
-  ssl: true
+// const dbConfig = {
+//   host: 'ec2-54-235-65-139.compute-1.amazonaws.com',
+//   user: 'jluztmsoizdhar',
+//   password: 'bWkhrp2UQSX2bJGcH4Zzgy_PY1',
+//   database: 'd324d1u5enjpd',
+//   ssl: true,
+// };
+const dbConfig = {
+  host: process.env.dbhost,
+  user: process.env.dbuser,
+  password: process.env.dbpassword,
+  database: process.env.database,
+  port: 5432,
+  ssl: false,
 };
 
-var pool = new Pool(dbConfig);
+const pool = new Pool(dbConfig);
+if (pool) console.log('We got the pool');
+pool.connect().then(client => {
+  console.log('In the connect');
+  client.query('select pin from coagis.bc_property', []).then(res => {
+    client.release();
+    console.log('hello from', res.rows[0].pin);
+  })
+  .catch(e => {
+    client.release();
+    console.error('query error', e.message, e.stack);
+  });
+})
+.catch(e => {
+  console.error('connect error', e.message, e.stack);
+});
 
 const GRAPHQL_PORT = 8080;
 const WS_PORT = 8090;
@@ -61,7 +85,6 @@ const graphQLServer = express().use('*', cors());
 //   "uid":"B9ewtFNqm0a9yOu2ljdHSEwkRS92"
 // }
 graphQLServer.use('/graphql', bodyParser.json(), apolloExpress( (req, res) => {
-  console.log("Here");
   if (!req.headers.authorization || req.headers.authorization === 'null') {
     return {
       schema,
@@ -73,16 +96,15 @@ graphQLServer.use('/graphql', bodyParser.json(), apolloExpress( (req, res) => {
         name: null,
         email: null,
         groups: [],
-        subscriptions: null
+        subscriptions: null,
       },
     };
   }
-  console.log("Ya!");
-  return firebase.auth().verifyIdToken(req.headers.authorization).then (function (decodedToken) {
+  return firebase.auth().verifyIdToken(req.headers.authorization).then(function (decodedToken) {
     const groups = Groups.getGroupsByEmail(decodedToken.email);
     const ss = MySimpliCity.getSubscriptions(decodedToken.email, groups);
     const subscriptions = JSON.stringify(ss);
-    console.log("auth-verify");
+    console.log('auth-verify');
     return {
       schema,
       context: {
@@ -93,12 +115,12 @@ graphQLServer.use('/graphql', bodyParser.json(), apolloExpress( (req, res) => {
         name: decodedToken.name,
         email: decodedToken.email,
         groups,
-        subscriptions
+        subscriptions,
       },
     };
-  }).catch (function(error) {
+  }).catch(function(error) {
     if (req.headers.authorization !== 'null') {
-      console.log("Error decoding firebase token: " + JSON.stringify(error));
+      console.log(`Error decoding firebase token: ${JSON.stringify(error)}`);
     }
     return {
       schema,
@@ -110,7 +132,7 @@ graphQLServer.use('/graphql', bodyParser.json(), apolloExpress( (req, res) => {
         name: null,
         email: null,
         groups: [],
-        subscriptions: null
+        subscriptions: null,
       },
     };
   });
