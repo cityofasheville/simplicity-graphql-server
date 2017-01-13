@@ -36,20 +36,20 @@ const dbConfig = {
 
 const pool = new Pool(dbConfig);
 if (pool) console.log('We got the pool');
-pool.connect().then(client => {
-  console.log('In the connect');
-  client.query('select pin from coagis.bc_property', []).then(res => {
-    client.release();
-    console.log('hello from', res.rows[0].pin);
-  })
-  .catch(e => {
-    client.release();
-    console.error('query error', e.message, e.stack);
-  });
-})
-.catch(e => {
-  console.error('connect error', e.message, e.stack);
-});
+// pool.connect().then(client => {
+//   console.log('In the connect');
+//   client.query('select pin from coagis.bc_property', []).then(res => {
+//     client.release();
+//     console.log('hello from', res.rows[0].pin);
+//   })
+//   .catch(e => {
+//     client.release();
+//     console.error('query error', e.message, e.stack);
+//   });
+// })
+// .catch(e => {
+//   console.error('connect error', e.message, e.stack);
+// });
 
 const GRAPHQL_PORT = 8080;
 const WS_PORT = 8090;
