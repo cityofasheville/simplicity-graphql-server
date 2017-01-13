@@ -25,13 +25,6 @@ firebase.initializeApp({
   databaseURL: 'https://simplicityii-878be.firebaseio.com',
 });
 
-// const dbConfig = {
-//   host: 'ec2-54-235-65-139.compute-1.amazonaws.com',
-//   user: 'jluztmsoizdhar',
-//   password: 'bWkhrp2UQSX2bJGcH4Zzgy_PY1',
-//   database: 'd324d1u5enjpd',
-//   ssl: true,
-// };
 const dbConfig = {
   host: process.env.dbhost,
   user: process.env.dbuser,
