@@ -1,4 +1,4 @@
-let subscribedPages = {
+const subscribedPages = {
   CMO: ['development/citywide/development-dashboard'],
   IT: [],
 };
@@ -8,20 +8,20 @@ class MySimpliCity {
     subscribedPages['eric@deepweave'] = ['crime/citywide/crime-dashboard'];
   }
 
-  getSubscriptions (email, groups) {
-    let subscriptions = {
+  getSubscriptions(email, groups) {
+    const subscriptions = {
       groups: {},
-      favorites: []
+      favorites: [],
     };
-    groups.forEach( (group) => {
+    groups.forEach((group) => {
       if (group in subscribedPages) {
         subscriptions.groups[group] = [];
-        subscribedPages[group].forEach( (page) => {
+        subscribedPages[group].forEach((page) => {
           subscriptions.groups[group].push(page);
         });
       }
       if (email in subscribedPages) {
-        subscribedPages[email].forEach( (page) => {
+        subscribedPages[email].forEach((page) => {
           subscriptions.favorites.push(page);
         });
       }

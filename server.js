@@ -1,19 +1,19 @@
-import express from 'express';
-import { apolloExpress, graphiqlExpress } from 'apollo-server';
-import bodyParser from 'body-parser';
-import cors from 'cors';
-import { createServer } from 'http';
-import { SubscriptionServer } from 'subscriptions-transport-ws';
+const express = require('express');
+const { apolloExpress, graphiqlExpress } = require('apollo-server');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+const { createServer } = require('http');
+const { SubscriptionServer } = require('subscriptions-transport-ws');
 require('dotenv').config();
 const pg = require('pg');
 const Pool = pg.Pool;
 
-import Groups from './data/groups';
-import MySimpliCity from './data/mysimplicity';
+const Groups = require('./data/groups');
+const MySimpliCity = require('./data/mysimplicity');
 
 
-import { subscriptionManager } from './data/subscriptions';
-import schema from './data/schema';
+const { subscriptionManager } = require('./data/subscriptions');
+const schema = require('./data/schema');
 
 // Import Firebase - for now (8/25/16), the use of require and import of individual
 // submodules is needed to avoid problems with webpack (import seems to require

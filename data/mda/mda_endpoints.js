@@ -6,4 +6,4 @@ const endpoints = `
   # Property table maintained by _Buncombe County_ and _City of Asheville_
   mda_property( id: ID!, name: String ): MDA_Property
 `;
-export default endpoints;
+module.exports = endpoints;

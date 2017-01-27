@@ -228,4 +228,4 @@ const types = `
     platurl: String
   }
 `;
-export default types;
+module.exports = types;

@@ -7,16 +7,16 @@ let groupsByEmail = null;
 
 class Groups {
 
-  getGroupsByEmail (email) {
-    if (groupsByEmail == null) {
+  getGroupsByEmail(email) {
+    if (groupsByEmail === null) {
       groupsByEmail = {};
       for (let gg in groupMembership) {
         const users = groupMembership[gg];
-        users.forEach( (email) => {
-          if (!(email in groupsByEmail)) {
-            groupsByEmail[email] = [];
+        users.forEach((email1) => {
+          if (!(email1 in groupsByEmail)) {
+            groupsByEmail[email1] = [];
           }
-          groupsByEmail[email].push(gg);
+          groupsByEmail[email1].push(gg);
         });
       }
     }

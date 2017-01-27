@@ -31,19 +31,18 @@ const searchCivicAddressId = function (searchString, context) {
 const performSearch = function (searchString, searchContext, context) {
   if (searchContext === 'civicAddressId') {
     return searchCivicAddressId(searchString, context);
-  } else {
-    return Promise.resolve({
-      type: searchContext,
-      results: [
-        {
-          score: 22,
-          type: 'silly',
-          id: 1,
-          text: `search by ${searchContext}`,
-        },
-      ] }
-    );
   }
+  return Promise.resolve({
+    type: searchContext,
+    results: [
+      {
+        score: 22,
+        type: 'silly',
+        id: 1,
+        text: `search by ${searchContext}`,
+      },
+    ] }
+  );
 };
 
 const permitsHandler = function (result) {
@@ -474,4 +473,4 @@ const resolveFunctions = {
 
 };
 
-export default resolveFunctions;
+module.exports = resolveFunctions;

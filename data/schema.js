@@ -1,8 +1,8 @@
-import { makeExecutableSchema } from 'graphql-tools';
+const { makeExecutableSchema } = require('graphql-tools');
 
-import resolvers from './resolvers';
-import mdaTypes from './mda/mda_types';
-import mdaEndpoints from './mda/mda_endpoints';
+const resolvers = require('./resolvers');
+const mdaTypes = require('./mda/mda_types');
+const mdaEndpoints = require('./mda/mda_endpoints');
 
 const schema = `
 
