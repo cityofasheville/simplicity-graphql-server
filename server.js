@@ -51,7 +51,7 @@ if (pool) console.log('We got the pool');
 //   console.error('connect error', e.message, e.stack);
 // });
 
-const GRAPHQL_PORT = 8080;
+const GRAPHQL_PORT = process.env.PORT || 8080;
 const WS_PORT = 8090;
 
 const graphQLServer = express().use('*', cors());
@@ -139,6 +139,8 @@ graphQLServer.listen(GRAPHQL_PORT, () => console.log(
   `GraphQL Server is now running on http://localhost:${GRAPHQL_PORT}/graphql`
 ));
 
+// Killing the subscription server for now.
+/*
 // WebSocket server for subscriptions
 const websocketServer = createServer((request, response) => {
   response.writeHead(404);
@@ -149,8 +151,10 @@ websocketServer.listen(WS_PORT, () => console.log( // eslint-disable-line no-con
   `Websocket Server is now running on http://localhost:${WS_PORT}`
 ));
 
+
 // eslint-disable-next-line
 new SubscriptionServer(
   { subscriptionManager },
   websocketServer
 );
+*/
