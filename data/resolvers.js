@@ -48,7 +48,7 @@ const performSearch = function (searchString, searchContext, context) {
 const permitsHandler = function (result) {
   if (result.rows.length === 0) return [];
   const trips = result.rows.map((permit) => {
-    return { ...permit };
+    return Object.assign({}, permit);
   });
   // Now let's bundle up the trips into the permits
   const permits = [];
@@ -457,7 +457,7 @@ const resolveFunctions = {
     // The other fields are trivial & Apollo knows how to deal with them.
     trips(obj, args, context) {
       return obj.trips.map((t) => {
-        return { ...t };
+        return Object.assign({}, t);
       });
     },
   },
