@@ -81,7 +81,7 @@ type Query {
 
 `;
 
-export default makeExecutableSchema({
+module.exports = makeExecutableSchema({
   typeDefs: schema,
   resolvers,
 });

@@ -32,4 +32,4 @@ class MySimpliCity {
 
 }
 
-export default new MySimpliCity();
+module.exports = new MySimpliCity();

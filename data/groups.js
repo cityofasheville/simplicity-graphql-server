@@ -27,4 +27,4 @@ class Groups {
 
 }
 
-export default new Groups();
+module.exports = new Groups();
