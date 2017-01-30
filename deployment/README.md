@@ -3,7 +3,11 @@
 These instructions are to run the SimpliCity GraphQL server behind an NGINX proxy server. For the time
 being we're running two node services, but it's possible to run more.
 
-To deploy, simply run ````sudo ./deploy.sh```` from this directory.
+To deploy, simply run 
+````
+  cd deployment
+  sudo ./deploy.sh
+````
 
 To update from Github and redeploy, run:
 
