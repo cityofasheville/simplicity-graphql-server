@@ -2,8 +2,6 @@ const express = require('express');
 const { apolloExpress, graphiqlExpress } = require('apollo-server');
 const bodyParser = require('body-parser');
 const cors = require('cors');
-const { createServer } = require('http');
-const { SubscriptionServer } = require('subscriptions-transport-ws');
 require('dotenv').config();
 const pg = require('pg');
 const Pool = pg.Pool;
@@ -12,7 +10,6 @@ const Groups = require('./data/groups');
 const MySimpliCity = require('./data/mysimplicity');
 
 
-const { subscriptionManager } = require('./data/subscriptions');
 const schema = require('./data/schema');
 
 // Import Firebase - for now (8/25/16), the use of require and import of individual
@@ -52,7 +49,6 @@ if (pool) console.log('We got the pool');
 // });
 
 const GRAPHQL_PORT = process.env.PORT || 8080;
-const WS_PORT = 8090;
 
 const graphQLServer = express().use('*', cors());
 
@@ -77,7 +73,7 @@ const graphQLServer = express().use('*', cors());
 //   },
 //   "uid":"B9ewtFNqm0a9yOu2ljdHSEwkRS92"
 // }
-graphQLServer.use('/graphql', bodyParser.json(), apolloExpress( (req, res) => {
+graphQLServer.use('/graphql', bodyParser.json(), apolloExpress((req, res) => {
   if (!req.headers.authorization || req.headers.authorization === 'null') {
     return {
       schema,
@@ -93,7 +89,7 @@ graphQLServer.use('/graphql', bodyParser.json(), apolloExpress( (req, res) => {
       },
     };
   }
-  return firebase.auth().verifyIdToken(req.headers.authorization).then(function (decodedToken) {
+  return firebase.auth().verifyIdToken(req.headers.authorization).then((decodedToken) => {
     const groups = Groups.getGroupsByEmail(decodedToken.email);
     const ss = MySimpliCity.getSubscriptions(decodedToken.email, groups);
     const subscriptions = JSON.stringify(ss);
@@ -111,7 +107,7 @@ graphQLServer.use('/graphql', bodyParser.json(), apolloExpress( (req, res) => {
         subscriptions,
       },
     };
-  }).catch(function(error) {
+  }).catch((error) => {
     if (req.headers.authorization !== 'null') {
       console.log(`Error decoding firebase token: ${JSON.stringify(error)}`);
     }
