@@ -1,4 +1,5 @@
 [Service]
+WorkingDirectory=/opt/simplicity-graphql-server
 ExecStart=/usr/bin/node /opt/simplicity-graphql-server/server.js
 Restart=always
 StandardOutput=syslog
