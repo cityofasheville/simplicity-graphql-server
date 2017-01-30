@@ -1,7 +1,9 @@
 # Deploying the Simplicity GraphQL Server
 
-These instructions are to run the SimpliCity GraphQL server behind an NGINX proxy server. For the time
-being we're running two node services, but it's possible to run more.
+These instructions are to run the SimpliCity GraphQL server behind an NGINX proxy server. For
+the time being we're running only a single node service, but it's possible to run more.
+The ````simplicitygql2.service```` and ````simplicitygql.conf.example```` files are included
+to show how to do it (an additional Firebase authentication file is probably also required).
 
 To deploy, simply run 
 ````
