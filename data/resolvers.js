@@ -136,6 +136,7 @@ const resolveFunctions = {
       return queryPermits(pool, obj, args, context);
     },
 
+
     search(obj, args, context) {
       const searchString = args.searchString;
       const searchContexts = args.searchContexts;
@@ -304,6 +305,26 @@ const resolveFunctions = {
           }
         });
     },
+    gl_budget_history_plus_proposed(obj, args, context) {
+      const pool = context.pool;
+      console.log('Ok, we are getting the budget history');
+      return pool.query(
+        'SELECT * from coagis.v_gl_budget_history_plus_proposed'
+      )
+        .then((result) => {
+          console.log(`Back with result of length ${result.rows.length}`);
+          if (result.rows.length === 0) return null;
+          const p = result.rows;
+          return p;
+        })
+        .catch((err) => {
+          if (err) {
+            console.log(`Got an error in property: ${JSON.stringify(err)}`);
+          }
+        });
+      }
+    },
+
     mda_property(obj, args, context) {
       const id = args.id;
       const pool = context.pool;
@@ -460,6 +481,10 @@ const resolveFunctions = {
         return Object.assign({}, t);
       });
     },
+  },
+
+  SimpleBudgetDetail: {
+
   },
 
   SearchResult: {

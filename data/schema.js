@@ -71,12 +71,38 @@ type Permit {
   trips: [PermitTrip]!
 }
 
+type SimpleBudgetDetail {
+  account_type: String,
+  account_name: String,
+  fund_name: String,
+  department_name: String,
+  division_name: String,
+  costcenter_name: String,
+  function_name: String,
+  organization_name: String,
+  object_name: String,
+  year: Int,
+  budget: Float,
+  actual: Float,
+  full_account_id: String,
+  org_id: String,
+  obj_id: String,
+  fund_id: String,
+  dept_id: String,
+  div_id: String,
+  cost_id: String,
+  func_id: String,
+  proj_id: String,
+  is_proposed: String
+}
+
 # the schema allows the following query:
 type Query {
   search ( searchString: String!, searchContexts: [String] ): [TypedSearchResult]!
   ${mdaEndpoints}
   my_simplicity: UserDashboards
   permits (type: String, violated: Boolean, limit: Int): [Permit]!
+  gl_budget_history_plus_proposed: [SimpleBudgetDetail]!
 }
 
 `;
