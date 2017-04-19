@@ -21,3 +21,5 @@ To update from Github and redeploy, run:
 To see the status of the node services, run, e.g., ````sudo systemctl status simplicitygql1```` 
 or ````sudo journalctl -u simplicitygql1````.
 
+Node console logging goes to /var/log/messages
+
