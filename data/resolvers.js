@@ -140,7 +140,7 @@ const resolveFunctions = {
       const pool = context.pool;
       console.log('Ok, we are getting the budget history');
       return pool.query(
-        'SELECT * from coagis.v_gl_budget_history_plus_proposed limit 100'
+        'SELECT * from coagis.v_budget_history_plus_proposed'
       )
       .then((result) => {
         console.log('Hi there - I am back from the query');
