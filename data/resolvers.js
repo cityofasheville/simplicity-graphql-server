@@ -137,6 +137,7 @@ const resolveFunctions = {
     },
 
     gl_budget_summary (obj, args, context) {
+      const pool = context.pool;
       const which = args.breakdown;
       let categoryColumn = 'department_name';
       let view = 'coagis.v_budget_summary_by_dept';
