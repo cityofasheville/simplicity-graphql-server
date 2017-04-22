@@ -96,6 +96,14 @@ type SimpleBudgetDetail {
   is_proposed: String
 }
 
+type SimpleBudgetSummary {
+  account_type: String,
+  category_name: String,
+  year: Int,
+  budget: Float,
+  actual: Float
+}
+
 # the schema allows the following query:
 type Query {
   search ( searchString: String!, searchContexts: [String] ): [TypedSearchResult]!
@@ -103,6 +111,7 @@ type Query {
   my_simplicity: UserDashboards
   permits (type: String, violated: Boolean, limit: Int): [Permit]!
   gl_budget_history_plus_proposed: [SimpleBudgetDetail]!
+  gl_budget_summary ( breakdown: String!, maxCategories: Int ): [SimpleBudgetSummary]!
 }
 
 `;
