@@ -148,7 +148,7 @@ const resolveFunctions = {
       let maxCategories = 9;
       if ('maxCategories' in args) maxCategories = args.maxCategories + 0;
       let query = `
-        SELECT account_type, ${categoryColumn}, year, SUM(total_budget) as total_budget, SUM(total_actual) AS total_actual
+        SELECT account_type, category_name, year, SUM(total_budget) as total_budget, SUM(total_actual) AS total_actual
         FROM (
           select 
             account_type, year, total_budget, total_actual, row,
