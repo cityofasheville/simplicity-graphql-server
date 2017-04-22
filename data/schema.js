@@ -100,8 +100,8 @@ type SimpleBudgetSummary {
   account_type: String,
   category_name: String,
   year: Int,
-  budget: Float,
-  actual: Float
+  total_budget: Float,
+  total_actual: Float
 }
 
 # the schema allows the following query:
