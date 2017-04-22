@@ -136,6 +136,47 @@ const resolveFunctions = {
       return queryPermits(pool, obj, args, context);
     },
 
+    gl_budget_summary (obj, args, context) {
+      const pool = context.pool;
+      const which = args.breakdown;
+      let categoryColumn = 'department_name';
+      let view = 'coagis.v_budget_summary_by_dept';
+      if (which == 'use') {
+        categoryColumn = 'account_name';
+        view = 'coagis.v_budget_summary_by_use';
+      }
+      let maxCategories = 9;
+      if ('maxCategories' in args) maxCategories = args.maxCategories + 0;
+      let query = `
+        SELECT account_type, category_name, year, SUM(total_budget) as total_budget, SUM(total_actual) AS total_actual
+        FROM (
+          select 
+            account_type, year, total_budget, total_actual, row,
+            case 
+              when row > ${maxCategories} then 'Other'
+              else ${categoryColumn}
+            end AS category_name
+          from ${view}
+          where year >= 2014
+        ) as ii
+        GROUP BY account_type, category_name, year
+        ORDER BY year desc, account_type, total_budget desc
+      `;
+      console.log(`Here is the query:\n ${query}`);
+      return pool.query(query)
+      .then((result) => {
+        console.log('Hi there - I am back from the query');
+        console.log(`Back with result of length ${result.rows.length}`);
+        if (result.rows.length === 0) return null;
+        const p = result.rows;
+        return p;
+      })
+      .catch((err) => {
+        if (err) {
+          console.log(`Got an error in property: ${JSON.stringify(err)}`);
+        }
+      });
+    },
     gl_budget_history_plus_proposed(obj, args, context) {
       const pool = context.pool;
       console.log('Ok, we are getting the budget history');
