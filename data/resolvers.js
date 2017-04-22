@@ -162,6 +162,7 @@ const resolveFunctions = {
         GROUP BY account_type, category_name, year
         ORDER BY year desc, account_type, total_budget desc
       `;
+      console.log(`Here is the query:\n ${query}`);
       return pool.query(query)
       .then((result) => {
         console.log('Hi there - I am back from the query');
