@@ -147,8 +147,9 @@ const resolveFunctions = {
       }
       let maxCategories = 9;
       if ('maxCategories' in args) maxCategories = args.maxCategories + 0;
-      let query = `
-        SELECT account_type, category_name, year, SUM(total_budget) as total_budget, SUM(total_actual) AS total_actual
+      const query = `
+        SELECT account_type, category_name, year, SUM(total_budget) as total_budget,
+          SUM(total_actual) AS total_actual
         FROM (
           select 
             account_type, year, total_budget, total_actual, row,
@@ -162,10 +163,8 @@ const resolveFunctions = {
         GROUP BY account_type, category_name, year
         ORDER BY year desc, account_type, total_budget desc
       `;
-      console.log(`Here is the query:\n ${query}`);
       return pool.query(query)
       .then((result) => {
-        console.log('Hi there - I am back from the query');
         console.log(`Back with result of length ${result.rows.length}`);
         if (result.rows.length === 0) return null;
         const p = result.rows;
