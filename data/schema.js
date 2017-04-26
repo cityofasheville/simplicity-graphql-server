@@ -41,36 +41,6 @@ type UserDashboards {
   subscriptions: String
 }
 
-type PermitTrip {
-  trip: Int!
-  start_date: String
-  end_date: String
-  due_date: String
-  trip_violation_days: Int!
-  trip_sla: Int!
-  division: String!
-}
-
-type Permit {
-  permit_id: ID!
-  type: String
-  subtype: String
-  category: String
-  app_date: String
-  app_status: String
-  app_status_date: String
-  ntrips: Int!
-  violation: Boolean!
-  violation_count: Int!
-  violation_days: Int!
-  sla: Int!
-  building: Int!
-  fire: Int!
-  zoning: Int!
-  addressing: Int!
-  trips: [PermitTrip]!
-}
-
 type SimpleBudgetDetail {
   account_type: String,
   account_name: String,
@@ -109,7 +79,6 @@ type Query {
   search ( searchString: String!, searchContexts: [String] ): [TypedSearchResult]!
   ${mdaEndpoints}
   my_simplicity: UserDashboards
-  permits (type: String, violated: Boolean, limit: Int): [Permit]!
   gl_budget_history_plus_proposed: [SimpleBudgetDetail]!
   gl_budget_summary ( breakdown: String!, maxCategories: Int ): [SimpleBudgetSummary]!
 }
