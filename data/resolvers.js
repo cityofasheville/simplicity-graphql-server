@@ -70,7 +70,7 @@ const resolveFunctions = {
               else ${categoryColumn}
             end AS category_name
           from ${view}
-          where year >= 2014
+          where year >= 2015
         ) as ii
         GROUP BY account_type, category_name, year
         ORDER BY year desc, account_type, total_budget desc
