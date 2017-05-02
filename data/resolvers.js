@@ -426,15 +426,6 @@ const resolveFunctions = {
     },
   },
 
-  Permit: {
-    // The other fields are trivial & Apollo knows how to deal with them.
-    trips(obj, args, context) {
-      return obj.trips.map((t) => {
-        return Object.assign({}, t);
-      });
-    },
-  },
-
   SearchResult: {
     __resolveType(data, context, info) {
       if (data.type === 'civicAddressId') {
