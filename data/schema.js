@@ -49,6 +49,7 @@ type SimpleBudgetDetail {
   division_name: String,
   costcenter_name: String,
   function_name: String,
+  charcode_name: String,
   organization_name: String,
   object_name: String,
   year: Int,
@@ -62,6 +63,7 @@ type SimpleBudgetDetail {
   div_id: String,
   cost_id: String,
   func_id: String,
+  charcode: String,
   proj_id: String,
   is_proposed: String
 }

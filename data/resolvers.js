@@ -54,7 +54,7 @@ const resolveFunctions = {
       let categoryColumn = 'department_name';
       let view = 'coagis.v_budget_summary_by_dept';
       if (which === 'use') {
-        categoryColumn = 'account_name';
+        categoryColumn = 'charcode_name';
         view = 'coagis.v_budget_summary_by_use';
       }
       let maxCategories = 9;
@@ -92,7 +92,7 @@ const resolveFunctions = {
       const pool = context.pool;
       console.log('Ok, we are getting the budget history');
       return pool.query(
-        'SELECT * from coagis.v_budget_history_plus_proposed where year >= 2014'
+        'SELECT * from coagis.v_budget_history_plus_proposed where year >= 2015'
       )
       .then((result) => {
         console.log('Hi there - I am back from the query');
