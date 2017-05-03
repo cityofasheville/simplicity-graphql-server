@@ -107,6 +107,39 @@ const resolveFunctions = {
         }
       });
     },
+    gl_budget_cash_flow(obj, args, context) {
+      const pool = context.pool;
+      let query = `
+        SELECT account_type, department_name, dept_id, fund_id, fund_name,
+          SUM(budget) as budget, NULL as charcode_name, NULL as charcode, year
+        FROM coagis.v_budget_history_plus_proposed
+        WHERE account_type = 'E' and year = 2018 and budget <> 0
+        GROUP BY account_type, year, fund_id, fund_name, dept_id,
+        department_name, charcode, charcode_name
+      `;
+      if (args.accountType === 'R') {
+        query = `
+        SELECT account_type, charcode_name, charcode, year, SUM(budget) as budget,
+          fund_name, fund_id, NULL as dept_id, NULL as department_name
+        FROM coagis.v_budget_history_plus_proposed
+        WHERE account_Type = 'R' and year = 2018 and budget <> 0
+        GROUP BY charcode, charcode_name, account_type, year, fund_id,
+        fund_name, dept_id, department_name
+      `;
+      }
+      return pool.query(query)
+      .then((result) => {
+        console.log(`Back with result of length ${result.rows.length}`);
+        if (result.rows.length === 0) return null;
+        const p = result.rows;
+        return p;
+      })
+      .catch((err) => {
+        if (err) {
+          console.log(`Got an error in property: ${JSON.stringify(err)}`);
+        }
+      });
+    },
 
     search(obj, args, context) {
       const searchString = args.searchString;
@@ -423,15 +456,6 @@ const resolveFunctions = {
     type(obj) {return obj.type;},
     results(obj, args, context) {
       return obj.results;
-    },
-  },
-
-  Permit: {
-    // The other fields are trivial & Apollo knows how to deal with them.
-    trips(obj, args, context) {
-      return obj.trips.map((t) => {
-        return Object.assign({}, t);
-      });
     },
   },
 
