@@ -76,6 +76,18 @@ type SimpleBudgetSummary {
   total_actual: Float
 }
 
+type BudgetCashFlow {
+  account_type: String,
+  charcode_name: String,
+  charcode: String,
+  dept_id: String,
+  department_name: String,
+  fund_id: String,
+  fund_name: String,
+  budget: Float,
+  year: Int
+}
+
 # the schema allows the following query:
 type Query {
   search ( searchString: String!, searchContexts: [String] ): [TypedSearchResult]!
@@ -83,6 +95,7 @@ type Query {
   my_simplicity: UserDashboards
   gl_budget_history_plus_proposed: [SimpleBudgetDetail]!
   gl_budget_summary ( breakdown: String!, maxCategories: Int ): [SimpleBudgetSummary]!
+  gl_budget_cash_flow ( accountType: String! ): [BudgetCashFlow]!
 }
 
 `;
