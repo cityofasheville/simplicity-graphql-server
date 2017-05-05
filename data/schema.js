@@ -82,8 +82,8 @@ type SimpleBudgetSummary {
 
 type BudgetCashFlow {
   account_type: String,
-  charcode_name: String,
-  charcode: String,
+  category_name: String,
+  category_id: String,
   dept_id: String,
   department_name: String,
   fund_id: String,
