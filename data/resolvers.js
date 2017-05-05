@@ -111,19 +111,19 @@ const resolveFunctions = {
       const pool = context.pool;
       let query = `
         SELECT account_type, department_name, dept_id, fund_id, fund_name,
-          SUM(budget) as budget, NULL as charcode_name, NULL as charcode, year
-        FROM coagis.v_budget_history_plus_proposed
+          SUM(budget) as budget, NULL as category_name, NULL as category_id, year
+        FROM coagis.v_budget_proposed_plus_history
         WHERE account_type = 'E' and year = 2018 and budget <> 0
         GROUP BY account_type, year, fund_id, fund_name, dept_id,
-        department_name, charcode, charcode_name
+        department_name, category_id, category_name
       `;
       if (args.accountType === 'R') {
         query = `
-        SELECT account_type, charcode_name, charcode, year, SUM(budget) as budget,
+        SELECT account_type, category_name, category_id, year, SUM(budget) as budget,
           fund_name, fund_id, NULL as dept_id, NULL as department_name
-        FROM coagis.v_budget_history_plus_proposed
+        FROM coagis.v_budget_proposed_plus_history
         WHERE account_Type = 'R' and year = 2018 and budget <> 0
-        GROUP BY charcode, charcode_name, account_type, year, fund_id,
+        GROUP BY category_id, category_name, account_type, year, fund_id,
         fund_name, dept_id, department_name
       `;
       }
