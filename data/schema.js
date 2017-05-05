@@ -51,6 +51,8 @@ type SimpleBudgetDetail {
   function_name: String,
   charcode_name: String,
   organization_name: String,
+  category_name: String,
+  budget_section_name: String,
   object_name: String,
   year: Int,
   budget: Float,
@@ -64,6 +66,8 @@ type SimpleBudgetDetail {
   cost_id: String,
   func_id: String,
   charcode: String,
+  category_id: String,
+  budget_section_id: String,
   proj_id: String,
   is_proposed: String
 }
