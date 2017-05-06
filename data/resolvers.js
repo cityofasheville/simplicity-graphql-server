@@ -54,7 +54,7 @@ const resolveFunctions = {
       let categoryColumn = 'department_name';
       let view = 'coagis.v_budget_summary_by_dept';
       if (which === 'use') {
-        categoryColumn = 'charcode_name';
+        categoryColumn = 'category_name';
         view = 'coagis.v_budget_summary_by_use';
       }
       let maxCategories = 9;
