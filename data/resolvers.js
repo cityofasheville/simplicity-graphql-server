@@ -57,7 +57,7 @@ const resolveFunctions = {
         categoryColumn = 'category_name';
         view = 'coagis.v_budget_summary_by_use';
       }
-      let maxCategories = 9;
+      let maxCategories = 10;
       if ('maxCategories' in args) maxCategories = args.maxCategories + 0;
       const query = `
         SELECT account_type, category_name, year, SUM(total_budget) as total_budget,
@@ -66,7 +66,8 @@ const resolveFunctions = {
           select 
             account_type, year, total_budget, total_actual, row,
             case 
-              when row > ${maxCategories} then 'Other'
+              when row > ${maxCategories} or ${categoryColumn} = 'Non-Departmental Department'
+              then 'Other'
               else ${categoryColumn}
             end AS category_name
           from ${view}
