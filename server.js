@@ -16,11 +16,12 @@ const schema = require('./data/schema');
 // submodules is needed to avoid problems with webpack (import seems to require
 // beta version of webpack 2).
 const firebase = require('firebase');
-
+console.log('Go1');
 firebase.initializeApp({
   serviceAccount: './SimpliCityII-284f9d0ebb83.json',
   databaseURL: 'https://simplicityii-878be.firebaseio.com',
 });
+console.log('Go2');
 
 const dbConfig = {
   host: process.env.dbhost,
@@ -49,7 +50,7 @@ if (pool) console.log('We got the pool');
 // });
 
 const GRAPHQL_PORT = process.env.PORT || 8080;
-
+console.log(`The graphql port is ${GRAPHQL_PORT}`);
 const graphQLServer = express().use('*', cors());
 
 // Decoded token: {
