@@ -10,18 +10,16 @@ const Groups = require('./data/groups');
 const MySimpliCity = require('./data/mysimplicity');
 
 
-const schema = require('./data/schema');
+const schema = require('./schema');
 
 // Import Firebase - for now (8/25/16), the use of require and import of individual
 // submodules is needed to avoid problems with webpack (import seems to require
 // beta version of webpack 2).
 const firebase = require('firebase');
-console.log('Go1');
 firebase.initializeApp({
   serviceAccount: './SimpliCityII-284f9d0ebb83.json',
   databaseURL: 'https://simplicityii-878be.firebaseio.com',
 });
-console.log('Go2');
 
 const dbConfig = {
   host: process.env.dbhost,
@@ -33,21 +31,6 @@ const dbConfig = {
 };
 
 const pool = new Pool(dbConfig);
-if (pool) console.log('We got the pool');
-// pool.connect().then(client => {
-//   console.log('In the connect');
-//   client.query('select pin from coagis.bc_property', []).then(res => {
-//     client.release();
-//     console.log('hello from', res.rows[0].pin);
-//   })
-//   .catch(e => {
-//     client.release();
-//     console.error('query error', e.message, e.stack);
-//   });
-// })
-// .catch(e => {
-//   console.error('connect error', e.message, e.stack);
-// });
 
 const GRAPHQL_PORT = process.env.PORT || 8080;
 console.log(`The graphql port is ${GRAPHQL_PORT}`);
