@@ -1,7 +1,11 @@
 const { merge } = require('lodash');
 
 const resolverMap = {
-  Query: {},
+  Query: {
+    version(obj, args, context) {
+      return '1.0';
+    },
+  },
 };
 
 module.exports = merge(

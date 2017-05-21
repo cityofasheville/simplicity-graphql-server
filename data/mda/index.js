@@ -1,4 +1,4 @@
 module.exports = {
-  schema: null,
-  resolvers: require('./resolvers'),
+  schema: [require('./mda_schema')],
+  resolvers: require('./mda_resolvers'),
 };

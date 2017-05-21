@@ -6,6 +6,7 @@ const baseSchema = `
   }
 
   extend type Query {
+    search ( searchString: String!, searchContexts: [String] ): [TypedSearchResult]!
     my_simplicity: UserDashboards
     budgetHistory: [SimpleBudgetDetail]!
     budgetSummary ( breakdown: String!, maxCategories: Int ): [SimpleBudgetSummary]!
