@@ -1,6 +1,3 @@
-const { makeExecutableSchema } = require('graphql-tools');
-const resolvers = require('./resolvers');
-
 const baseSchema = `
   # the schema allows the following query:
   type Query {
@@ -8,12 +5,7 @@ const baseSchema = `
   }
 `;
 
-const schema = baseSchema.concat(
+module.exports = baseSchema.concat(
   require('./data/simplicity').schema,
   require('./data/mda').schema
 );
-
-module.exports = makeExecutableSchema({
-  typeDefs: schema,
-  resolvers,
-});

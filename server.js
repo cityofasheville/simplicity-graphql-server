@@ -1,5 +1,6 @@
 const express = require('express');
 const { apolloExpress, graphiqlExpress } = require('apollo-server');
+const { makeExecutableSchema } = require('graphql-tools');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 require('dotenv').config();
@@ -9,8 +10,12 @@ const Pool = pg.Pool;
 const Groups = require('./data/groups');
 const MySimpliCity = require('./data/mysimplicity');
 
-
-const schema = require('./schema');
+const typeDefs = require('./schema');
+const resolvers = require('./resolvers');
+const executableSchema = makeExecutableSchema({
+  typeDefs,
+  resolvers,
+});
 
 // Import Firebase - for now (8/25/16), the use of require and import of individual
 // submodules is needed to avoid problems with webpack (import seems to require
@@ -57,10 +62,11 @@ const graphQLServer = express().use('*', cors());
 //   },
 //   "uid":"B9ewtFNqm0a9yOu2ljdHSEwkRS92"
 // }
+
 graphQLServer.use('/graphql', bodyParser.json(), apolloExpress((req, res) => {
   if (!req.headers.authorization || req.headers.authorization === 'null') {
     return {
-      schema,
+      executableSchema,
       context: {
         pool,
         loggedin: false,
@@ -79,7 +85,7 @@ graphQLServer.use('/graphql', bodyParser.json(), apolloExpress((req, res) => {
     const subscriptions = JSON.stringify(ss);
     console.log('auth-verify');
     return {
-      schema,
+      executableSchema,
       context: {
         pool,
         loggedin: true,
@@ -96,7 +102,7 @@ graphQLServer.use('/graphql', bodyParser.json(), apolloExpress((req, res) => {
       console.log(`Error decoding firebase token: ${JSON.stringify(error)}`);
     }
     return {
-      schema,
+      executableSchema,
       context: {
         pool,
         loggedin: false,
