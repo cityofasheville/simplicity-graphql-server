@@ -45,12 +45,14 @@ const performSearch = function (searchString, searchContext, context) {
   );
 };
 const resolvers = {
-  search(obj, args, context) {
-    const searchString = args.searchString;
-    const searchContexts = args.searchContexts;
-    return Promise.all(searchContexts.map((searchContext) => {
-      return performSearch(searchString, searchContext, context);
-    }));
+  Query: {
+    search(obj, args, context) {
+      const searchString = args.searchString;
+      const searchContexts = args.searchContexts;
+      return Promise.all(searchContexts.map((searchContext) => {
+        return performSearch(searchString, searchContext, context);
+      }));
+    },
   },
 };
 

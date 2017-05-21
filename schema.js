@@ -1,13 +1,13 @@
 const { makeExecutableSchema } = require('graphql-tools');
 
-const resolvers = require('./resolvers');
 const mdaTypes = require('./data/mda/mda_types');
 const mdaEndpoints = require('./data/mda/mda_endpoints');
+
 const simplicitySchema = require('./data/simplicity').schema;
-const searchSchema = require('./data/search').schema;
+const resolvers = require('./resolvers');
 
 const schema = [
-  `${mdaTypes}`,
+  mdaTypes,
   `
   # the schema allows the following query:
   type Query {
@@ -15,9 +15,7 @@ const schema = [
     ${mdaEndpoints}
   }
   `,
-  searchSchema,
-  simplicitySchema,
-];
+].concat(simplicitySchema, []); // just add more schemas here in place of []
 
 module.exports = makeExecutableSchema({
   typeDefs: schema,
