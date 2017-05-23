@@ -9,14 +9,14 @@ const Pool = pg.Pool;
 
 const Groups = require('./data/groups');
 const MySimpliCity = require('./data/mysimplicity');
-
+console.log('Build the schema');
 const typeDefs = require('./schema');
 const resolvers = require('./resolvers');
 const executableSchema = makeExecutableSchema({
   typeDefs,
   resolvers,
 });
-
+console.log('Done');
 // Import Firebase - for now (8/25/16), the use of require and import of individual
 // submodules is needed to avoid problems with webpack (import seems to require
 // beta version of webpack 2).
@@ -66,7 +66,7 @@ const graphQLServer = express().use('*', cors());
 graphQLServer.use('/graphql', bodyParser.json(), apolloExpress((req, res) => {
   if (!req.headers.authorization || req.headers.authorization === 'null') {
     return {
-      executableSchema,
+      schema: executableSchema,
       context: {
         pool,
         loggedin: false,
@@ -85,7 +85,7 @@ graphQLServer.use('/graphql', bodyParser.json(), apolloExpress((req, res) => {
     const subscriptions = JSON.stringify(ss);
     console.log('auth-verify');
     return {
-      executableSchema,
+      schema: executableSchema,
       context: {
         pool,
         loggedin: true,
@@ -102,7 +102,7 @@ graphQLServer.use('/graphql', bodyParser.json(), apolloExpress((req, res) => {
       console.log(`Error decoding firebase token: ${JSON.stringify(error)}`);
     }
     return {
-      executableSchema,
+      schema: executableSchema,
       context: {
         pool,
         loggedin: false,
