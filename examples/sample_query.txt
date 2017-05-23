@@ -1,0 +1,33 @@
+{
+  version
+  search(searchString: "11111", searchContexts: ["civicAddressId"]) {
+    results {
+      type
+      score
+      ... on AddressResult {
+        civic_address_id
+        address
+        is_in_city
+      }
+    }
+  }
+
+  mda_address (id: 11111) {
+    street_name
+  }
+
+  budgetSummary(maxCategories: 6, breakdown: "use") {
+    account_type
+    category_name
+    total_budget
+    total_actual
+    year
+  }
+  
+  budgetCashFlow(accountType: "R") {
+    dept_id
+    year
+    budget
+  }
+  
+}

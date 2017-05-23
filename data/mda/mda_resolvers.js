@@ -1,170 +1,5 @@
-const searchCivicAddressId = function (searchString, context) {
-  const pool = context.pool;
-  const myQuery = `SELECT civicaddress_id, pinnum, address from coagis.bc_address where cast(civicaddress_id as TEXT) LIKE '${searchString}%'  limit 5`;
-  return pool.query(myQuery)
-    .then((result) => {
-      if (result.rows.length === 0) return { type: 'civicAddressId', results: [] };
-
-      const finalResult = {
-        type: 'civicAddressId',
-        results: result.rows.map((address) => {
-          return {
-            score: 33,
-            type: 'civicAddressId',
-            id: address.civicaddress_id,
-            civic_address_id: address.civicaddress_id,
-            address: address.address,
-            pinnum: address.pinnum,
-            is_in_city: (address.jurisdiction_type === 'Asheville Corporate Limits'),
-          };
-        }),
-      };
-      return finalResult;
-    })
-    .catch((err) => {
-      if (err) {
-        console.log(`Got an error in searchCivicAddressID: ${JSON.stringify(err)}`);
-      }
-    });
-};
-
-const performSearch = function (searchString, searchContext, context) {
-  if (searchContext === 'civicAddressId') {
-    return searchCivicAddressId(searchString, context);
-  }
-  return Promise.resolve({
-    type: searchContext,
-    results: [
-      {
-        score: 22,
-        type: 'silly',
-        id: 1,
-        text: `search by ${searchContext}`,
-      },
-    ] }
-  );
-};
-
-
-const resolveFunctions = {
+const resolvers = {
   Query: {
-    gl_budget_summary(obj, args, context) {
-      const pool = context.pool;
-      const which = args.breakdown;
-      let categoryColumn = 'department_name';
-      let view = 'coagis.v_budget_summary_by_dept';
-      if (which === 'use') {
-        categoryColumn = 'category_name';
-        view = 'coagis.v_budget_summary_by_use';
-      }
-      let maxCategories = 10;
-      if ('maxCategories' in args) maxCategories = args.maxCategories + 0;
-      const query = `
-        SELECT account_type, category_name, year, SUM(total_budget) as total_budget,
-          SUM(total_actual) AS total_actual
-        FROM (
-          select 
-            account_type, year, total_budget, total_actual, row,
-            case 
-              when row > ${maxCategories} or ${categoryColumn} = 'Non-Departmental Department'
-              then 'Other'
-              else ${categoryColumn}
-            end AS category_name
-          from ${view}
-          where year >= 2015
-        ) as ii
-        GROUP BY account_type, category_name, year
-        ORDER BY year desc, account_type, total_budget desc
-      `;
-      return pool.query(query)
-      .then((result) => {
-        console.log(`Back with result of length ${result.rows.length}`);
-        if (result.rows.length === 0) return null;
-        const p = result.rows;
-        return p;
-      })
-      .catch((err) => {
-        if (err) {
-          console.log(`Got an error in property: ${JSON.stringify(err)}`);
-        }
-      });
-    },
-    gl_budget_history_plus_proposed(obj, args, context) {
-      const pool = context.pool;
-      console.log('Ok, we are getting the budget history');
-      return pool.query(
-        'SELECT * from coagis.v_budget_proposed_plus_history where year >= 2015'
-      )
-      .then((result) => {
-        console.log('Hi there - I am back from the query');
-        console.log(`Back with result of length ${result.rows.length}`);
-        if (result.rows.length === 0) return null;
-        const p = result.rows;
-        return p;
-      })
-      .catch((err) => {
-        if (err) {
-          console.log(`Got an error in property: ${JSON.stringify(err)}`);
-        }
-      });
-    },
-    gl_budget_cash_flow(obj, args, context) {
-      const pool = context.pool;
-      let query = `
-        SELECT account_type, department_name, dept_id, fund_id, fund_name,
-          SUM(budget) as budget, NULL as category_name, NULL as category_id, year
-        FROM coagis.v_budget_proposed_plus_history
-        WHERE account_type = 'E' and year = 2018 and budget <> 0
-        GROUP BY account_type, year, fund_id, fund_name, dept_id,
-        department_name, category_id, category_name
-      `;
-      if (args.accountType === 'R') {
-        query = `
-        SELECT account_type, category_name, category_id, year, SUM(budget) as budget,
-          fund_name, fund_id, NULL as dept_id, NULL as department_name
-        FROM coagis.v_budget_proposed_plus_history
-        WHERE account_Type = 'R' and year = 2018 and budget <> 0
-        GROUP BY category_id, category_name, account_type, year, fund_id,
-        fund_name, dept_id, department_name
-      `;
-      }
-      return pool.query(query)
-      .then((result) => {
-        console.log(`Back with result of length ${result.rows.length}`);
-        if (result.rows.length === 0) return null;
-        const p = result.rows;
-        return p;
-      })
-      .catch((err) => {
-        if (err) {
-          console.log(`Got an error in property: ${JSON.stringify(err)}`);
-        }
-      });
-    },
-
-    search(obj, args, context) {
-      const searchString = args.searchString;
-      const searchContexts = args.searchContexts;
-      return Promise.all(searchContexts.map((searchContext) => {
-        return performSearch(searchString, searchContext, context);
-      }));
-    },
-
-    my_simplicity(obj, args, context) {
-      if (context.loggedin) {
-        return {
-          email: context.email,
-          groups: context.groups,
-          subscriptions: context.subscriptions,
-        };
-      }
-      return {
-        email: 'none',
-        groups: [],
-        subscriptions: JSON.stringify({}),
-      };
-    },
-
     mda_address(obj, args, context) {
       const id = args.id;
       console.log(`In mda_address with id = ${id}`);
@@ -196,7 +31,7 @@ const resolveFunctions = {
           centerline_id,
           location_id,
           parent_location_id
-         from coagis.bc_address where civicaddress_id = '${id}'  limit 1`)
+          from coagis.bc_address where civicaddress_id = '${id}'  limit 1`)
         .then((result) => {
           if (result.rows.length === 0) return null;
           const a = result.rows[0];
@@ -376,7 +211,7 @@ const resolveFunctions = {
           citystatezip,
           deedurl,
           platurl
-         from coagis.bc_property where pin = '${id}' limit 1`
+          from coagis.bc_property where pin = '${id}' limit 1`
         )
         .then((result) => {
           console.log('Howdy');
@@ -452,23 +287,6 @@ const resolveFunctions = {
         });
     },
   },
-
-  TypedSearchResult: {
-    type(obj) {return obj.type;},
-    results(obj, args, context) {
-      return obj.results;
-    },
-  },
-
-  SearchResult: {
-    __resolveType(data, context, info) {
-      if (data.type === 'civicAddressId') {
-        return info.schema.getType('AddressResult');
-      }
-      return info.schema.getType('SillyResult');
-    },
-  },
-
 };
 
-module.exports = resolveFunctions;
+module.exports = resolvers;
