@@ -2,6 +2,23 @@ const { merge } = require('lodash');
 
 const resolvers = {
   Query: {
+    firstReviewSLAItems(obj, args, context) {
+      const pool = context.pool;
+      return pool.query(
+        'SELECT * from amd.dsd_first_review_sla'
+      )
+      .then((result) => {
+        console.log(`Back with result of length ${result.rows.length}`);
+        if (result.rows.length === 0) return null;
+        const p = result.rows;
+        return p;
+      })
+      .catch((err) => {
+        if (err) {
+          console.log(`Got an error in firstReviewSLAItems: ${JSON.stringify(err)}`);
+        }
+      });
+    },
     budgetSummary(obj, args, context) {
       const pool = context.pool;
       const which = args.breakdown;
