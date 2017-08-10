@@ -11,12 +11,14 @@ const baseSchema = `
     budgetHistory: [SimpleBudgetDetail]!
     budgetSummary ( breakdown: String!, maxCategories: Int ): [SimpleBudgetSummary]!
     budgetCashFlow ( accountType: String! ): [BudgetCashFlow]!  
+    firstReviewSLAItems: [FirstReviewSLAItem]!
   }
 `;
 const searchSchema = require('./search').schema;
 
 const schema = [
   require('./budget_schema.js'),
+  require('./dsd_sla_schema'),
   searchSchema,
   baseSchema];
 
