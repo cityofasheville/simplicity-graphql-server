@@ -12,6 +12,7 @@ const baseSchema = `
     budgetSummary ( breakdown: String!, maxCategories: Int ): [SimpleBudgetSummary]!
     budgetCashFlow ( accountType: String! ): [BudgetCashFlow]!  
     firstReviewSLAItems: [FirstReviewSLAItem]!
+    firstReviewSLASummary (tasks: [String]) : [FirstReviewSLASummaryItem]!
   }
 `;
 const searchSchema = require('./search').schema;

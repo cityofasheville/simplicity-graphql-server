@@ -19,6 +19,39 @@ const resolvers = {
         }
       });
     },
+    firstReviewSLASummary(obj, args, context) {
+      const pool = context.pool;
+      let tasks = null;
+      let q = 'select * from amd.dsd_first_review_sla_summary';
+      if (args.tasks) {
+        args.tasks.forEach(t => {
+          tasks = (tasks === null) ? `'${t}'` : `${tasks}, '${t}'`;
+        });
+        q += ` where task in (${tasks})`;
+      }
+      return pool.query(q)
+      .then(result => {
+        if (result.rows.length === 0) return [];
+        return result.rows.map(item => {
+          const total = Number(item.met_sla) + Number(item.past_sla);
+          const pct = 100.0 * Number(item.met_sla) / total;
+          return {
+            task: item.task,
+            met_sla: item.met_sla,
+            past_sla: item.past_sla,
+            met_sla_percent: pct.toPrecision(5),
+            month: item.month,
+            year: item.year,
+          };
+        });
+      })
+      .catch(err => {
+        if (err) {
+          console.log(`Error in firstReviewSLASummary: ${JSON.stringify(err)}`);
+        }
+        return [];
+      });
+    },
     budgetSummary(obj, args, context) {
       const pool = context.pool;
       const which = args.breakdown;

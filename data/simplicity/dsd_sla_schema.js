@@ -19,4 +19,13 @@ type FirstReviewSLAItem {
   sla_business: Int,
   worked_days_business: Int
 }
+
+type FirstReviewSLASummaryItem {
+  task: String,
+  met_sla: Int,
+  past_sla: Int
+  met_sla_percent: Float,
+  month: Int,
+  year: Int
+}
 `;
