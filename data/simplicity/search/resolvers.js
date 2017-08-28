@@ -36,24 +36,52 @@ const performSearch = function (searchString, searchContext, context) {
     const geolocatorUrl = 'http://192.168.0.125:6080/arcgis/rest/services/Geolocators/BC_address_unit/GeocodeServer/findAddressCandidates'
       + '?Street=&City=&ZIP='
       + `&Single+Line+Input=${encodeURIComponent(searchString)}&category=`
-      + '&outFields=shape%2C+match_addr&maxLocations=&outSR=&searchExtent='
+      + '&outFields=House%2C+PreDir%2C+StreetName%2C+SufType%2C+SubAddrUnit%2C+City%2C+ZIP'
+      + '&maxLocations=&outSR=&searchExtent='
       + '&location=&distance=&magicKey=&f=pjson';
     console.log(`Geoloc: ${geolocatorUrl}`);
     return axios.get(geolocatorUrl)
     .then(response => {
-      console.log(JSON.stringify(response.data));
-      const candidates = response.data.candidates.map(a => {
-        return {
-          score: a.score,
-          type: 'address',
-          civic_address_id: 'i824i',
-          address: a.address,
-          is_in_city: true,
-        };
-      });
-      return Promise.resolve({
-        type: searchContext,
-        results: candidates,
+      // console.log(JSON.stringify(response.data.candidates));
+      return Promise.all(response.data.candidates.map(a => {
+        const pool = context.pool;
+        const myQuery = 'SELECT civicaddress_id, address_full, address_city, address_zipcode, '
+        + 'trash_pickup_day, zoning, owner_name, owner_address, owner_cityname, owner_state, '
+        + 'owner_zipcode, property_pin, property_pinext, centerline_id '
+        + 'FROM amd.coa_bc_address_master WHERE '
+        + `address_number = '${a.attributes.House}' `
+        + `AND address_unit = '${a.attributes.SubAddrUnit}' `
+        + `AND address_street_prefix = '${a.attributes.PreDir}' `
+        + `AND address_street_name = '${a.attributes.StreetName}' `
+        + `AND address_street_type = '${a.attributes.SufType}' `
+        + `AND address_commcode = '${a.attributes.City}' AND `
+        + `address_zipcode = '${a.attributes.ZIP}'`;
+        // console.log(`My query: ${myQuery}`);
+        return pool.query(myQuery)
+        .then(result => {
+          // console.log(`RESULT ROWS (${result.rows.length}): ${JSON.stringify(result.rows)}`);
+          return {
+            items: result.rows.map(row => {
+              return {
+                score: a.score,
+                type: 'address',
+                civic_address_id: row.civicaddress_id,
+                address: row.address_full,
+                is_in_city: true,
+              };
+            }),
+          };
+        });
+      }))
+      .then(candidates => {
+        // console.log(`Got the candidates:  ${JSON.stringify(candidates)}`);
+        return Promise.resolve({
+          type: searchContext,
+          results: candidates.reduce((prev, curr) => {
+            // console.log(`Prev: ${JSON.stringify(prev)}, Curr: ${JSON.stringify(curr)}`);
+            return prev.concat(curr.items);
+          }, []),
+        });
       });
     })
     .catch(error => {
