@@ -1,3 +1,4 @@
+const axios = require('axios');
 const searchCivicAddressId = function (searchString, context) {
   const pool = context.pool;
   const myQuery = `SELECT civicaddress_id, pinnum, address from coagis.bc_address where cast(civicaddress_id as TEXT) LIKE '${searchString}%'  limit 5`;
@@ -38,17 +39,25 @@ const performSearch = function (searchString, searchContext, context) {
       + '&outFields=shape%2C+match_addr&maxLocations=&outSR=&searchExtent='
       + '&location=&distance=&magicKey=&f=pjson';
     console.log(`Geoloc: ${geolocatorUrl}`);
-    return Promise.resolve({
-      type: searchContext,
-      results: [
-        {
-          score: 88,
+    return axios.get(geolocatorUrl)
+    .then(response => {
+      console.log(JSON.stringify(response.data));
+      const candidates = response.data.candidates.map(a => {
+        return {
+          score: a.score,
           type: 'address',
           civic_address_id: 'i824i',
-          address: searchString,
-          is_in_city: false,
-        },
-      ],
+          address: a.address,
+          is_in_city: true,
+        };
+      });
+      return Promise.resolve({
+        type: searchContext,
+        results: candidates,
+      });
+    })
+    .catch(error => {
+      console.log(error);
     });
   }
   return Promise.resolve({
