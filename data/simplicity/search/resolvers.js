@@ -39,7 +39,7 @@ const performSearch = function (searchString, searchContext, context) {
       + '&outFields=House%2C+PreDir%2C+StreetName%2C+SufType%2C+SubAddrUnit%2C+City%2C+ZIP'
       + '&maxLocations=&outSR=&searchExtent='
       + '&location=&distance=&magicKey=&f=pjson';
-    console.log(`Geoloc: ${geolocatorUrl}`);
+    // console.log(`Geoloc: ${geolocatorUrl}`);
     return axios.get(geolocatorUrl)
     .then(response => {
       // console.log(JSON.stringify(response.data.candidates));
@@ -47,7 +47,7 @@ const performSearch = function (searchString, searchContext, context) {
         const pool = context.pool;
         const myQuery = 'SELECT civicaddress_id, address_full, address_city, address_zipcode, '
         + 'trash_pickup_day, zoning, owner_name, owner_address, owner_cityname, owner_state, '
-        + 'owner_zipcode, property_pin, property_pinext, centerline_id '
+        + 'owner_zipcode, property_pin, property_pinext, centerline_id, jurisdiction_type '
         + 'FROM amd.coa_bc_address_master WHERE '
         + `address_number = '${a.attributes.House}' `
         + `AND address_unit = '${a.attributes.SubAddrUnit}' `
@@ -67,7 +67,8 @@ const performSearch = function (searchString, searchContext, context) {
                 type: 'address',
                 civic_address_id: row.civicaddress_id,
                 address: row.address_full,
-                is_in_city: true,
+//                address: row.jurisdiction_type,
+                is_in_city: row.jurisdiction_type === 'Asheville Corporate Limits',
               };
             }),
           };
