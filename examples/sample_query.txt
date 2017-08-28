@@ -1,3 +1,20 @@
+# Search by address:
+query {
+  search (searchString: "70 Court Plaza", searchContexts: ["address"]) {
+		type
+    results {
+      type
+      score
+      ... on AddressResult {
+        civic_address_id
+        address
+        is_in_city
+      }
+    }
+  }
+}
+
+
 {
   version
   search(searchString: "11111", searchContexts: ["civicAddressId"]) {
