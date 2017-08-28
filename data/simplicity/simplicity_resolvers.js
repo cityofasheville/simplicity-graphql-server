@@ -171,6 +171,8 @@ const resolvers = {
     __resolveType(data, context, info) {
       if (data.type === 'civicAddressId') {
         return info.schema.getType('AddressResult');
+      } else if (data.type === 'address') {
+        return info.schema.getType('AddressResult');
       }
       return info.schema.getType('SillyResult');
     },

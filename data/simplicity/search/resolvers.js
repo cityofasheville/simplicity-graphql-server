@@ -31,6 +31,25 @@ const searchCivicAddressId = function (searchString, context) {
 const performSearch = function (searchString, searchContext, context) {
   if (searchContext === 'civicAddressId') {
     return searchCivicAddressId(searchString, context);
+  } else if (searchContext === 'address') {
+    const geolocatorUrl = 'http://192.168.0.125:6080/arcgis/rest/services/Geolocators/BC_address_unit/GeocodeServer/findAddressCandidates'
+      + '?Street=&City=&ZIP='
+      + `&Single+Line+Input=${encodeURIComponent(searchString)}&category=`
+      + '&outFields=shape%2C+match_addr&maxLocations=&outSR=&searchExtent='
+      + '&location=&distance=&magicKey=&f=pjson';
+    console.log(`Geoloc: ${geolocatorUrl}`);
+    return Promise.resolve({
+      type: searchContext,
+      results: [
+        {
+          score: 88,
+          type: 'address',
+          civic_address_id: 'i824i',
+          address: searchString,
+          is_in_city: false,
+        },
+      ],
+    });
   }
   return Promise.resolve({
     type: searchContext,
