@@ -1,7 +1,8 @@
 const axios = require('axios');
-const searchCivicAddressId = function (searchString, context) {
+function searchCivicAddressId(searchString, context) {
   const pool = context.pool;
-  const myQuery = `SELECT civicaddress_id, pinnum, address from coagis.bc_address where cast(civicaddress_id as TEXT) LIKE '${searchString}%'  limit 5`;
+  const myQuery = 'SELECT civicaddress_id, pinnum, address from coagis.bc_address'
+  + `where cast(civicaddress_id as TEXT) LIKE '${searchString}%'  limit 5`;
   return pool.query(myQuery)
     .then((result) => {
       if (result.rows.length === 0) return { type: 'civicAddressId', results: [] };
@@ -27,88 +28,79 @@ const searchCivicAddressId = function (searchString, context) {
         console.log(`Got an error in searchCivicAddressID: ${JSON.stringify(err)}`);
       }
     });
-};
+}
 
-const performSearch = function (searchString, searchContext, context) {
+function searchAddress(searchString, searchContext, context) {
+  const geolocatorUrl = 'http://192.168.0.125:6080/arcgis/rest/services/Geolocators/BC_address_unit/GeocodeServer/findAddressCandidates'
+  + '?Street=&City=&ZIP='
+  + `&Single+Line+Input=${encodeURIComponent(searchString)}&category=`
+  + '&outFields=House%2C+PreDir%2C+StreetName%2C+SufType%2C+SubAddrUnit%2C+City%2C+ZIP'
+  + '&maxLocations=&outSR=&searchExtent='
+  + '&location=&distance=&magicKey=&f=pjson';
+  return axios.get(geolocatorUrl)
+  .then(response => {
+    // console.log(JSON.stringify(response.data.candidates));
+    return Promise.all(response.data.candidates.map(a => {
+      const pool = context.pool;
+      // const myQuery = 'SELECT civicaddress_id, address_full, address_city, address_zipcode, '
+      // + 'trash_pickup_day, zoning, owner_name, owner_address, owner_cityname, owner_state, '
+      // + 'owner_zipcode, property_pin, property_pinext, centerline_id, jurisdiction_type '
+      const myQuery = 'SELECT civicaddress_id, address_full, address_city, address_zipcode, '
+      + 'address_number, address_unit, address_street_prefix, address_street_name '
+      + 'FROM amd.coa_bc_address_master WHERE '
+      + `address_number = '${a.attributes.House}' `
+      + `AND address_unit = '${a.attributes.SubAddrUnit}' `
+      + `AND address_street_prefix = '${a.attributes.PreDir}' `
+      + `AND address_street_name = '${a.attributes.StreetName}' `
+      + `AND address_street_type = '${a.attributes.SufType}' `
+      + `AND address_commcode = '${a.attributes.City}' AND `
+      + `address_zipcode = '${a.attributes.ZIP}'`;
+
+      return pool.query(myQuery)
+      .then(result => {
+        return {
+          items: result.rows.map(row => {
+            return {
+              score: a.score,
+              type: 'address',
+              civic_address_id: row.civicaddress_id,
+              address: row.address_full,
+              street_name: row.address_street_name,
+              street_prefix: row.address_street_prefix,
+              street_number: row.address_number,
+              unit: row.address_unit,
+              city: row.address_city,
+              zipcode: row.address_zipcode,
+              // is_in_city: row.jurisdiction_type === 'Asheville Corporate Limits',
+            };
+          }),
+        };
+      });
+    }))
+    .then(candidates => {
+      const result = {
+        type: 'searchContext',
+        results: candidates.reduce((prev, curr) => {
+          return prev.concat(curr.items);
+        }, []),
+      };
+      return Promise.resolve(result);
+    });
+  })
+  .catch(error => {
+    throw new Error(error);
+  });
+}
+
+function performSearch(searchString, searchContext, context) {
   if (searchContext === 'civicAddressId') {
     return searchCivicAddressId(searchString, context);
   } else if (searchContext === 'address') {
-    const geolocatorUrl = 'http://192.168.0.125:6080/arcgis/rest/services/Geolocators/BC_address_unit/GeocodeServer/findAddressCandidates'
-      + '?Street=&City=&ZIP='
-      + `&Single+Line+Input=${encodeURIComponent(searchString)}&category=`
-      + '&outFields=House%2C+PreDir%2C+StreetName%2C+SufType%2C+SubAddrUnit%2C+City%2C+ZIP'
-      + '&maxLocations=&outSR=&searchExtent='
-      + '&location=&distance=&magicKey=&f=pjson';
-    // console.log(`Geoloc: ${geolocatorUrl}`);
-    return axios.get(geolocatorUrl)
-    .then(response => {
-      // console.log(JSON.stringify(response.data.candidates));
-      return Promise.all(response.data.candidates.map(a => {
-        const pool = context.pool;
-        // const myQuery = 'SELECT civicaddress_id, address_full, address_city, address_zipcode, '
-        // + 'trash_pickup_day, zoning, owner_name, owner_address, owner_cityname, owner_state, '
-        // + 'owner_zipcode, property_pin, property_pinext, centerline_id, jurisdiction_type '
-        const myQuery = 'SELECT civicaddress_id, address_full, address_city, address_zipcode, '
-        + 'address_number, address_unit, address_street_prefix, address_street_name '
-        + 'FROM amd.coa_bc_address_master WHERE '
-        + `address_number = '${a.attributes.House}' `
-        + `AND address_unit = '${a.attributes.SubAddrUnit}' `
-        + `AND address_street_prefix = '${a.attributes.PreDir}' `
-        + `AND address_street_name = '${a.attributes.StreetName}' `
-        + `AND address_street_type = '${a.attributes.SufType}' `
-        + `AND address_commcode = '${a.attributes.City}' AND `
-        + `address_zipcode = '${a.attributes.ZIP}'`;
-        // console.log(`My query: ${myQuery}`);
-        return pool.query(myQuery)
-        .then(result => {
-          // console.log(`RESULT ROWS (${result.rows.length}): ${JSON.stringify(result.rows)}`);
-          return {
-            items: result.rows.map(row => {
-              return {
-                score: a.score,
-                type: 'address',
-                civic_address_id: row.civicaddress_id,
-                address: row.address_full,
-                street_name: row.address_street_name,
-                street_prefix: row.address_street_prefix,
-                street_number: row.address_number,
-                unit: row.address_unit,
-                city: row.address_city,
-                zipcode: row.address_zipcode,
-                // is_in_city: row.jurisdiction_type === 'Asheville Corporate Limits',
-              };
-            }),
-          };
-        });
-      }))
-      .then(candidates => {
-        // console.log(`Got the candidates:  ${JSON.stringify(candidates)}`);
-        const result = {
-          type: searchContext,
-          results: candidates.reduce((prev, curr) => {
-            return prev.concat(curr.items);
-          }, []),
-        };
-        // console.log(`Final result: ${JSON.stringify(result)}`);
-        return Promise.resolve(result);
-      });
-    })
-    .catch(error => {
-      console.log(error);
-    });
+    return searchAddress(searchString, searchContext, context);
   }
-  return Promise.resolve({
-    type: searchContext,
-    results: [
-      {
-        score: 22,
-        type: 'silly',
-        id: 1,
-        text: `search by ${searchContext}`,
-      },
-    ] }
-  );
-};
+  throw new Error(`Unknown search context ${searchContext}`);
+}
+
 const resolvers = {
   Query: {
     search(obj, args, context) {
