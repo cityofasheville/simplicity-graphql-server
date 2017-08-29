@@ -9,11 +9,14 @@ const schema = `
   type AddressResult implements SearchResult {
     score: Int!
     type: String!
-    id: ID!
     civic_address_id: String
     address: String
-    pinnum: String
-    is_in_city: Boolean
+    street_name: String
+    street_prefix: String
+    street_number: String
+    unit: String
+    city: String
+    zipcode: String
   }
 
   interface SearchResult {

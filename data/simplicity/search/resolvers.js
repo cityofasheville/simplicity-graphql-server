@@ -45,9 +45,11 @@ const performSearch = function (searchString, searchContext, context) {
       // console.log(JSON.stringify(response.data.candidates));
       return Promise.all(response.data.candidates.map(a => {
         const pool = context.pool;
+        // const myQuery = 'SELECT civicaddress_id, address_full, address_city, address_zipcode, '
+        // + 'trash_pickup_day, zoning, owner_name, owner_address, owner_cityname, owner_state, '
+        // + 'owner_zipcode, property_pin, property_pinext, centerline_id, jurisdiction_type '
         const myQuery = 'SELECT civicaddress_id, address_full, address_city, address_zipcode, '
-        + 'trash_pickup_day, zoning, owner_name, owner_address, owner_cityname, owner_state, '
-        + 'owner_zipcode, property_pin, property_pinext, centerline_id, jurisdiction_type '
+        + 'address_number, address_unit, address_street_prefix, address_street_name '
         + 'FROM amd.coa_bc_address_master WHERE '
         + `address_number = '${a.attributes.House}' `
         + `AND address_unit = '${a.attributes.SubAddrUnit}' `
@@ -67,8 +69,13 @@ const performSearch = function (searchString, searchContext, context) {
                 type: 'address',
                 civic_address_id: row.civicaddress_id,
                 address: row.address_full,
-//                address: row.jurisdiction_type,
-                is_in_city: row.jurisdiction_type === 'Asheville Corporate Limits',
+                street_name: row.address_street_name,
+                street_prefix: row.address_street_prefix,
+                street_number: row.address_number,
+                unit: row.address_unit,
+                city: row.address_city,
+                zipcode: row.address_zipcode,
+                // is_in_city: row.jurisdiction_type === 'Asheville Corporate Limits',
               };
             }),
           };
@@ -76,13 +83,14 @@ const performSearch = function (searchString, searchContext, context) {
       }))
       .then(candidates => {
         // console.log(`Got the candidates:  ${JSON.stringify(candidates)}`);
-        return Promise.resolve({
+        const result = {
           type: searchContext,
           results: candidates.reduce((prev, curr) => {
-            // console.log(`Prev: ${JSON.stringify(prev)}, Curr: ${JSON.stringify(curr)}`);
             return prev.concat(curr.items);
           }, []),
-        });
+        };
+        // console.log(`Final result: ${JSON.stringify(result)}`);
+        return Promise.resolve(result);
       });
     })
     .catch(error => {
