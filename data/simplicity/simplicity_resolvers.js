@@ -171,7 +171,6 @@ const resolvers = {
       + 'trash_pickup_day, zoning, owner_name, owner_address, owner_cityname, owner_state, '
       + 'owner_zipcode, property_pin, property_pinext, centerline_id, jurisdiction_type '
       + `FROM amd.coa_bc_address_master WHERE civicaddress_id in (${idList}) `;
-      console.log('The query: ' + query);
       return pool.query(query)
       .then((result) => {
         console.log(`Back with result of length ${result.rows.length}`);
