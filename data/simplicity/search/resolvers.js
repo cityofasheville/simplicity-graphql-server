@@ -31,8 +31,8 @@ function searchCivicAddressId(searchString, context) {
 }
 
 function searchAddress(searchString, searchContext, context) {
-  const geolocatorUrl = 'http://arcgis.ashevillenc.gov/arcgis/rest/services/Geolocators/BC_address_unit/GeocodeServer/findAddressCandidates'
   // const geolocatorUrl = 'http://192.168.0.125:6080/arcgis/rest/services/Geolocators/BC_address_unit/GeocodeServer/findAddressCandidates'
+  const geolocatorUrl = 'http://arcgis.ashevillenc.gov/arcgis/rest/services/Geolocators/BC_address_unit/GeocodeServer/findAddressCandidates'
   + '?Street=&City=&ZIP='
   + `&Single+Line+Input=${encodeURIComponent(searchString)}&category=`
   + '&outFields=House%2C+PreDir%2C+StreetName%2C+SufType%2C+SubAddrUnit%2C+City%2C+ZIP'
@@ -40,7 +40,7 @@ function searchAddress(searchString, searchContext, context) {
   + '&location=&distance=&magicKey=&f=pjson';
   console.log('Making the call');
   console.log(geolocatorUrl);
-  return axios.get(geolocatorUrl, { timeout: 10000 })
+  return axios.get(geolocatorUrl, { timeout: 5000 })
   // return axios.get({
   //   method: 'get',
   //   url: geolocatorUrl,
@@ -48,23 +48,31 @@ function searchAddress(searchString, searchContext, context) {
   // })
   .then(response => {
     console.log(`Got a total of ${response.data.candidates.length} responses`);
-    console.log(JSON.stringify(response.data.candidates));
+//    console.log(JSON.stringify(response.data.candidates));
     return Promise.all(response.data.candidates.map(a => {
       const pool = context.pool;
-      const myQuery = 'SELECT civicaddress_id, address_full, address_city, address_zipcode, '
+      let myQuery = 'SELECT civicaddress_id, address_full, address_city, address_zipcode, '
       + 'address_number, address_unit, address_street_prefix, address_street_name '
       + 'FROM amd.coa_bc_address_master WHERE '
       + `address_number = '${a.attributes.House}' `
-      + `AND address_unit = '${a.attributes.SubAddrUnit}' `
-      + `AND address_street_prefix = '${a.attributes.PreDir}' `
       + `AND address_street_name = '${a.attributes.StreetName}' `
       + `AND address_street_type = '${a.attributes.SufType}' `
       + `AND address_commcode = '${a.attributes.City}' AND `
-      + `address_zipcode = '${a.attributes.ZIP}'`;
-      console.log(myQuery);
+      + `address_zipcode = '${a.attributes.ZIP}' `;
+      if (a.attributes.SubAddrUnit !== null && a.attributes.SubAddrUnit !== '') {
+        myQuery += `AND address_unit = '${a.attributes.SubAddrUnit}' `;
+      } else {
+        myQuery += `AND (trim(BOTH FROM address_unit) = '${a.attributes.SubAddrUnit}' OR address_unit IS NULL) `;
+      }
+      if (a.attributes.PreDir !== null && a.attributes.PreDir !== '') {
+        myQuery += `AND address_street_prefix = '${a.attributes.PreDir}' `;     
+      } else {
+        myQuery += `AND (trim(BOTH FROM address_street_prefix) = '${a.attributes.PreDir}' OR address_street_prefix IS NULL) `;
+      }
+//      console.log(myQuery);
       return pool.query(myQuery)
       .then(result => {
-        console.log(`Back with query with ${result.rows.length} rows`);
+//        console.log(`Back with query with ${result.rows.length} rows`);
         return {
           items: result.rows.map(row => {
             return {
