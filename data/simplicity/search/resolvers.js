@@ -39,6 +39,7 @@ function searchAddress(searchString, searchContext, context) {
   + '&maxLocations=&outSR=&searchExtent='
   + '&location=&distance=&magicKey=&f=pjson';
   console.log('Making the call');
+  console.log(geolocatorUrl);
   return axios.get(geolocatorUrl, { timeout: 10000 })
   // return axios.get({
   //   method: 'get',
