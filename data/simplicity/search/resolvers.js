@@ -31,13 +31,14 @@ function searchCivicAddressId(searchString, context) {
 }
 
 function searchAddress(searchString, searchContext, context) {
-  const geolocatorUrl = 'http://192.168.0.125:6080/arcgis/rest/services/Geolocators/BC_address_unit/GeocodeServer/findAddressCandidates'
+  const geolocatorUrl = 'http://arcgis.ashevillenc.gov/arcgis/rest/services/Geolocators/BC_address_unit/GeocodeServer/findAddressCandidates'
+  // const geolocatorUrl = 'http://192.168.0.125:6080/arcgis/rest/services/Geolocators/BC_address_unit/GeocodeServer/findAddressCandidates'
   + '?Street=&City=&ZIP='
   + `&Single+Line+Input=${encodeURIComponent(searchString)}&category=`
   + '&outFields=House%2C+PreDir%2C+StreetName%2C+SufType%2C+SubAddrUnit%2C+City%2C+ZIP'
   + '&maxLocations=&outSR=&searchExtent='
   + '&location=&distance=&magicKey=&f=pjson';
-  return axios.get(geolocatorUrl, { timeout: 100000 })
+  return axios.get(geolocatorUrl, { timeout: 5000 })
   // return axios.get({
   //   method: 'get',
   //   url: geolocatorUrl,
