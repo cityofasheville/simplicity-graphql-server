@@ -7,6 +7,7 @@ require('dotenv').config();
 const pg = require('pg');
 const Pool = pg.Pool;
 
+pg.defaults.poolSize = 1;
 const Groups = require('./data/groups');
 const MySimpliCity = require('./data/mysimplicity');
 console.log('Build the schema');

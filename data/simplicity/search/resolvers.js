@@ -37,9 +37,15 @@ function searchAddress(searchString, searchContext, context) {
   + '&outFields=House%2C+PreDir%2C+StreetName%2C+SufType%2C+SubAddrUnit%2C+City%2C+ZIP'
   + '&maxLocations=&outSR=&searchExtent='
   + '&location=&distance=&magicKey=&f=pjson';
-  return axios.get(geolocatorUrl)
+  return axios.get(geolocatorUrl, { timeout: 1000 })
+  // return axios.get({
+  //   method: 'get',
+  //   url: geolocatorUrl,
+  //   timeout: 1000,
+  // })
   .then(response => {
-    // console.log(JSON.stringify(response.data.candidates));
+    console.log(`Got a total of ${response.data.candidates.length} responses`);
+    console.log(JSON.stringify(response.data.candidates));
     return Promise.all(response.data.candidates.map(a => {
       const pool = context.pool;
       const myQuery = 'SELECT civicaddress_id, address_full, address_city, address_zipcode, '
@@ -52,9 +58,10 @@ function searchAddress(searchString, searchContext, context) {
       + `AND address_street_type = '${a.attributes.SufType}' `
       + `AND address_commcode = '${a.attributes.City}' AND `
       + `address_zipcode = '${a.attributes.ZIP}'`;
-
+      console.log(myQuery);
       return pool.query(myQuery)
       .then(result => {
+        console.log(`Back with query with ${result.rows.length} rows`);
         return {
           items: result.rows.map(row => {
             return {
