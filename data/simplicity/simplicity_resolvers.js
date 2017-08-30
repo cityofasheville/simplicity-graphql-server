@@ -167,7 +167,7 @@ const resolvers = {
       }).join(',');
       console.log(`The idlist is ${idList}`)
       const query = 'SELECT civicaddress_id, address_full, address_city, address_zipcode, '
-      + 'address_number, address_unit, address_street_prefix, address_street_name '
+      + 'address_number, address_unit, address_street_prefix, address_street_name, '
       + 'trash_pickup_day, zoning, owner_name, owner_address, owner_cityname, owner_state, '
       + 'owner_zipcode, property_pin, property_pinext, centerline_id, jurisdiction_type '
       + `FROM amd.coa_bc_address_master WHERE civicaddress_id in (${idList}) `;
