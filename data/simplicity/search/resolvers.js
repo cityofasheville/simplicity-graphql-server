@@ -42,9 +42,6 @@ function searchAddress(searchString, searchContext, context) {
     // console.log(JSON.stringify(response.data.candidates));
     return Promise.all(response.data.candidates.map(a => {
       const pool = context.pool;
-      // const myQuery = 'SELECT civicaddress_id, address_full, address_city, address_zipcode, '
-      // + 'trash_pickup_day, zoning, owner_name, owner_address, owner_cityname, owner_state, '
-      // + 'owner_zipcode, property_pin, property_pinext, centerline_id, jurisdiction_type '
       const myQuery = 'SELECT civicaddress_id, address_full, address_city, address_zipcode, '
       + 'address_number, address_unit, address_street_prefix, address_street_name '
       + 'FROM amd.coa_bc_address_master WHERE '
@@ -71,7 +68,6 @@ function searchAddress(searchString, searchContext, context) {
               unit: row.address_unit,
               city: row.address_city,
               zipcode: row.address_zipcode,
-              // is_in_city: row.jurisdiction_type === 'Asheville Corporate Limits',
             };
           }),
         };

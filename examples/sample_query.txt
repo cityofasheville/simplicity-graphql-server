@@ -1,6 +1,5 @@
-# Search by address:
 query {
-  search (searchString: "70 Court Plaza", searchContexts: ["address"]) {
+  search (searchString: "60 N. Market St apt 503", searchContexts: ["address"]) {
 		type
     results {
       type
@@ -8,12 +7,17 @@ query {
       ... on AddressResult {
         civic_address_id
         address
-        is_in_city
+        street_name
+        street_prefix
+        street_number
+        unit
+        city
+        zipcode
       }
     }
   }
 }
-
+[230126, 272083]
 
 {
   version
