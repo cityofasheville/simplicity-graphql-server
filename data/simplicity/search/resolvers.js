@@ -37,7 +37,7 @@ function searchAddress(searchString, searchContext, context) {
   + '&outFields=House%2C+PreDir%2C+StreetName%2C+SufType%2C+SubAddrUnit%2C+City%2C+ZIP'
   + '&maxLocations=&outSR=&searchExtent='
   + '&location=&distance=&magicKey=&f=pjson';
-  return axios.get(geolocatorUrl, { timeout: 10000 })
+  return axios.get(geolocatorUrl, { timeout: 100000 })
   // return axios.get({
   //   method: 'get',
   //   url: geolocatorUrl,
