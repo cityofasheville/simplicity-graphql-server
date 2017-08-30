@@ -20,6 +20,7 @@
   "homepage": "https://github.com/cityofasheville/simplicity-graphql-server",
   "dependencies": {
     "apollo-server": "^0.2.0",
+    "axios": "^0.16.2",
     "body-parser": "^1.15.2",
     "coa-command-line-args": "^1.0.1",
     "coa-node-logging": "^1.0.1",
