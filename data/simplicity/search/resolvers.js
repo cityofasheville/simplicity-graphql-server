@@ -48,7 +48,8 @@ function searchAddress(searchString, searchContext, context) {
   // })
   .then(response => {
     console.log(`Got a total of ${response.data.candidates.length} responses`);
-//    console.log(JSON.stringify(response.data.candidates));
+    // console.log(JSON.stringify(response.data.candidates));
+
     return Promise.all(response.data.candidates.map(a => {
       const pool = context.pool;
       let myQuery = 'SELECT civicaddress_id, address_full, address_city, address_zipcode, '
@@ -69,7 +70,7 @@ function searchAddress(searchString, searchContext, context) {
       } else {
         myQuery += `AND (trim(BOTH FROM address_street_prefix) = '${a.attributes.PreDir}' OR address_street_prefix IS NULL) `;
       }
-//      console.log(myQuery);
+      // console.log(myQuery);
       return pool.query(myQuery)
       .then(result => {
 //        console.log(`Back with query with ${result.rows.length} rows`);
