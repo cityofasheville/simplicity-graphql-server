@@ -41,16 +41,54 @@ function searchAddress(searchString, searchContext, context) {
   console.log('Making the call');
   console.log(geolocatorUrl);
   return axios.get(geolocatorUrl, { timeout: 5000 })
-  // return axios.get({
-  //   method: 'get',
-  //   url: geolocatorUrl,
-  //   timeout: 1000,
-  // })
   .then(response => {
     console.log(`Got a total of ${response.data.candidates.length} responses`);
     // console.log(JSON.stringify(response.data.candidates));
+    const candidates = response.data.candidates.filter(c => {
+      return (c.score > 50);
+    });
 
-    return Promise.all(response.data.candidates.map(a => {
+    const uniqueStreets = candidates.reduce((accum, curr) => {
+      if (accum.indexOf(curr.attributes.StreetName) < 0) accum.push(curr.attributes.StreetName);
+      return accum;
+    }, []);
+    const locNumber = [];
+    const locName = [];
+    const locType = [];
+    const locPrefix = [];
+    const locUnit = [];
+    const locZipcode = [];
+    const locCity = [];
+    candidates.forEach((c, i) => {
+      if (i < 11) {
+        locNumber.push(c.attributes.House);
+        locName.push(c.attributes.StreetName);
+        locType.push(c.attributes.SufType);
+        locPrefix.push(c.attributes.PreDir);
+        locUnit.push(c.attributes.SubAddrUnit);
+        locZipcode.push(c.attributes.ZIP);
+        locCity.push(c.attributes.City);
+      }
+    });
+    // locNumber = [283843];
+    // locName = ['SALEM'];
+    console.log(`UniqueStreets: ${uniqueStreets}`); // 283843
+    const fquery = 'SELECT civicaddress_id, address_full, address_city, address_zipcode, '
+    + 'address_number, address_unit, address_street_prefix, address_street_name '
+    + 'from amd.get_all_foo($1, $2, $3, $4, $5, $6, $7)';
+   // console.log(`Here is the query: ${fquery}`);
+    const args = [locNumber, locName, locType, locPrefix, locUnit, locZipcode, locCity];
+   // console.log(`Here are the args: ${JSON.stringify(args)}`);
+    return context.pool.query(fquery, args)
+    .then(result => {
+      console.log(`RESULT: ${JSON.stringify(result.rows)}`);
+    })
+    .catch(error => {
+      console.log(`Got an error: ${JSON.stringify(error)}`);
+      throw new Error(error);
+    });
+
+    return Promise.all(candidates.map(a => {
       const pool = context.pool;
       let myQuery = 'SELECT civicaddress_id, address_full, address_city, address_zipcode, '
       + 'address_number, address_unit, address_street_prefix, address_street_name '
@@ -66,7 +104,7 @@ function searchAddress(searchString, searchContext, context) {
         myQuery += `AND (trim(BOTH FROM address_unit) = '${a.attributes.SubAddrUnit}' OR address_unit IS NULL) `;
       }
       if (a.attributes.PreDir !== null && a.attributes.PreDir !== '') {
-        myQuery += `AND address_street_prefix = '${a.attributes.PreDir}' `;     
+        myQuery += `AND address_street_prefix = '${a.attributes.PreDir}' `;
       } else {
         myQuery += `AND (trim(BOTH FROM address_street_prefix) = '${a.attributes.PreDir}' OR address_street_prefix IS NULL) `;
       }
@@ -92,10 +130,10 @@ function searchAddress(searchString, searchContext, context) {
         };
       });
     }))
-    .then(candidates => {
+    .then(clist => {
       const result = {
         type: 'searchContext',
-        results: candidates.reduce((prev, curr) => {
+        results: clist.reduce((prev, curr) => {
           return prev.concat(curr.items);
         }, []),
       };
