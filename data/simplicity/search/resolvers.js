@@ -47,11 +47,10 @@ function searchAddress(searchString, searchContext, context) {
     const candidates = response.data.candidates.filter(c => {
       return (c.score > 50);
     });
+    if (candidates.length === 0) {
+      return Promise.resolve([]);
+    }
 
-    const uniqueStreets = candidates.reduce((accum, curr) => {
-      if (accum.indexOf(curr.attributes.StreetName) < 0) accum.push(curr.attributes.StreetName);
-      return accum;
-    }, []);
     const locNumber = [];
     const locName = [];
     const locType = [];
@@ -60,76 +59,47 @@ function searchAddress(searchString, searchContext, context) {
     const locZipcode = [];
     const locCity = [];
     candidates.forEach((c, i) => {
-      if (i < 11) {
-        locNumber.push(c.attributes.House);
-        locName.push(c.attributes.StreetName);
-        locType.push(c.attributes.SufType);
-        locPrefix.push(c.attributes.PreDir);
-        locUnit.push(c.attributes.SubAddrUnit);
-        locZipcode.push(c.attributes.ZIP);
-        locCity.push(c.attributes.City);
-      }
+      locNumber.push(c.attributes.House);
+      locName.push(c.attributes.StreetName);
+      locType.push(c.attributes.SufType);
+      locPrefix.push(c.attributes.PreDir);
+      locUnit.push(c.attributes.SubAddrUnit);
+      locZipcode.push(c.attributes.ZIP);
+      locCity.push(c.attributes.City);
     });
-    // locNumber = [283843];
-    // locName = ['SALEM'];
-    console.log(`UniqueStreets: ${uniqueStreets}`); // 283843
+
     const fquery = 'SELECT civicaddress_id, address_full, address_city, address_zipcode, '
     + 'address_number, address_unit, address_street_prefix, address_street_name '
     + 'from amd.get_all_foo($1, $2, $3, $4, $5, $6, $7)';
-   // console.log(`Here is the query: ${fquery}`);
     const args = [locNumber, locName, locType, locPrefix, locUnit, locZipcode, locCity];
-   // console.log(`Here are the args: ${JSON.stringify(args)}`);
+
+    const idMap = {};
     return context.pool.query(fquery, args)
     .then(result => {
       console.log(`RESULT: ${JSON.stringify(result.rows)}`);
+      return {
+        items: result.rows.map(row => {
+          return {
+            score: 0,
+            type: 'address',
+            civic_address_id: row.civicaddress_id,
+            address: row.address_full,
+            street_name: row.address_street_name,
+            street_prefix: row.address_street_prefix,
+            street_number: row.address_number,
+            unit: row.address_unit,
+            city: row.address_city,
+            zipcode: row.address_zipcode,
+          };
+        })
+        // .filter(row => {
+        //   if (idMap.hasOwnProperty(row.civic_address_id)) return false;
+        //   idMap[row.civic_address_id] = true;
+        //   return true;
+        // })
+        ,
+      };
     })
-    .catch(error => {
-      console.log(`Got an error: ${JSON.stringify(error)}`);
-      throw new Error(error);
-    });
-
-    return Promise.all(candidates.map(a => {
-      const pool = context.pool;
-      let myQuery = 'SELECT civicaddress_id, address_full, address_city, address_zipcode, '
-      + 'address_number, address_unit, address_street_prefix, address_street_name '
-      + 'FROM amd.coa_bc_address_master WHERE '
-      + `address_number = '${a.attributes.House}' `
-      + `AND address_street_name = '${a.attributes.StreetName}' `
-      + `AND address_street_type = '${a.attributes.SufType}' `
-      + `AND address_commcode = '${a.attributes.City}' AND `
-      + `address_zipcode = '${a.attributes.ZIP}' `;
-      if (a.attributes.SubAddrUnit !== null && a.attributes.SubAddrUnit !== '') {
-        myQuery += `AND address_unit = '${a.attributes.SubAddrUnit}' `;
-      } else {
-        myQuery += `AND (trim(BOTH FROM address_unit) = '${a.attributes.SubAddrUnit}' OR address_unit IS NULL) `;
-      }
-      if (a.attributes.PreDir !== null && a.attributes.PreDir !== '') {
-        myQuery += `AND address_street_prefix = '${a.attributes.PreDir}' `;
-      } else {
-        myQuery += `AND (trim(BOTH FROM address_street_prefix) = '${a.attributes.PreDir}' OR address_street_prefix IS NULL) `;
-      }
-      // console.log(myQuery);
-      return pool.query(myQuery)
-      .then(result => {
-//        console.log(`Back with query with ${result.rows.length} rows`);
-        return {
-          items: result.rows.map(row => {
-            return {
-              score: a.score,
-              type: 'address',
-              civic_address_id: row.civicaddress_id,
-              address: row.address_full,
-              street_name: row.address_street_name,
-              street_prefix: row.address_street_prefix,
-              street_number: row.address_number,
-              unit: row.address_unit,
-              city: row.address_city,
-              zipcode: row.address_zipcode,
-            };
-          }),
-        };
-      });
-    }))
     .then(clist => {
       const result = {
         type: 'searchContext',
@@ -141,6 +111,7 @@ function searchAddress(searchString, searchContext, context) {
     });
   })
   .catch(error => {
+    console.log(`Got an error: ${JSON.stringify(error)}`);
     throw new Error(error);
   });
 }
