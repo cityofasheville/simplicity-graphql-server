@@ -1,10 +1,12 @@
 const axios = require('axios');
 function searchCivicAddressId(searchString, context) {
   const pool = context.pool;
-  const myQuery = 'SELECT civicaddress_id, pinnum, address from coagis.bc_address'
+  const myQuery = 'SELECT civicaddress_id, pinnum, address from coagis.bc_address '
   + `where cast(civicaddress_id as TEXT) LIKE '${searchString}%'  limit 5`;
+  console.log(`Query: ${myQuery}`);
   return pool.query(myQuery)
     .then((result) => {
+      console.log(`Got the rows: ${JSON.stringify(result)}`);
       if (result.rows.length === 0) return { type: 'civicAddressId', results: [] };
 
       const finalResult = {
@@ -118,6 +120,7 @@ function searchAddress(searchString, searchContext, context) {
 
 function performSearch(searchString, searchContext, context) {
   if (searchContext === 'civicAddressId') {
+    console.log(`Searching for civic address id ${searchString}`);
     return searchCivicAddressId(searchString, context);
   } else if (searchContext === 'address') {
     return searchAddress(searchString, searchContext, context);
