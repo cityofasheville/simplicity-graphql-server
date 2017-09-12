@@ -19,6 +19,16 @@ const schema = `
     zipcode: String
   }
 
+  type PropertyResult implements SearchResult {
+    score: Int!
+    type: String!
+    pinnum: String
+    pinnumext: String
+    address: String
+    city: String
+    zipcode: String
+  }
+
   interface SearchResult {
     type: String!
     score: Int!

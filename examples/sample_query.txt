@@ -18,7 +18,8 @@ query {
   }
 }
 [230126, 272083]
-
+civic_address_id: 
+PIN: 9649503540
 {
   version
   search(searchString: "11111", searchContexts: ["civicAddressId"]) {

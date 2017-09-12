@@ -158,6 +158,11 @@ const resolvers = {
         subscriptions: JSON.stringify({}),
       };
     },
+    properties(obj, args, context) {
+      const pool = context.pool;
+      const pins = args.pins;
+      if (pins.length <= 0) return [];
+    },
     addresses(obj, args, context) {
       const pool = context.pool;
       const ids = args.civicaddress_ids;
@@ -219,6 +224,10 @@ const resolvers = {
         return info.schema.getType('AddressResult');
       } else if (data.type === 'address') {
         return info.schema.getType('AddressResult');
+      } else if (data.type === 'property') {
+        return info.schema.getType('PropertyResult');
+      } else if (data.type === 'pin') {
+        return info.schema.getType('PropertyResult');
       }
       return info.schema.getType('SillyResult');
     },
