@@ -17,9 +17,34 @@ query {
     }
   }
 }
-[230126, 272083]
-civic_address_id: 
-PIN: 9649503540
+
+{
+	properties(pins: ["060513308900000", "060539064400000"]) {
+    civic_address_id
+    pinnum
+    pinnumext
+    address
+    city
+    zipcode
+    tax_exempt
+		neighborhood
+    appraisal_area
+    acreage
+    zoning
+    deed_link
+    latitude
+    longitude
+    building_value
+    appraised_value
+    market_value
+    plat_link
+    property_card_link
+    tax_value
+    owner
+    owner_address
+  }
+}
+
 {
   version
   search(searchString: "11111", searchContexts: ["civicAddressId"]) {
