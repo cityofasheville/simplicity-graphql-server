@@ -8,7 +8,7 @@ const resolvers = {
         'SELECT * from amd.dsd_first_review_sla'
       )
       .then((result) => {
-        console.log(`Back with result of length ${result.rows.length}`);
+
         if (result.rows.length === 0) return null;
         const p = result.rows;
         return p;
@@ -82,7 +82,6 @@ const resolvers = {
       `;
       return pool.query(query)
       .then((result) => {
-        console.log(`Back with result of length ${result.rows.length}`);
         if (result.rows.length === 0) return null;
         const p = result.rows;
         return p;
@@ -95,12 +94,10 @@ const resolvers = {
     },
     budgetHistory(obj, args, context) {
       const pool = context.pool;
-      console.log('Ok, we are getting the budget history');
       return pool.query(
         'SELECT * from coagis.v_budget_proposed_plus_history where year >= 2015'
       )
       .then((result) => {
-        console.log(`Back with result of length ${result.rows.length}`);
         if (result.rows.length === 0) return null;
         const p = result.rows;
         return p;
@@ -133,7 +130,6 @@ const resolvers = {
       }
       return pool.query(query)
       .then((result) => {
-        console.log(`Back with result of length ${result.rows.length}`);
         if (result.rows.length === 0) return null;
         const p = result.rows;
         return p;
@@ -162,6 +158,54 @@ const resolvers = {
       const pool = context.pool;
       const pins = args.pins;
       if (pins.length <= 0) return [];
+      const pinList = pins.map(p => {
+        return `'${p}'`;
+      }).join(',');
+      const query = 'SELECT pin, pinext, address, exempt, acreage, owner, exempt, cityname, '
+      + 'zipcode, totalmarketvalue, appraisedvalue, taxvalue, landvalue, buildingvalue, '
+      + 'propcard, deedurl, platurl, appraisalarea, neighborhoodcode, a.civicaddress_id, '
+      + 'a.lattitude, a.longitude, a.zoning, a.owner_address '
+      + 'FROM amd.bc_property LEFT JOIN amd.coa_bc_address_master as a '
+      + 'ON bc_property.pin = a.property_pin '
+      + 'AND bc_property.pinext = a.property_pinext '
+      + `WHERE bc_property.pinnum in (${pinList})`;
+      // console.log(`properties query: ${query}`);
+      return pool.query(query)
+      .then(result => {
+        if (result.rows.length === 0) return [];
+        return result.rows.map(itm => {
+          const taxExempt = (itm.exempt !== '');
+          return {
+            civic_address_id: itm.civicaddress_id,
+            pinnum: itm.pin,
+            pinnumext: itm.pinext,
+            address: itm.address,
+            city: itm.cityname,
+            zipcode: itm.zipcode,
+            tax_exempt: taxExempt,
+            neighborhood: itm.neighborhoodcode,
+            appraisal_area: itm.appraisalarea,
+            acreage: itm.acreage,
+            zoning: itm.zoning,
+            deed_link: itm.deedurl,
+            property_card_link: itm.propcard,
+            plat_link: itm.platurl,
+            latitude: itm.lattitude,
+            longitude: itm.longitude,
+            building_value: itm.buildingvalue,
+            land_value: itm.landvalue,
+            appraised_value: itm.appraisedvalue,
+            tax_value: itm.taxvalue,
+            market_value: itm.totalmarketvalue,
+            owner: itm.owner,
+            owner_address: itm.owner_address,
+          };
+        });
+      })
+      .catch(error => {
+        console.log(`Error in properties endpoint: ${JSON.stringify(error)}`);
+        throw new Error(error);
+      });
     },
     addresses(obj, args, context) {
       const pool = context.pool;
@@ -170,7 +214,7 @@ const resolvers = {
       const idList = ids.map(id => {
         return `'${id}'`;
       }).join(',');
-      console.log(`The idlist is ${idList}`)
+
       const query = 'SELECT civicaddress_id, address_full, address_city, address_zipcode, '
       + 'address_number, address_unit, address_street_prefix, address_street_name, '
       + 'trash_pickup_day, zoning, owner_name, owner_address, owner_cityname, owner_state, '
@@ -178,7 +222,7 @@ const resolvers = {
       + `FROM amd.coa_bc_address_master WHERE civicaddress_id in (${idList}) `;
       return pool.query(query)
       .then((result) => {
-        console.log(`Back with result of length ${result.rows.length}`);
+
         if (result.rows.length === 0) return [];
         const p = result.rows;
         return p.map(itm => {

@@ -10,14 +10,12 @@ const Pool = pg.Pool;
 pg.defaults.poolSize = 1;
 const Groups = require('./data/groups');
 const MySimpliCity = require('./data/mysimplicity');
-console.log('Build the schema');
 const typeDefs = require('./schema');
 const resolvers = require('./resolvers');
 const executableSchema = makeExecutableSchema({
   typeDefs,
   resolvers,
 });
-console.log('Done');
 // Import Firebase - for now (8/25/16), the use of require and import of individual
 // submodules is needed to avoid problems with webpack (import seems to require
 // beta version of webpack 2).
