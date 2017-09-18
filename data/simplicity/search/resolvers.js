@@ -70,8 +70,9 @@ function searchPin(searchString, context) {
 function searchProperty(searchString, searchContext, context) {
   const maxCandidates = 500;
   const minCandidateScore = 50;
-  const geolocatorUrl = 'http://arcgis.ashevillenc.gov/arcgis/rest/services/Geolocators/BC_address_unit/GeocodeServer/findAddressCandidates'
-  + '?Street=&City=&ZIP='
+  const geoLocator = 'BC_address_point'; // BC_address_unit or BC_street_address
+  const baseLocator = `http://arcgis.ashevillenc.gov/arcgis/rest/services/Geolocators/${geoLocator}/GeocodeServer/findAddressCandidates`;
+  const geolocatorUrl = `${baseLocator}?Street=&City=&ZIP=`
   + `&Single+Line+Input=${encodeURIComponent(searchString)}&category=`
   + '&outFields=House%2C+PreDir%2C+StreetName%2C+SufType%2C+SubAddrUnit%2C+City%2C+ZIP'
   + '&maxLocations=&outSR=&searchExtent='
@@ -155,8 +156,9 @@ function searchProperty(searchString, searchContext, context) {
 function searchAddress(searchString, searchContext, context) {
   const maxCandidates = 500;
   const minCandidateScore = 50;
-  const geolocatorUrl = 'http://arcgis.ashevillenc.gov/arcgis/rest/services/Geolocators/BC_address_unit/GeocodeServer/findAddressCandidates'
-  + '?Street=&City=&ZIP='
+  const geoLocator = 'BC_address_point'; // BC_address_unit or BC_street_address
+  const baseLocator = `http://arcgis.ashevillenc.gov/arcgis/rest/services/Geolocators/${geoLocator}/GeocodeServer/findAddressCandidates`;
+  const geolocatorUrl = `${baseLocator}?Street=&City=&ZIP=`
   + `&Single+Line+Input=${encodeURIComponent(searchString)}&category=`
   + '&outFields=House%2C+PreDir%2C+StreetName%2C+SufType%2C+SubAddrUnit%2C+City%2C+ZIP'
   + '&maxLocations=&outSR=&searchExtent='
