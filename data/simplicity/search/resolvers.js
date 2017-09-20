@@ -240,6 +240,8 @@ function searchAddress(searchString, searchContext, context) {
   });
 }
 
+// Context options: address, pin, neighborhood, property, civicAddressId, street, owner, and google
+
 function performSearch(searchString, searchContext, context) {
   if (searchContext === 'civicAddressId') {
     return searchCivicAddressId(searchString, context);
@@ -249,6 +251,8 @@ function performSearch(searchString, searchContext, context) {
     return searchAddress(searchString, searchContext, context);
   } else if (searchContext === 'property') {
     return searchProperty(searchString, searchContext, context);
+  } else if (searchContext === 'street') {
+    return null;
   }
   throw new Error(`Unknown search context ${searchContext}`);
 }
