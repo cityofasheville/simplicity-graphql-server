@@ -131,7 +131,6 @@ function searchProperty(searchString, geoCodeResponse, context) {
 }
 
 function searchAddress(searchString, geoCodeResponse, context) {
-  console.log('In searchAddress');
   if (geoCodeResponse.locName.length === 0) {
     return Promise.resolve(
       {
@@ -280,9 +279,7 @@ const resolvers = {
        searchContexts.indexOf('street') >= 0) {
         geoCodeResponse = requestGeo(searchString);
       }
-      console.log('Do the geoResponse');
       return geoCodeResponse.then(result => {
-        console.log(`Here with response: ${JSON.stringify(result)}`);
         return Promise.all(searchContexts.map((searchContext) => {
           return performSearch(searchString, searchContext, result, context);
         }));
