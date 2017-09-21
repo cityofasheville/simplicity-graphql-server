@@ -16,6 +16,7 @@ const baseSchema = `
     firstReviewSLAItems: [FirstReviewSLAItem]!
     firstReviewSLASummary (tasks: [String]) : [FirstReviewSLASummaryItem]!
     crimes(incident_ids: [Int]!): [CrimeIncident]
+    crimes_by_address(civicaddress_id: Int!, radius: Int, after: String, before: String): [CrimeIncident]
   }
 `;
 const searchSchema = require('./search').schema;

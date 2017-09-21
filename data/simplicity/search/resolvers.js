@@ -271,6 +271,7 @@ function requestGeo(searchString) {
 const resolvers = {
   Query: {
     search(obj, args, context) {
+      console.log('In search');
       const searchString = args.searchString;
       const searchContexts = args.searchContexts;
       let geoCodeResponse = Promise.resolve(null);
@@ -279,12 +280,15 @@ const resolvers = {
        searchContexts.indexOf('street') >= 0) {
         geoCodeResponse = requestGeo(searchString);
       }
+      console.log('do the geocoder');
       return geoCodeResponse.then(result => {
         return Promise.all(searchContexts.map((searchContext) => {
+          console.log(`Perform search for context ${searchContext}`);
           return performSearch(searchString, searchContext, result, context);
         }));
       })
       .catch((err) => {
+        console.log('In search error catch');
         if (err) {
           console.log(`Got an error in search: ${JSON.stringify(err)}`);
           throw new Error(err);

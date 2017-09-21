@@ -252,6 +252,12 @@ const resolvers = {
         throw new Error(`Got an error in addresses: ${JSON.stringify(err)}`);
       });
     },
+    crimes_by_address(obj, args, context) {
+      const civicaddress_id = args.civicaddress_id;
+      const before = args.before;
+      const after = args.after;
+      const radius = args.radius;
+    },
     crimes(obj, args, context) {
       const pool = context.pool;
       const ids = args.incident_ids;
