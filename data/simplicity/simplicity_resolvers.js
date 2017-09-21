@@ -222,7 +222,6 @@ const resolvers = {
       + `FROM amd.coa_bc_address_master WHERE civicaddress_id in (${idList}) `;
       return pool.query(query)
       .then((result) => {
-
         if (result.rows.length === 0) return [];
         const p = result.rows;
         return p.map(itm => {
@@ -251,6 +250,49 @@ const resolvers = {
       })
       .catch((err) => {
         throw new Error(`Got an error in addresses: ${JSON.stringify(err)}`);
+      });
+    },
+    crimes(obj, args, context) {
+      const pool = context.pool;
+      const ids = args.incident_ids;
+      if (ids.length <= 0) return [];
+      const idList = ids.map(id => {
+        return `'${id}'`;
+      }).join(',');
+
+      const query = 'SELECT incident_id, agency, date_occurred, case_number, '
+      + 'address, geo_beat, geo_report_area, x, y, offense_short_description, '
+      + 'offense_long_description, offense_code, offense_group_code, '
+      + 'offense_group_level, offense_group_short_description, '
+      + 'offense_group_long_description '
+      + `FROM amd.coa_apd_public_incidents_view WHERE incident_id in (${idList}) `;
+      return pool.query(query)
+      .then((result) => {
+        if (result.rows.length === 0) return [];
+        const p = result.rows;
+        return p.map(itm => {
+          return {
+            incident_id: itm.incident_id,
+            agency: itm.agency,
+            date_occurred: itm.date_occurred,
+            case_number: itm.case_number,
+            address: itm.address,
+            geo_beat: itm.geo_beat,
+            geo_report_area: itm.geo_report_area,
+            x: itm.x,
+            y: itm.y,
+            offense_short_description: itm.offense_short_description,
+            offense_long_description: itm.offense_long_description,
+            offense_code: itm.offense_code,
+            offense_group_code: itm.offense_group_code,
+            offense_group_level: itm.offense_group_level,
+            offense_group_short_description: itm.offense_group_short_description,
+            offense_group_long_description: itm.offense_group_long_description,
+          };
+        });
+      })
+      .catch((err) => {
+        throw new Error(`Got an error in crimes: ${JSON.stringify(err)}`);
       });
     },
   },
