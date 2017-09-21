@@ -258,6 +258,7 @@ function requestGeo(searchString) {
         }
       }
     });
+    console.log('Prepare to return a result');
     return Promise.resolve(result);
   })
   .catch((err) => {
