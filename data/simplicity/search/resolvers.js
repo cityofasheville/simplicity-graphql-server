@@ -219,13 +219,15 @@ function requestGeo(searchString) {
   + '&outFields=House%2C+PreDir%2C+StreetName%2C+SufType%2C+SubAddrUnit%2C+City%2C+ZIP'
   + '&maxLocations=&outSR=&searchExtent='
   + '&location=&distance=&magicKey=&f=pjson';
-
+  console.log('axios');
   return axios.get(geolocatorUrl, { timeout: 5000 })
   .then(response => {
+    console.log('got geo response');
     const candidates = response.data.candidates.filter(c => {
       return (c.score >= minCandidateScore);
     });
     if (candidates.length === 0) {
+      console.log('returning []');
       return Promise.resolve(
         {
           type: 'searchContext',
@@ -242,6 +244,7 @@ function requestGeo(searchString) {
       locZipcode: [],
       locCity: [],
     };
+    console.log('load the candidates');
     candidates.forEach((c, i) => {
       if (i < maxCandidates) {
         result.locNumber.push(c.attributes.House);
