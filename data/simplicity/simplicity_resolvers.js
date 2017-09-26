@@ -253,10 +253,65 @@ const resolvers = {
       });
     },
     crimes_by_address(obj, args, context) {
-      const civicaddress_id = args.civicaddress_id;
+      const civicaddressId = String(args.civicaddress_id);
       const before = args.before;
       const after = args.after;
-      const radius = args.radius;
+      const radius = Number(args.radius) / 3.28084; // Feet -> Meters
+      const pool = context.pool;
+      console.log("Type of cid is " + typeof civicaddressId);
+      console.log(`In crimes-by-address with radius ${radius}, civic id ${civicaddressId}`);
+      let query = 'SELECT A.incident_id, A.date_occurred, A.case_number, '
+      + 'A.address, A.geo_beat, A.x, A.y, A.offense_short_description, '
+      + 'A.offense_long_description, A.offense_code, A.offense_group_code, '
+      + 'A.offense_group_level, A.offense_group_short_description '
+      + 'from amd.coa_apd_public_incidents_view as A '
+      + 'left outer join amd.coa_bc_address_master as B '
+      + 'on ST_Point_Inside_Circle(A.shape, B.address_x, B.address_y, $2) '
+      + 'where b.civicaddress_id = $1 ';
+      const qargs = [civicaddressId, radius];
+      console.log(`Before: ${before}.`);
+      console.log(`After: ${after}.`);
+      let nextParam = '$3';
+      if (before !== undefined) {
+        qargs.push(`'${before}'`);
+        query += `and date_occurred < ${nextParam} `;
+        nextParam = '$4';
+      }
+      if (after !== undefined) {
+        qargs.push(`'${after}'`);
+        query += `and date_occurred > ${nextParam} `;
+      }
+
+      console.log(query);
+      console.log(`Args: ${JSON.stringify(qargs)}`);
+      return pool.query(query, qargs)
+      .then(result => {
+        console.log(`Back from query with result: ${result.rows.length}`);
+        if (result.rows.length === 0) return [];
+        return result.rows.map(itm => {
+          return {
+            incident_id: itm.incident_id,
+            agency: itm.agency,
+            date_occurred: itm.date_occurred,
+            case_number: itm.case_number,
+            address: itm.address,
+            geo_beat: itm.geo_beat,
+            geo_report_area: itm.geo_report_area,
+            x: itm.x,
+            y: itm.y,
+            offense_short_description: itm.offense_short_description,
+            offense_long_description: itm.offense_long_description,
+            offense_code: itm.offense_code,
+            offense_group_code: itm.offense_group_code,
+            offense_group_level: itm.offense_group_level,
+            offense_group_short_description: itm.offense_group_short_description,
+          };
+        });
+      })
+    .catch((err) => {
+      console.log(`Got an error in crimes_by_address: ${JSON.stringify(err)}`);
+      throw new Error(`Got an error in crimes_by_address: ${JSON.stringify(err)}`);
+    });
     },
     crimes(obj, args, context) {
       const pool = context.pool;

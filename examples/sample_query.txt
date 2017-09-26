@@ -18,6 +18,15 @@ query {
   }
 }
 
+ {
+            "civic_address_id": "230126",
+            "address": "60 503 N MARKET ST"
+          },
+          {
+            "civic_address_id": "210113",
+            "address": "60 N MARKET ST"
+          },
+
 {
 	properties(pins: ["060513308900000", "060539064400000"]) {
     civic_address_id
