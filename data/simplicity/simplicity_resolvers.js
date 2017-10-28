@@ -8,7 +8,6 @@ const resolvers = {
         'SELECT * from amd.dsd_first_review_sla'
       )
       .then((result) => {
-
         if (result.rows.length === 0) return null;
         const p = result.rows;
         return p;
@@ -217,7 +216,8 @@ const resolvers = {
 
       const query = 'SELECT civicaddress_id, address_full, address_city, address_zipcode, '
       + 'address_number, address_unit, address_street_prefix, address_street_name, '
-      + 'trash_pickup_day, zoning, owner_name, owner_address, owner_cityname, owner_state, '
+      + 'trash_pickup_day, recycling_pickup_district, recycling_pickup_day, '
+      + 'zoning, owner_name, owner_address, owner_cityname, owner_state, '
       + 'owner_zipcode, property_pin, property_pinext, centerline_id, jurisdiction_type '
       + `FROM amd.coa_bc_address_master WHERE civicaddress_id in (${idList}) `;
       return pool.query(query)
@@ -237,6 +237,8 @@ const resolvers = {
             is_in_city: (itm.jurisdiction_type === 'Asheville Corporate Limits'),
             zoning: itm.zoning,
             trash_day: itm.trash_pickup_day,
+            recycling_pickup_district: itm.recycling_pickup_district,
+            recycling_pickup_day: itm.recycling_pickup_day,          
             centerline_id: itm.centerline_id,
             pinnum: itm.property_pin,
             pinnumext: itm.property_pinext,

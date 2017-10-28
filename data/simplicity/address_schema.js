@@ -11,6 +11,8 @@ type Address {
   is_in_city: Boolean
   zoning: String
   trash_day: String
+  recycling_pickup_district: String,
+  recycling_pickup_day: String,
   centerline_id: String
   pinnum: String
   pinnumext: String
