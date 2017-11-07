@@ -263,10 +263,10 @@ const resolvers = {
       console.log("Type of cid is " + typeof civicaddressId);
       console.log(`In crimes-by-address with radius ${radius}, civic id ${civicaddressId}`);
       let query = 'SELECT A.incident_id, A.date_occurred, A.case_number, '
-      + 'A.address, A.geo_beat, A.x, A.y, A.offense_short_description, '
+      + 'A.address, A.geo_beat, A.x, A.y, A.x_wgs, A.y_wgx, A.offense_short_description, '
       + 'A.offense_long_description, A.offense_code, A.offense_group_code, '
       + 'A.offense_group_level, A.offense_group_short_description '
-      + 'from amd.coa_apd_public_incidents_view as A '
+      + 'from amd.coa_apd_public_incidents_view_wgs as A '
       + 'left outer join amd.coa_bc_address_master as B '
       + 'on ST_Point_Inside_Circle(A.shape, B.address_x, B.address_y, $2) '
       + 'where b.civicaddress_id = $1 ';
@@ -299,8 +299,8 @@ const resolvers = {
             address: itm.address,
             geo_beat: itm.geo_beat,
             geo_report_area: itm.geo_report_area,
-            x: itm.x,
-            y: itm.y,
+            x: itm.x_wgs,
+            y: itm.y_wgs,
             offense_short_description: itm.offense_short_description,
             offense_long_description: itm.offense_long_description,
             offense_code: itm.offense_code,
@@ -324,11 +324,11 @@ const resolvers = {
       }).join(',');
 
       const query = 'SELECT incident_id, agency, date_occurred, case_number, '
-      + 'address, geo_beat, geo_report_area, x, y, offense_short_description, '
+      + 'address, geo_beat, geo_report_area, x, y, x_wgs, y_wgx, offense_short_description, '
       + 'offense_long_description, offense_code, offense_group_code, '
       + 'offense_group_level, offense_group_short_description, '
       + 'offense_group_long_description '
-      + `FROM amd.coa_apd_public_incidents_view WHERE incident_id in (${idList}) `;
+      + `FROM amd.coa_apd_public_incidents_view_wgs WHERE incident_id in (${idList}) `;
       return pool.query(query)
       .then((result) => {
         if (result.rows.length === 0) return [];
@@ -342,8 +342,8 @@ const resolvers = {
             address: itm.address,
             geo_beat: itm.geo_beat,
             geo_report_area: itm.geo_report_area,
-            x: itm.x,
-            y: itm.y,
+            x: itm.x_wgs,
+            y: itm.y_wgs,
             offense_short_description: itm.offense_short_description,
             offense_long_description: itm.offense_long_description,
             offense_code: itm.offense_code,
