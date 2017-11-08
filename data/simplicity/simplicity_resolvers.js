@@ -263,7 +263,7 @@ const resolvers = {
       console.log("Type of cid is " + typeof civicaddressId);
       console.log(`In crimes-by-address with radius ${radius}, civic id ${civicaddressId}`);
       let query = 'SELECT A.incident_id, A.date_occurred, A.case_number, '
-      + 'A.address, A.geo_beat, A.x, A.y, A.x_wgs, A.y_wgx, A.offense_short_description, '
+      + 'A.address, A.geo_beat, A.x, A.y, A.x_wgs, A.y_wgs, A.offense_short_description, '
       + 'A.offense_long_description, A.offense_code, A.offense_group_code, '
       + 'A.offense_group_level, A.offense_group_short_description '
       + 'from amd.coa_apd_public_incidents_view_wgs as A '
