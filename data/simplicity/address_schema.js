@@ -2,6 +2,8 @@ module.exports = `
 type Address {
   civic_address_id: String
   address: String
+  x: Float
+  y: Float
   street_name: String
   street_prefix: String
   street_number: String
