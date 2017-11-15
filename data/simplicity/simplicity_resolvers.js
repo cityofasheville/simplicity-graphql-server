@@ -216,6 +216,7 @@ const resolvers = {
 
       const query = 'SELECT civicaddress_id, address_full, address_city, address_zipcode, '
       + 'address_number, address_unit, address_street_prefix, address_street_name, '
+      + 'lattitude, longitude, '
       + 'trash_pickup_day, recycling_pickup_district, recycling_pickup_day, '
       + 'zoning, owner_name, owner_address, owner_cityname, owner_state, '
       + 'owner_zipcode, property_pin, property_pinext, centerline_id, jurisdiction_type '
@@ -228,6 +229,8 @@ const resolvers = {
           return {
             civic_address_id: itm.civicaddress_id,
             address: itm.address_full,
+            x: itm.lattitude,
+            y: itm.longitude,
             street_name: itm.address_street_name,
             street_prefix: itm.address_street_prefix,
             street_number: itm.address_number,
@@ -284,11 +287,8 @@ const resolvers = {
         query += `and date_occurred > ${nextParam} `;
       }
 
-      console.log(query);
-      console.log(`Args: ${JSON.stringify(qargs)}`);
       return pool.query(query, qargs)
       .then(result => {
-        console.log(`Back from query with result: ${result.rows.length}`);
         if (result.rows.length === 0) return [];
         return result.rows.map(itm => {
           return {
