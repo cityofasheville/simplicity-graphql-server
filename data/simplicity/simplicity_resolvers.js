@@ -358,6 +358,46 @@ const resolvers = {
         throw new Error(`Got an error in crimes: ${JSON.stringify(err)}`);
       });
     },
+    permits(obj, args, context) {
+      const pool = context.pool;
+      const ids = args.permit_numbers;
+      if (ids.length <= 0) return [];
+      const idList = ids.map(id => {
+        return `'${id}'`;
+      }).join(',');
+      const query = 'SELECT permit_num, permit_group, permit_type, '
+      + 'permit_subtype, permit_category, permit_description, '
+      + 'applicant_name, applied_date, status_current, status_date, '
+      + 'civic_address_id, address, contractor_name, '
+      + 'contractor_license_number '
+      + `FROM amd.mda_permits WHERE permit_num in (${idList}) `;
+      return pool.query(query)
+      .then((result) => {
+        if (result.rows.length === 0) return [];
+        const p = result.rows;
+        return p.map(itm => {
+          return {
+            permit_number: itm.permit_num,
+            permit_group: itm.permit_group,
+            permit_type: itm.permit_type,
+            permit_subtype: itm.permit_subtype,
+            permit_category: itm.permit_category,
+            permit_description: itm.permit_description,
+            applicant_name: itm.applicant_name,
+            applied_date: itm.applied_date,
+            status_current: itm.status_current,
+            status_date: itm.status_date,
+            civic_address_id: itm.civic_address_id,
+            address: itm.address,
+            contractor_name: itm.contractor_name,
+            contractor_license_number: itm.contractor_license_number,
+          };
+        });
+      })
+      .catch((err) => {
+        throw new Error(`Got an error in crimes: ${JSON.stringify(err)}`);
+      });
+    },
   },
 
   TypedSearchResult: {

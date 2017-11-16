@@ -219,6 +219,7 @@ function requestGeo(searchString) {
   + '&outFields=House%2C+PreDir%2C+StreetName%2C+SufType%2C+SubAddrUnit%2C+City%2C+ZIP'
   + '&maxLocations=&outSR=&searchExtent='
   + '&location=&distance=&magicKey=&f=pjson';
+  console.log(`Geoloc url = ${geolocatorUrl}`);
   console.log('axios');
   return axios.get(geolocatorUrl, { timeout: 5000 })
   .then(response => {

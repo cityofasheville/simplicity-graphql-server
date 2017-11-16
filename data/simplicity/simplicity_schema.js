@@ -17,16 +17,19 @@ const baseSchema = `
     firstReviewSLASummary (tasks: [String]) : [FirstReviewSLASummaryItem]!
     crimes(incident_ids: [Int]!): [CrimeIncident]
     crimes_by_address(civicaddress_id: Int!, radius: Int, after: String, before: String): [CrimeIncident]
+    permits(permit_numbers: [String]!): [Permit]
   }
 `;
 const searchSchema = require('./search').schema;
 const addressSchema = require('./address_schema');
 const propertySchema = require('./property_schema');
 const crimeSchema = require('./crime_schema');
+const developmentSchema = require('./development_schema');
 
 const schema = [
   require('./budget_schema.js'),
   require('./dsd_sla_schema'),
+  developmentSchema,
   crimeSchema,
   addressSchema,
   propertySchema,
