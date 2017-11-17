@@ -365,12 +365,14 @@ const resolvers = {
       const idList = ids.map(id => {
         return `'${id}'`;
       }).join(',');
-      const query = 'SELECT permit_num, permit_group, permit_type, '
-      + 'permit_subtype, permit_category, permit_description, '
-      + 'applicant_name, applied_date, status_current, status_date, '
-      + 'civic_address_id, address, contractor_name, '
-      + 'contractor_license_number '
-      + `FROM amd.mda_permits WHERE permit_num in (${idList}) `;
+      const query = 'SELECT a.permit_num, a.permit_group, a.permit_type, '
+      + 'a.permit_subtype, a.permit_category, a.permit_description, '
+      + 'a.applicant_name, a.applied_date, a.status_current, a.status_date, '
+      + 'a.civic_address_id, a.address, a.contractor_name, '
+      + 'a.contractor_license_number '
+      + 'FROM amd.mda_permits AS a '
+      + 'LEFT JOIN amd.coa_bc_address_master_wgs AS b on a.civic_address_id = b.civicaddress_id '
+      + `WHERE a.permit_num in (${idList}) `;
       return pool.query(query)
       .then((result) => {
         if (result.rows.length === 0) return [];
