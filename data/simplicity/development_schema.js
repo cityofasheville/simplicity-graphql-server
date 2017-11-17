@@ -1,4 +1,10 @@
 module.exports = `
+type PermitComment {
+  comment_seq_number: Int
+  comment_date: String
+  comments: String
+}
+
 type Permit {
   permit_number: String
   permit_group: String
@@ -12,17 +18,11 @@ type Permit {
   status_date: String
   civic_address_id: String
   address: String
+  x: Float
+  y: Float
   contractor_name: String
   contractor_license_number: String
+  comments: [PermitComment]
 }
 
-`;
-
-let xx = `
-type PermitComment {
-  permit_number: String
-  comment_seq_number: Int
-  comment_date: String
-  comments: String
-}
 `;

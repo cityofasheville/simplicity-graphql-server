@@ -358,6 +358,7 @@ const resolvers = {
         throw new Error(`Got an error in crimes: ${JSON.stringify(err)}`);
       });
     },
+
     permits(obj, args, context) {
       const pool = context.pool;
       const ids = args.permit_numbers;
@@ -369,36 +370,62 @@ const resolvers = {
       + 'a.permit_subtype, a.permit_category, a.permit_description, '
       + 'a.applicant_name, a.applied_date, a.status_current, a.status_date, '
       + 'a.civic_address_id, a.address, a.contractor_name, '
-      + 'a.contractor_license_number '
-      + 'FROM amd.mda_permits AS a '
-      + 'LEFT JOIN amd.coa_bc_address_master_wgs AS b on a.civic_address_id = b.civicaddress_id '
-      + `WHERE a.permit_num in (${idList}) `;
+      + 'a.contractor_license_number, a.lattitude as x, a.longitude as y, '
+      + 'b.comment_seq_number, b.comment_date, b.comments '
+      + 'FROM amd.v_mda_permits_xy AS a '
+      + 'LEFT JOIN amd.mda_permit_comments AS b on a.permit_num = b.permit_num '
+      + `WHERE a.permit_num in (${idList}) `
+      + 'ORDER BY a.permit_num DESC, b.comment_seq_number ASC ';
+      console.log(`QUERY: ${query}`);
       return pool.query(query)
       .then((result) => {
         if (result.rows.length === 0) return [];
         const p = result.rows;
-        return p.map(itm => {
-          return {
-            permit_number: itm.permit_num,
-            permit_group: itm.permit_group,
-            permit_type: itm.permit_type,
-            permit_subtype: itm.permit_subtype,
-            permit_category: itm.permit_category,
-            permit_description: itm.permit_description,
-            applicant_name: itm.applicant_name,
-            applied_date: itm.applied_date,
-            status_current: itm.status_current,
-            status_date: itm.status_date,
-            civic_address_id: itm.civic_address_id,
-            address: itm.address,
-            contractor_name: itm.contractor_name,
-            contractor_license_number: itm.contractor_license_number,
-          };
+        const fResults = [];
+        let curPermit = null;
+
+        p.forEach(itm => {
+          if (curPermit === null || curPermit.permit_number !== itm.permit_num) {
+            curPermit = {
+              permit_number: itm.permit_num,
+              permit_group: itm.permit_group,
+              permit_type: itm.permit_type,
+              permit_subtype: itm.permit_subtype,
+              permit_category: itm.permit_category,
+              permit_description: itm.permit_description,
+              applicant_name: itm.applicant_name,
+              applied_date: itm.applied_date,
+              status_current: itm.status_current,
+              status_date: itm.status_date,
+              civic_address_id: itm.civic_address_id,
+              address: itm.address,
+              x: itm.x,
+              y: itm.y,
+              contractor_name: itm.contractor_name,
+              contractor_license_number: itm.contractor_license_number,
+              comments: [],
+            };
+            fResults.push(curPermit);
+          }
+          if (itm.comment_seq_number !== null) {
+            curPermit.comments.push({
+              comment_seq_number: itm.comment_seq_number,
+              comment_date: itm.comment_date,
+              comments: itm.comments,
+            });
+          }
         });
+        return fResults;
       })
       .catch((err) => {
         throw new Error(`Got an error in crimes: ${JSON.stringify(err)}`);
       });
+    },
+  },
+
+  Permit: {
+    comments(obj, args, context) {
+      return obj.comments;
     },
   },
 
