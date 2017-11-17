@@ -18,6 +18,7 @@ const baseSchema = `
     crimes(incident_ids: [Int]!): [CrimeIncident]
     crimes_by_address(civicaddress_id: Int!, radius: Int, after: String, before: String): [CrimeIncident]
     permits(permit_numbers: [String]!): [Permit]
+    permits_by_address(civicaddress_id: Int!, radius: Int, after: String, before: String): [Permit]
   }
 `;
 const searchSchema = require('./search').schema;

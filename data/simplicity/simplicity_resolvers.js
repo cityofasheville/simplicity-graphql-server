@@ -263,8 +263,6 @@ const resolvers = {
       const after = args.after;
       const radius = Number(args.radius) / 3.28084; // Feet -> Meters
       const pool = context.pool;
-      console.log("Type of cid is " + typeof civicaddressId);
-      console.log(`In crimes-by-address with radius ${radius}, civic id ${civicaddressId}`);
       let query = 'SELECT A.incident_id, A.date_occurred, A.case_number, '
       + 'A.address, A.geo_beat, A.x, A.y, A.x_wgs, A.y_wgs, A.offense_short_description, '
       + 'A.offense_long_description, A.offense_code, A.offense_group_code, '
@@ -274,8 +272,6 @@ const resolvers = {
       + 'on ST_Point_Inside_Circle(A.shape, B.address_x, B.address_y, $2) '
       + 'where b.civicaddress_id = $1 ';
       const qargs = [civicaddressId, radius];
-      console.log(`Before: ${before}.`);
-      console.log(`After: ${after}.`);
       let nextParam = '$3';
       if (before !== undefined) {
         qargs.push(`'${before}'`);
@@ -310,10 +306,10 @@ const resolvers = {
           };
         });
       })
-    .catch((err) => {
-      console.log(`Got an error in crimes_by_address: ${JSON.stringify(err)}`);
-      throw new Error(`Got an error in crimes_by_address: ${JSON.stringify(err)}`);
-    });
+      .catch((err) => {
+        console.log(`Got an error in crimes_by_address: ${JSON.stringify(err)}`);
+        throw new Error(`Got an error in crimes_by_address: ${JSON.stringify(err)}`);
+      });
     },
     crimes(obj, args, context) {
       const pool = context.pool;
@@ -358,6 +354,7 @@ const resolvers = {
         throw new Error(`Got an error in crimes: ${JSON.stringify(err)}`);
       });
     },
+
     permits(obj, args, context) {
       const pool = context.pool;
       const ids = args.permit_numbers;
@@ -365,38 +362,139 @@ const resolvers = {
       const idList = ids.map(id => {
         return `'${id}'`;
       }).join(',');
-      const query = 'SELECT permit_num, permit_group, permit_type, '
-      + 'permit_subtype, permit_category, permit_description, '
-      + 'applicant_name, applied_date, status_current, status_date, '
-      + 'civic_address_id, address, contractor_name, '
-      + 'contractor_license_number '
-      + `FROM amd.mda_permits WHERE permit_num in (${idList}) `;
+      const query = 'SELECT a.permit_num, a.permit_group, a.permit_type, '
+      + 'a.permit_subtype, a.permit_category, a.permit_description, '
+      + 'a.applicant_name, a.applied_date, a.status_current, a.status_date, '
+      + 'a.civic_address_id, a.address, a.contractor_name, '
+      + 'a.contractor_license_number, a.lattitude as x, a.longitude as y, '
+      + 'b.comment_seq_number, b.comment_date, b.comments '
+      + 'FROM amd.v_mda_permits_xy AS a '
+      + 'LEFT JOIN amd.mda_permit_comments AS b on a.permit_num = b.permit_num '
+      + `WHERE a.permit_num in (${idList}) `
+      + 'ORDER BY a.permit_num DESC, b.comment_seq_number ASC ';
       return pool.query(query)
       .then((result) => {
         if (result.rows.length === 0) return [];
         const p = result.rows;
-        return p.map(itm => {
-          return {
-            permit_number: itm.permit_num,
-            permit_group: itm.permit_group,
-            permit_type: itm.permit_type,
-            permit_subtype: itm.permit_subtype,
-            permit_category: itm.permit_category,
-            permit_description: itm.permit_description,
-            applicant_name: itm.applicant_name,
-            applied_date: itm.applied_date,
-            status_current: itm.status_current,
-            status_date: itm.status_date,
-            civic_address_id: itm.civic_address_id,
-            address: itm.address,
-            contractor_name: itm.contractor_name,
-            contractor_license_number: itm.contractor_license_number,
-          };
+        const fResults = [];
+        let curPermit = null;
+
+        p.forEach(itm => {
+          if (curPermit === null || curPermit.permit_number !== itm.permit_num) {
+            curPermit = {
+              permit_number: itm.permit_num,
+              permit_group: itm.permit_group,
+              permit_type: itm.permit_type,
+              permit_subtype: itm.permit_subtype,
+              permit_category: itm.permit_category,
+              permit_description: itm.permit_description,
+              applicant_name: itm.applicant_name,
+              applied_date: itm.applied_date,
+              status_current: itm.status_current,
+              status_date: itm.status_date,
+              civic_address_id: itm.civic_address_id,
+              address: itm.address,
+              x: itm.x,
+              y: itm.y,
+              contractor_name: itm.contractor_name,
+              contractor_license_number: itm.contractor_license_number,
+              comments: [],
+            };
+            fResults.push(curPermit);
+          }
+          if (itm.comment_seq_number !== null) {
+            curPermit.comments.push({
+              comment_seq_number: itm.comment_seq_number,
+              comment_date: itm.comment_date,
+              comments: itm.comments,
+            });
+          }
         });
+        return fResults;
       })
       .catch((err) => {
         throw new Error(`Got an error in crimes: ${JSON.stringify(err)}`);
       });
+    },
+
+    permits_by_address(obj, args, context) {
+      const civicaddressId = String(args.civicaddress_id);
+      const before = args.before;
+      const after = args.after;
+      const radius = Number(args.radius) / 3.28084; // Feet -> Meters
+      const pool = context.pool;
+      let query = 'SELECT A.permit_num, A.permit_group, A.permit_type, '
+      + 'A.permit_subtype, A.permit_category, A.permit_description, '
+      + 'A.applicant_name, A.applied_date, A.status_current, A.status_date, '
+      + 'A.civic_address_id, A.address, A.contractor_name, '
+      + 'A.contractor_license_number, A.lattitude as x, A.longitude as y, '
+      + 'C.comment_seq_number, C.comment_date, C.comments '
+      + 'from amd.v_mda_permits_xy as A '
+      + 'left outer join amd.coa_bc_address_master as B '
+      + 'on ST_Point_Inside_Circle(ST_Point(A.address_x, A.address_y), B.address_x, B.address_y, $2) '
+      + 'LEFT JOIN amd.mda_permit_comments AS C on A.permit_num = C.permit_num '      
+      + 'where b.civicaddress_id = $1 ';
+      const qargs = [civicaddressId, radius];
+      let nextParam = '$3';
+      if (before !== undefined) {
+        qargs.push(`'${before}'`);
+        query += `and applied_date < ${nextParam} `;
+        nextParam = '$4';
+      }
+      if (after !== undefined) {
+        qargs.push(`'${after}'`);
+        query += `and applied_date > ${nextParam} `;
+      }
+
+      return pool.query(query, qargs)
+      .then(result => {
+        if (result.rows.length === 0) return [];
+        const p = result.rows;
+        const fResults = [];
+        let curPermit = null;
+        p.forEach(itm => {
+          if (curPermit === null || curPermit.permit_number !== itm.permit_num) {
+            curPermit = {
+              permit_number: itm.permit_num,
+              permit_group: itm.permit_group,
+              permit_type: itm.permit_type,
+              permit_subtype: itm.permit_subtype,
+              permit_category: itm.permit_category,
+              permit_description: itm.permit_description,
+              applicant_name: itm.applicant_name,
+              applied_date: itm.applied_date,
+              status_current: itm.status_current,
+              status_date: itm.status_date,
+              civic_address_id: itm.civic_address_id,
+              address: itm.address,
+              x: itm.x,
+              y: itm.y,
+              contractor_name: itm.contractor_name,
+              contractor_license_number: itm.contractor_license_number,
+              comments: [],
+            };
+            fResults.push(curPermit);
+          }
+          if (itm.comment_seq_number !== null) {
+            curPermit.comments.push({
+              comment_seq_number: itm.comment_seq_number,
+              comment_date: itm.comment_date,
+              comments: itm.comments,
+            });
+          }
+        });
+        return fResults;
+      })
+      .catch((err) => {
+        console.log(`Got an error in permits_by_address: ${JSON.stringify(err)}`);
+        throw new Error(`Got an error in permits_by_address: ${JSON.stringify(err)}`);
+      });
+    },
+  },
+
+  Permit: {
+    comments(obj, args, context) {
+      return obj.comments;
     },
   },
 
