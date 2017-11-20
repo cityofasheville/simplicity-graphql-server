@@ -29,6 +29,13 @@ const schema = `
     zipcode: String
   }
 
+  type StreetResult implements SearchResult {
+    score: Int!
+    type: String!
+    centerline_id: Float!
+    full_street_name: String!
+  }
+
   interface SearchResult {
     type: String!
     score: Int!

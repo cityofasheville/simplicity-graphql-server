@@ -130,7 +130,7 @@ function searchProperty(searchString, geoCodeResponse, context) {
   });
 }
 
-function searchAddress(searchString, geoCodeResponse, context) {
+function searchAddress(searchContext, searchString, geoCodeResponse, context) {
   if (geoCodeResponse.locName.length === 0) {
     return Promise.resolve(
       {
@@ -139,9 +139,11 @@ function searchAddress(searchString, geoCodeResponse, context) {
       }
     );
   }
-  const fquery = 'SELECT civicaddress_id, address_full, address_city, address_zipcode, '
-  + 'address_number, address_unit, address_street_prefix, address_street_name '
-  + 'from amd.get_search_addresses($1, $2, $3, $4, $5, $6, $7)';
+  const fquery = 'SELECT A.civicaddress_id, A.address_full, A.address_city, A.address_zipcode, '
+  + 'A.address_number, A.address_unit, A.address_street_prefix, A.address_street_name, '
+  + 'A.centerline_id, B.full_street_name '
+  + 'from amd.get_search_addresses($1, $2, $3, $4, $5, $6, $7) AS A '
+  + 'LEFT OUTER JOIN amd.bc_street AS B on A.centerline_id = B.centerline_id ';
   const args = [
     geoCodeResponse.locNumber,
     geoCodeResponse.locName,
@@ -155,6 +157,22 @@ function searchAddress(searchString, geoCodeResponse, context) {
   const idMap = {};
   return context.pool.query(fquery, args)
   .then(result => {
+    if (searchContext === 'street') {
+      return result.rows.map(row => {
+        return {
+          score: 0,
+          type: 'street',
+          centerline_id: row.centerline_id,
+          full_street_name: row.full_street_name,
+        };
+      })
+      .filter(row => {
+        if (idMap.hasOwnProperty(row.centerline_id)) return false;
+        idMap[row.centerline_id] = true;
+        return true;
+      });
+    }
+    // Search context is 'address'
     return result.rows.map(row => {
       return {
         score: 0,
@@ -199,12 +217,11 @@ function performSearch(searchString, searchContext, geoCodeResponse, context) {
   } else if (searchContext === 'pin') {
     return searchPin(searchString, context);
   } else if (searchContext === 'address') {
-    return searchAddress(searchString, geoCodeResponse, context);
+    return searchAddress(searchContext, searchString, geoCodeResponse, context);
   } else if (searchContext === 'property') {
     return searchProperty(searchString, geoCodeResponse, context);
   } else if (searchContext === 'street') {
-    console.log('Better not be here');
-    return null;
+    return searchAddress(searchContext, searchString, geoCodeResponse, context);
   }
   throw new Error(`Unknown search context ${searchContext}`);
 }
@@ -220,7 +237,6 @@ function requestGeo(searchString) {
   + '&maxLocations=&outSR=&searchExtent='
   + '&location=&distance=&magicKey=&f=pjson';
   console.log(`Geoloc url = ${geolocatorUrl}`);
-  console.log('axios');
   return axios.get(geolocatorUrl, { timeout: 5000 })
   .then(response => {
     console.log('got geo response');
@@ -245,7 +261,6 @@ function requestGeo(searchString) {
       locZipcode: [],
       locCity: [],
     };
-    console.log('load the candidates');
     candidates.forEach((c, i) => {
       if (i < maxCandidates) {
         result.locNumber.push(c.attributes.House);

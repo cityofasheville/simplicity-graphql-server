@@ -515,6 +515,8 @@ const resolvers = {
         return info.schema.getType('PropertyResult');
       } else if (data.type === 'pin') {
         return info.schema.getType('PropertyResult');
+      } else if (data.type === 'street') {
+        return info.schema.getType('StreetResult');
       }
       return info.schema.getType('SillyResult');
     },

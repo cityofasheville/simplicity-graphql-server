@@ -18,6 +18,21 @@ query {
   }
 }
 
+query {
+  search (searchString: "60 N. Market St apt 503", searchContexts: ["street"]) {
+		type
+    results {
+      type
+      score
+      ... on StreetResult {
+        type
+        centerline_id
+        full_street_name
+      }
+    }
+  }
+}
+
 {
   crimes_by_address(civicaddress_id: 230126, radius: 100, before: "2015-03-12", after: "2013-08-28") {
     case_number
