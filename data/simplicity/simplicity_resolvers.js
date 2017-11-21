@@ -291,7 +291,7 @@ const resolvers = {
             zoning: itm.zoning,
             trash_day: itm.trash_pickup_day,
             recycling_pickup_district: itm.recycling_pickup_district,
-            recycling_pickup_day: itm.recycling_pickup_day,          
+            recycling_pickup_day: itm.recycling_pickup_day,
             centerline_id: itm.centerline_id,
             pinnum: itm.property_pin,
             pinnumext: itm.property_pinext,
@@ -320,7 +320,7 @@ const resolvers = {
       + 'from amd.coa_apd_public_incidents_view_wgs as A '
       + 'left outer join amd.coa_bc_address_master as B '
       + 'on ST_Point_Inside_Circle(A.shape, B.address_x, B.address_y, $2) '
-      + 'where b.civicaddress_id = $1 ';
+      + 'where b.civicaddress_id = $1 '; // Future function name change - ST_PointInsideCircle
       const qargs = [civicaddressId, radius];
       let nextParam = '$3';
       if (before !== undefined) {
@@ -482,8 +482,8 @@ const resolvers = {
       + 'from amd.v_mda_permits_xy as A '
       + 'left outer join amd.coa_bc_address_master as B '
       + 'on ST_Point_Inside_Circle(ST_Point(A.address_x, A.address_y), B.address_x, B.address_y, $2) '
-      + 'LEFT JOIN amd.mda_permit_comments AS C on A.permit_num = C.permit_num '      
-      + 'where b.civicaddress_id = $1 ';'where b.civicaddress_id = $1 '; // Future functin name change - ST_PointInsideCircle
+      + 'LEFT JOIN amd.mda_permit_comments AS C on A.permit_num = C.permit_num '
+      + 'where b.civicaddress_id = $1 '; // Future function name change - ST_PointInsideCircle
 
       const qargs = [civicaddressId, radius];
       let nextParam = '$3';
