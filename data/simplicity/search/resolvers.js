@@ -141,7 +141,7 @@ function searchAddress(searchContext, searchString, geoCodeResponse, context) {
   }
   const fquery = 'SELECT A.civicaddress_id, A.address_full, A.address_city, A.address_zipcode, '
   + 'A.address_number, A.address_unit, A.address_street_prefix, A.address_street_name, '
-  + 'A.centerline_id, B.full_street_name '
+  + 'A.centerline_id, B.full_street_name, B.lzip, B.rzip '
   + 'from amd.get_search_addresses($1, $2, $3, $4, $5, $6, $7) AS A '
   + 'LEFT OUTER JOIN amd.bc_street AS B on A.centerline_id = B.centerline_id ';
   const args = [
@@ -158,19 +158,44 @@ function searchAddress(searchContext, searchString, geoCodeResponse, context) {
   return context.pool.query(fquery, args)
   .then(result => {
     if (searchContext === 'street') {
-      return result.rows.map(row => {
-        return {
-          score: 0,
-          type: 'street',
-          centerline_id: row.centerline_id,
-          full_street_name: row.full_street_name,
-        };
-      })
-      .filter(row => {
-        if (idMap.hasOwnProperty(row.centerline_id)) return false;
-        idMap[row.centerline_id] = true;
-        return true;
+      const r = [];
+      result.rows.forEach(row => {
+        let idx = `${row.full_street_name}.${row.lzip}`;
+        if (!idMap.hasOwnProperty(idx)) {
+          idMap[idx] = {
+            score: 0,
+            type: 'street',
+            full_street_name: row.full_street_name,
+            zip_code: row.lzip,
+            centerline_ids: {},
+          };
+          idMap[idx].centerline_ids[row.centerline_id] = row.centerline_id;
+        } else {
+          idMap[idx].centerline_ids[row.centerline_id] = row.centerline_id;
+        }
+        if (row.lzip !== row.rzip) {
+          idx = `${row.full_street_name}.${row.rzip}`;
+          if (!idMap.hasOwnProperty(idx)) {
+            idMap[idx] = {
+              score: 0,
+              type: 'street',
+              full_street_name: row.full_street_name,
+              zip_code: row.rzip,
+              centerline_ids: {},
+            };
+            idMap[idx].centerline_ids[row.centerline_id] = row.centerline_id;
+          } else {
+            idMap[idx].centerline_ids[row.centerline_id] = row.centerline_id;
+          }
+        }
       });
+      for (const k in idMap) {
+        if (idMap.hasOwnProperty(k)) {
+          idMap[k].centerline_ids = Object.keys(idMap[k].centerline_ids);
+          r.push(idMap[k]);
+        }
+      }
+      return r;
     }
     // Search context is 'address'
     return result.rows.map(row => {

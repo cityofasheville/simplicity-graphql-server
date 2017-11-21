@@ -32,8 +32,9 @@ const schema = `
   type StreetResult implements SearchResult {
     score: Int!
     type: String!
-    centerline_id: Float!
     full_street_name: String!
+    zip_code: String
+    centerline_ids: [Float]!    
   }
 
   interface SearchResult {
