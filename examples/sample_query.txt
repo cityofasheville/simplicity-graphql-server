@@ -48,6 +48,22 @@ query {
   }
 }
 
+query {
+	addresses_by_street (centerline_ids: [
+    9762054992,
+    9762155794,
+    9762348567,
+    9762258137,
+    9761970654,
+    9762538368,
+    9762700675,
+    9762707554,
+    9761992911
+  ]) {
+    civic_address_id
+    address
+  }
+}
 
 {
   crimes_by_address(civicaddress_id: 230126, radius: 100, before: "2015-03-12", after: "2013-08-28") {
