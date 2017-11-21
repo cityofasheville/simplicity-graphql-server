@@ -311,7 +311,7 @@ const resolvers = {
       const civicaddressId = String(args.civicaddress_id);
       const before = args.before;
       const after = args.after;
-      const radius = Number(args.radius) / 3.28084; // Feet -> Meters
+      const radius = Number(args.radius); // State plane units are feet
       const pool = context.pool;
       let query = 'SELECT A.incident_id, A.date_occurred, A.case_number, '
       + 'A.address, A.geo_beat, A.x, A.y, A.x_wgs, A.y_wgs, A.offense_short_description, '
@@ -471,7 +471,7 @@ const resolvers = {
       const civicaddressId = String(args.civicaddress_id);
       const before = args.before;
       const after = args.after;
-      const radius = Number(args.radius) / 3.28084; // Feet -> Meters
+      const radius = Number(args.radius); // State plane units are feet
       const pool = context.pool;
       let query = 'SELECT A.permit_num, A.permit_group, A.permit_type, '
       + 'A.permit_subtype, A.permit_category, A.permit_description, '
