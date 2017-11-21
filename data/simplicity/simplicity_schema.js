@@ -8,6 +8,7 @@ const baseSchema = `
   extend type Query {
     search ( searchString: String!, searchContexts: [String] ): [TypedSearchResult]!
     addresses (civicaddress_ids: [String]! ): [Address]
+    addresses_by_street (centerline_ids: [Float]): [Address]
     properties (pins: [String]!): [Property]
     my_simplicity: UserDashboards
     budgetHistory: [SimpleBudgetDetail]!

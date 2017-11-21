@@ -33,6 +33,22 @@ query {
   }
 }
 
+query {
+  search (searchString: "Ox Creek", searchContexts: ["street"]) {
+		type
+    results {
+      type
+      score
+      ... on StreetResult {
+        type
+        full_street_name
+        centerline_ids
+      }
+    }
+  }
+}
+
+
 {
   crimes_by_address(civicaddress_id: 230126, radius: 100, before: "2015-03-12", after: "2013-08-28") {
     case_number
