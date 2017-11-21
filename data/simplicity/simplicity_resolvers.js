@@ -320,7 +320,8 @@ const resolvers = {
       + 'from amd.coa_apd_public_incidents_view_wgs as A '
       + 'left outer join amd.coa_bc_address_master as B '
       + 'on ST_Point_Inside_Circle(A.shape, B.address_x, B.address_y, $2) '
-      + 'where b.civicaddress_id = $1 '; // Future functin name change - ST_PointInsideCircle      const qargs = [civicaddressId, radius];
+      + 'where b.civicaddress_id = $1 ';
+      const qargs = [civicaddressId, radius];
       let nextParam = '$3';
       if (before !== undefined) {
         qargs.push(`'${before}'`);
