@@ -160,14 +160,12 @@ const resolvers = {
       const pinList = pins.map(p => {
         return `'${p}'`;
       }).join(',');
-      const query = 'SELECT pin, pinext, address, exempt, acreage, owner, exempt, cityname, '
+      const query = 'SELECT pin, pinext, pinnum, address, exempt, acreage, owner, cityname, '
       + 'zipcode, totalmarketvalue, appraisedvalue, taxvalue, landvalue, buildingvalue, '
-      + 'propcard, deedurl, platurl, appraisalarea, neighborhoodcode, a.civicaddress_id, '
-      + 'a.lattitude, a.longitude, a.zoning, a.owner_address '
-      + 'FROM amd.bc_property LEFT JOIN amd.coa_bc_address_master as a '
-      + 'ON bc_property.pin = a.property_pin '
-      + 'AND bc_property.pinext = a.property_pinext '
-      + `WHERE bc_property.pinnum in (${pinList})`;
+      + 'propcard, deedurl, platurl, appraisalarea, neighborhoodcode, civicaddress_id, '
+      + 'lattitude, longitude, zoning, owner_address '
+      + 'FROM amd.v_simplicity_properties '
+      + `WHERE pinnum in (${pinList})`;
       // console.log(`properties query: ${query}`);
       return pool.query(query)
       .then(result => {
@@ -206,6 +204,15 @@ const resolvers = {
         throw new Error(error);
       });
     },
+    // properties_by_street(obj, args, context) {
+    //   const pool = context.pool;
+    //   const radius = Number(args.radius); // State plane units are feet
+    //   const ids = args.centerline_ids;
+    //   if (ids.length <= 0) return [];
+    //   const idList = ids.map(id => {
+    //     return `'${id}'`;
+    //   }).join(',');
+    // },
     addresses(obj, args, context) {
       const pool = context.pool;
       const ids = args.civicaddress_ids;
