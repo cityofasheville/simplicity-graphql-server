@@ -408,6 +408,46 @@ const resolvers = {
         throw new Error(`Got an error in crimes_by_address: ${JSON.stringify(err)}`);
       });
     },
+    crimes_by_street(obj, args, context) {
+      const pool = context.pool;
+      const radius = (args.radius) ? Number(args.radius) : 100; // State plane units are feet
+      const ids = args.centerline_ids;
+      if (ids.length <= 0) return [];
+      const query = 'SELECT * FROM amd.get_crimes_along_streets($1, $2)';
+      const fargs = [
+        ids,
+        radius,
+      ];
+      return pool.query(query, fargs)
+      .then(result => {
+        if (result.rows.length === 0) return [];
+        return result.rows.map(itm => {
+          return {
+            incident_id: itm.incident_id,
+            agency: itm.agency,
+            date_occurred: itm.date_occurred,
+            case_number: itm.case_number,
+            address: itm.address,
+            geo_beat: itm.geo_beat,
+            geo_report_area: itm.geo_report_area,
+            x: itm.x_wgs,
+            y: itm.y_wgs,
+            offense_short_description: itm.offense_short_description,
+            offense_long_description: itm.offense_long_description,
+            offense_code: itm.offense_code,
+            offense_group_code: itm.offense_group_code,
+            offense_group_level: itm.offense_group_level,
+            offense_group_short_description: itm.offense_group_short_description,
+          };
+        });
+      })
+      .catch((err) => {
+        if (err) {
+          console.log(`Got an error in crimes_by_street: ${JSON.stringify(err)}`);
+          throw new Error(err);
+        }
+      });
+    },
     crimes(obj, args, context) {
       const pool = context.pool;
       const ids = args.incident_ids;
@@ -528,7 +568,7 @@ const resolvers = {
       + 'C.comment_seq_number, C.comment_date, C.comments '
       + 'from amd.v_mda_permits_xy as A '
       + 'left outer join amd.coa_bc_address_master as B '
-      + 'on ST_Point_Inside_Circle(ST_Point(A.address_x, A.address_y), B.address_x, B.address_y, $2) '
+      + 'on ST_Point_Inside_Circle(ST_SetSRID(ST_Point(A.address_x, A.address_y),2264), B.address_x, B.address_y, $2) '
       + 'LEFT JOIN amd.mda_permit_comments AS C on A.permit_num = C.permit_num '
       + 'where b.civicaddress_id = $1 '; // Future function name change - ST_PointInsideCircle
 
