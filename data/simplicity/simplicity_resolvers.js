@@ -553,7 +553,6 @@ const resolvers = {
         throw new Error(`Got an error in crimes: ${JSON.stringify(err)}`);
       });
     },
-
     permits_by_address(obj, args, context) {
       const civicaddressId = String(args.civicaddress_id);
       const before = args.before;
@@ -628,6 +627,49 @@ const resolvers = {
         throw new Error(`Got an error in permits_by_address: ${JSON.stringify(err)}`);
       });
     },
+    permits_by_street(obj, args, context) {
+      const pool = context.pool;
+      const radius = (args.radius) ? Number(args.radius) : 100; // State plane units are feet
+      const ids = args.centerline_ids;
+      if (ids.length <= 0) return [];
+      const query = 'SELECT * FROM amd.get_permits_along_streets($1, $2)';
+      const fargs = [
+        ids,
+        radius,
+      ];
+      return pool.query(query, fargs)
+      .then(result => {
+        if (result.rows.length === 0) return [];
+        return result.rows.map(itm => {
+          return {
+            permit_number: itm.permit_num,
+            permit_group: itm.permit_group,
+            permit_type: itm.permit_type,
+            permit_subtype: itm.permit_subtype,
+            permit_category: itm.permit_category,
+            permit_description: itm.permit_description,
+            applicant_name: itm.applicant_name,
+            applied_date: itm.applied_date,
+            status_current: itm.status_current,
+            status_date: itm.status_date,
+            civic_address_id: itm.civic_address_id,
+            address: itm.address,
+            x: itm.x,
+            y: itm.y,
+            contractor_name: itm.contractor_name,
+            contractor_license_number: itm.contractor_license_number,
+            comments: [],
+        };
+        });
+      })
+      .catch((err) => {
+        if (err) {
+          console.log(`Got an error in permits_by_street: ${JSON.stringify(err)}`);
+          throw new Error(err);
+        }
+      });
+    },
+
   },
 
   Permit: {
