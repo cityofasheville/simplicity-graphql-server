@@ -65,6 +65,17 @@ query {
   }
 }
 
+query {
+	crimes_by_street (centerline_ids: [
+   9648296918, 9648198882
+  ], radius: 100) {
+    x, 
+    y,
+    incident_id,
+    offense_long_description
+  }
+}
+
 {
   crimes_by_address(civicaddress_id: 230126, radius: 100, before: "2015-03-12", after: "2013-08-28") {
     case_number
