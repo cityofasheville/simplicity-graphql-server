@@ -674,7 +674,7 @@ const resolvers = {
       const status = args.status;
       const before = args.before;
       const after = args.after;
-      const path = '../projects/projects.json';
+      const path = './data/projects/projects.json';
       const data = JSON.parse(fs.readFileSync(path));
       console.log(`Length of data is ${data.length}`);
       return [];
