@@ -1,4 +1,5 @@
 const { merge } = require('lodash');
+const fs = require('fs');
 
 const resolvers = {
   Query: {
@@ -288,7 +289,7 @@ const resolvers = {
             zoning: itm.zoning,
             trash_day: itm.trash_pickup_day,
             recycling_pickup_district: itm.recycling_pickup_district,
-            recycling_pickup_day: itm.recycling_pickup_day,          
+            recycling_pickup_day: itm.recycling_pickup_day,
             centerline_id: itm.centerline_id,
             pinnum: itm.property_pin,
             pinnumext: itm.property_pinext,
@@ -669,7 +670,15 @@ const resolvers = {
         }
       });
     },
-
+    projects(obj, args, context) {
+      const status = args.status;
+      const before = args.before;
+      const after = args.after;
+      const path = '../projects/projects.json';
+      const data = JSON.parse(fs.readFileSync(path));
+      console.log(`Length of data is ${data.length}`);
+      return [];
+    },
   },
 
   Permit: {
