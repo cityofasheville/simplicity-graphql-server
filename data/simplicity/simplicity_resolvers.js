@@ -364,7 +364,7 @@ const resolvers = {
       + 'A.address, A.geo_beat, A.x, A.y, A.x_wgs, A.y_wgs, A.offense_short_description, '
       + 'A.offense_long_description, A.offense_code, A.offense_group_code, '
       + 'A.offense_group_level, A.offense_group_short_description '
-      + 'from amd.coa_apd_public_incidents_view_wgs as A '
+      + 'from amd.coa_apd_public_incidents_view as A '
       + 'left outer join amd.coa_bc_address_master as B '
       + 'on ST_Point_Inside_Circle(A.shape, B.address_x, B.address_y, $2) '
       + 'where b.civicaddress_id = $1 '; // Future function name change - ST_PointInsideCircle
@@ -461,7 +461,7 @@ const resolvers = {
       + 'offense_long_description, offense_code, offense_group_code, '
       + 'offense_group_level, offense_group_short_description, '
       + 'offense_group_long_description '
-      + `FROM amd.coa_apd_public_incidents_view_wgs WHERE incident_id in (${idList}) `;
+      + `FROM amd.coa_apd_public_incidents_view WHERE incident_id in (${idList}) `;
       return pool.query(query)
       .then((result) => {
         if (result.rows.length === 0) return [];
