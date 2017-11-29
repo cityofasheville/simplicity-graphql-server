@@ -456,17 +456,14 @@ const resolvers = {
       const idList = ids.map(id => {
         return `'${id}'`;
       }).join(',');
-      console.log('In crmies');
       const query = 'SELECT incident_id, agency, date_occurred, case_number, '
       + 'address, geo_beat, geo_report_area, x, y, x_wgs, y_wgs, offense_short_description, '
       + 'offense_long_description, offense_code, offense_group_code, '
       + 'offense_group_level, offense_group_short_description, '
       + 'offense_group_long_description '
       + `FROM amd.v_simplicity_crimes WHERE incident_id in (${idList}) `;
-      console.log(query);
       return pool.query(query)
       .then((result) => {
-        console.log('here');
         if (result.rows.length === 0) return [];
         const p = result.rows;
         return p.map(itm => {
