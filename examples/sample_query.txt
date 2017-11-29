@@ -1,3 +1,12 @@
+{
+  projects(after: "2017-11-20", status: ["In Progress", "Closed"]) {
+    ID
+    Summary
+    RequestedDate
+    CurrentStatus
+  }
+}
+
 query {
   search (searchString: "60 N. Market St apt 503", searchContexts: ["address"]) {
 		type

@@ -8,7 +8,7 @@ type ITProject {
   Requestor: String
   RequestedDate: String
   ResolutionDate: String
-  ElapsedType: String
+  ElapsedTime: String
   Priority: String
   DueDate: String
   AssignedTechnician: String

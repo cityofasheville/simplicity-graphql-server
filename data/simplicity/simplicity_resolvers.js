@@ -676,10 +676,63 @@ const resolvers = {
       const path = './data/projects/projects.json';
       const data = JSON.parse(fs.readFileSync(path));
       console.log(`Length of data is ${data.length}`);
-      return data.filter(item => {
+      return data.filter((item) => {
         let keep = true;
+        if (after || before) {
+          const date1 = new Date(item.RequestedDate);
+          if (after && date1 < new Date(`${after} 00:00:00 GMT-0500`)) {
+            keep = false;
+          }
+          if (keep && before && date1 > new Date(`${before} 00:00:00 GMT-0500`)) {
+            keep = false;
+          }
+        }
+        return keep;
+      })
+      .filter(item => {
+        let keep = true;
+        if (status) {
+          keep = status.reduce((accum, cur) => {
+            return (accum || item.CurrentStatus === cur); 
+          }, false);
+        }
+        return keep;
+      }).map(t => {
+        console.log(t);
+        return {
+          ID: t.ID,
+          ParentID: t.ParentID,
+          RespondBy: t.RespondBy,
+          Summary: t.Summary,
+          Type: t.Type,
+          Requestor: t.Requestor,
+          RequestedDate: t.RequestedDate,
+          ResolutionDate: t.ResolutionDate,
+          ElapsedTime: t.ElapsedType, // FIX THIS WHEN USING DB
+          Priority: t.Priority,
+          DueDate: t.DueDate,
+          AssignedTechnician: t.AssignedTechnician,
+          DateCompleted: t.DateCompleted,
+          Hours: t.Hours,
+          Department: t.Department,
+          Notes: t.Notes,
+          Resolution: t.Resolution,
+          CurrentStatus: t.CurrentStatus,
+          IncidentOrServiceReq: t.IncidentOrServiceReq,
+          HotList: t.HotList,
+          DateResponded: t.DateResponded,
+          WorkOrderTypeName: t.WorkOrderTypeName,
+          Subtype: t.Subtype,
+          Text1: t.Text1,
+          Text4: t.Text4,
+          ForwardProject: t.ForwardProject,
+          OrgImpact: t.OrgImpact,
+          RequestorPriority: t.RequestorPriority,
+          TaskLookup6: t.TaskLookup6,
+          TaskLookup7: t.TaskLookup7,
+          ITInvolvement: t.ITInvolvement,        
+        };
       });
-      return [];
     },
   },
 
