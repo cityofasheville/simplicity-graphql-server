@@ -365,9 +365,9 @@ const resolvers = {
       + 'A.address, A.geo_beat, A.x, A.y, A.x_wgs, A.y_wgs, A.offense_short_description, '
       + 'A.offense_long_description, A.offense_code, A.offense_group_code, '
       + 'A.offense_group_level, A.offense_group_short_description '
-      + 'from amd.coa_apd_public_incidents_view as A '
+      + 'from amd.v_simplicity_crimes as A '
       + 'left outer join amd.coa_bc_address_master as B '
-      + 'on ST_Point_Inside_Circle(A.shape, B.address_x, B.address_y, $2) '
+      + 'on ST_Point_Inside_Circle(ST_Point(A.x, A.y), B.address_x, B.address_y, $2) '
       + 'where b.civicaddress_id = $1 '; // Future function name change - ST_PointInsideCircle
       const qargs = [civicaddressId, radius];
       let nextParam = '$3';
@@ -676,6 +676,9 @@ const resolvers = {
       const path = './data/projects/projects.json';
       const data = JSON.parse(fs.readFileSync(path));
       console.log(`Length of data is ${data.length}`);
+      return data.filter(item => {
+        let keep = true;
+      });
       return [];
     },
   },
