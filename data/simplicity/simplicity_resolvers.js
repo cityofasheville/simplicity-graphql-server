@@ -277,8 +277,8 @@ const resolvers = {
           return {
             civic_address_id: itm.civicaddress_id,
             address: itm.address_full,
-            x: itm.lattitude,
-            y: itm.longitude,
+            x: itm.longitude,
+            y: itm.lattitude,
             street_name: itm.address_street_name,
             street_prefix: itm.address_street_prefix,
             street_number: itm.address_number,
@@ -327,8 +327,8 @@ const resolvers = {
           return {
             civic_address_id: itm.civicaddress_id,
             address: itm.address_full,
-            x: itm.lattitude,
-            y: itm.longitude,
+            x: itm.longitude,
+            y: itm.lattitude,
             street_name: itm.address_street_name,
             street_prefix: itm.address_street_prefix,
             street_number: itm.address_number,
@@ -492,7 +492,6 @@ const resolvers = {
         throw new Error(`Got an error in crimes: ${JSON.stringify(err)}`);
       });
     },
-
     permits(obj, args, context) {
       const pool = context.pool;
       const ids = args.permit_numbers;
@@ -504,7 +503,7 @@ const resolvers = {
       + 'a.permit_subtype, a.permit_category, a.permit_description, '
       + 'a.applicant_name, a.applied_date, a.status_current, a.status_date, '
       + 'a.civic_address_id, a.address, a.contractor_name, '
-      + 'a.contractor_license_number, a.lattitude as x, a.longitude as y, '
+      + 'a.contractor_license_number, a.longitude as x, a.lattitude as y, '
       + 'b.comment_seq_number, b.comment_date, b.comments '
       + 'FROM amd.v_mda_permits_xy AS a '
       + 'LEFT JOIN amd.mda_permit_comments AS b on a.permit_num = b.permit_num '
@@ -564,7 +563,7 @@ const resolvers = {
       + 'A.permit_subtype, A.permit_category, A.permit_description, '
       + 'A.applicant_name, A.applied_date, A.status_current, A.status_date, '
       + 'A.civic_address_id, A.address, A.contractor_name, '
-      + 'A.contractor_license_number, A.lattitude as x, A.longitude as y, '
+      + 'A.contractor_license_number, A.longitude as x, A.lattitude as y, '
       + 'C.comment_seq_number, C.comment_date, C.comments '
       + 'from amd.v_mda_permits_xy as A '
       + 'left outer join amd.coa_bc_address_master as B '
