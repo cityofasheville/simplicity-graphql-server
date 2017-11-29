@@ -456,15 +456,17 @@ const resolvers = {
       const idList = ids.map(id => {
         return `'${id}'`;
       }).join(',');
-
+      console.log('In crmies');
       const query = 'SELECT incident_id, agency, date_occurred, case_number, '
-      + 'address, geo_beat, geo_report_area, x, y, x_wgs, y_wgx, offense_short_description, '
+      + 'address, geo_beat, geo_report_area, x, y, x_wgs, y_wgs, offense_short_description, '
       + 'offense_long_description, offense_code, offense_group_code, '
       + 'offense_group_level, offense_group_short_description, '
       + 'offense_group_long_description '
-      + `FROM amd.coa_apd_public_incidents_view WHERE incident_id in (${idList}) `;
+      + `FROM amd.v_simplicity_crimes WHERE incident_id in (${idList}) `;
+      console.log(query);
       return pool.query(query)
       .then((result) => {
+        console.log('here');
         if (result.rows.length === 0) return [];
         const p = result.rows;
         return p.map(itm => {
@@ -489,6 +491,7 @@ const resolvers = {
         });
       })
       .catch((err) => {
+        console.log(`ERROR: ${err}`);
         throw new Error(`Got an error in crimes: ${JSON.stringify(err)}`);
       });
     },

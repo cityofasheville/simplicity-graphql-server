@@ -77,6 +77,16 @@ query {
 }
 
 {
+  crimes(incident_ids: [586612, 638093]) {
+      case_number
+    incident_id
+		date_occurred
+    address
+    offense_long_description
+  }
+}
+
+{
   crimes_by_address(civicaddress_id: 230126, radius: 100, before: "2015-03-12", after: "2013-08-28") {
     case_number
 		date_occurred
