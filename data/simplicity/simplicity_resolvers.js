@@ -698,7 +698,6 @@ const resolvers = {
         }
         return keep;
       }).map(t => {
-        console.log(t);
         return {
           ID: t.ID,
           ParentID: t.ParentID,
