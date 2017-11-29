@@ -671,6 +671,8 @@ const resolvers = {
     },
     projects(obj, args, context) {
       const status = args.status;
+      const reqType = args.req_type;
+      const priorities = args.priorities;
       const before = args.before;
       const after = args.after;
       const path = './data/projects/projects.json';
@@ -691,9 +693,25 @@ const resolvers = {
       })
       .filter(item => {
         let keep = true;
+        if (reqType) {
+          keep = (item.IncidentOrServiceReq === reqType);
+        }
+        return keep;
+      })
+      .filter(item => {
+        let keep = true;
         if (status) {
           keep = status.reduce((accum, cur) => {
-            return (accum || item.CurrentStatus === cur); 
+            return (accum || item.CurrentStatus === cur);
+          }, false);
+        }
+        return keep;
+      })
+      .filter(item => {
+        let keep = true;
+        if (priorities) {
+          keep = priorities.reduce((accum, cur) => {
+            return (accum || item.Priority === cur);
           }, false);
         }
         return keep;

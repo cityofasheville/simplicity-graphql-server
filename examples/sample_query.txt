@@ -1,5 +1,5 @@
 {
-  projects(after: "2017-11-20", status: ["In Progress", "Closed"]) {
+  projects(after: "2017-11-20", status: ["In Progress", "Open"]) {
     ID
     Summary
     RequestedDate
