@@ -78,6 +78,7 @@ function searchProperty(searchString, geoCodeResponse, context) {
   const fquery = 'SELECT DISTINCT property_pinnum '
   + 'from amd.get_search_addresses($1, $2, $3, $4, $5, $6, $7)';
 
+  console.log(`Query: ${fquery}`);
   const args = [
     geoCodeResponse.locNumber,
     geoCodeResponse.locName,
@@ -90,6 +91,7 @@ function searchProperty(searchString, geoCodeResponse, context) {
 
   return context.pool.query(fquery, args)
   .then(result => {
+    console.log('ret1');
     if (result.rows.length === 0) {
       return Promise.resolve([]);
     }
@@ -101,6 +103,7 @@ function searchProperty(searchString, geoCodeResponse, context) {
     + `WHERE pinnum IN (${pinList})`;
     return context.pool.query(pQuery)
     .then(props => {
+      console.log('ret2');      
       return props.rows.map(row => {
         return {
           score: 0,
@@ -261,22 +264,12 @@ function requestGeo(searchString) {
   + '&outFields=House%2C+PreDir%2C+StreetName%2C+SufType%2C+SubAddrUnit%2C+City%2C+ZIP'
   + '&maxLocations=&outSR=&searchExtent='
   + '&location=&distance=&magicKey=&f=pjson';
-  console.log(`Geoloc url = ${geolocatorUrl}`);
+
   return axios.get(geolocatorUrl, { timeout: 5000 })
   .then(response => {
-    console.log('got geo response');
     const candidates = response.data.candidates.filter(c => {
       return (c.score >= minCandidateScore);
     });
-    if (candidates.length === 0) {
-      console.log('returning []');
-      return Promise.resolve(
-        {
-          type: 'searchContext',
-          results: [],
-        }
-      );
-    }
     const result = {
       locNumber: [],
       locName: [],
@@ -286,6 +279,9 @@ function requestGeo(searchString) {
       locZipcode: [],
       locCity: [],
     };
+    if (candidates.length === 0) {
+      return Promise.resolve(result);
+    }
     candidates.forEach((c, i) => {
       if (i < maxCandidates) {
         result.locNumber.push(c.attributes.House);
@@ -302,7 +298,6 @@ function requestGeo(searchString) {
         }
       }
     });
-    console.log('Prepare to return a result');
     return Promise.resolve(result);
   })
   .catch((err) => {
@@ -316,7 +311,6 @@ function requestGeo(searchString) {
 const resolvers = {
   Query: {
     search(obj, args, context) {
-      console.log('In search');
       const searchString = args.searchString;
       const searchContexts = args.searchContexts;
       let geoCodeResponse = Promise.resolve(null);
@@ -325,17 +319,16 @@ const resolvers = {
        searchContexts.indexOf('street') >= 0) {
         geoCodeResponse = requestGeo(searchString);
       }
-      console.log('do the geocoder');
       return geoCodeResponse.then(result => {
         return Promise.all(searchContexts.map((searchContext) => {
           console.log(`Perform search for context ${searchContext}`);
-          return performSearch(searchString, searchContext, result, context);
+          const ret = performSearch(searchString, searchContext, result, context);
+          return ret;
         }));
       })
       .catch((err) => {
-        console.log('In search error catch');
         if (err) {
-          console.log(`Got an error in search: ${JSON.stringify(err)}`);
+          console.log(`Got an error in search: ${err}`);
           throw new Error(err);
         }
       });
