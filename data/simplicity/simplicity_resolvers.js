@@ -675,80 +675,101 @@ const resolvers = {
       const priorities = args.priorities;
       const before = args.before;
       const after = args.after;
-      const path = './data/projects/projects.json';
-      const data = JSON.parse(fs.readFileSync(path));
-      console.log(`Length of data is ${data.length}`);
-      return data.filter((item) => {
-        let keep = true;
-        if (after || before) {
-          const date1 = new Date(item.RequestedDate);
-          if (after && date1 < new Date(`${after} 00:00:00 GMT-0500`)) {
-            keep = false;
+
+      const pool = context.pool;
+      const query = "SELECT * from amd.workorders where requested_date > '2017-01-01'";
+
+      return pool.query(query)
+      .then((result) => {
+        if (result.rows.length === 0) return [];
+        return result.rows.map(itm => {
+          return {
+            ID: itm.id,
+            ParentID: itm.parent_id,
+            RespondBy: itm.respond_by,
+            Summary: itm.summary,
+            Type: itm.type,
+            Requestor: itm.requestor,
+            RequestedDate: itm.requested_date,
+            ResolutionDate: itm.resolution_date,
+            ElapsedTime: itm.elapsed_time,
+            Priority: itm.priority,
+            DueDate: itm.due_date,
+            AssignedTechnician: itm.assigned_technician,
+            DateCompleted: itm.date_completed,
+            Hours: itm.hours,
+            Department: itm.department,
+            Notes: itm.notes,
+            Resolution: itm.resolution,
+            CurrentStatus: itm.current_status,
+            IncidentOrServiceReq: itm.incident_or_service_req,
+            HotList: itm.hotlist,
+            DateResponded: itm.date_responded,
+            WorkOrderTypeName: itm.work_order_type_name,
+            Subtype: itm.sub_type,
+            Text1: itm.text1,
+            Text4: itm.text4,
+            ForwardProject: itm.forward_project,
+            OrgImpact: itm.org_impact,
+            RequestorPriority: itm.requestor_priority,
+            TaskLookup6: itm.task_lookup_6,
+            TaskLookup7: itm.task_lookup_7,
+            ITInvolvement: itm.it_involvement,
+            ASSNDATE: itm.assndate,
+            WOTYPE3: itm.wo_type_3,
+            STATUS: itm.status,
+            WO_TEXT2: itm.wo_text_2,
+            WO_TEXT3: itm.wo_text_3,
+            WO_TEXT5: itm.wo_text_5,
+            WO_TEXT6: itm.wo_text_6,
+            WO_NUM1: itm.wo_num_1,
+            WO_INT1: itm.wo_int_1,
+          };
+        });
+      })
+      .then((results) => {
+        return results
+        .filter((item) => {
+          let keep = true;
+          if (after || before) {
+            const date1 = new Date(item.RequestedDate);
+            if (after && date1 < new Date(`${after} 00:00:00 GMT-0500`)) {
+              keep = false;
+            }
+            if (keep && before && date1 > new Date(`${before} 00:00:00 GMT-0500`)) {
+              keep = false;
+            }
           }
-          if (keep && before && date1 > new Date(`${before} 00:00:00 GMT-0500`)) {
-            keep = false;
+          return keep;
+        })
+        .filter(item => {
+          let keep = true;
+          if (reqType) {
+            keep = (item.IncidentOrServiceReq === reqType);
           }
-        }
-        return keep;
+          return keep;
+        })
+        .filter(item => {
+          let keep = true;
+          if (status) {
+            keep = status.reduce((accum, cur) => {
+              return (accum || item.CurrentStatus === cur);
+            }, false);
+          }
+          return keep;
+        })
+        .filter(item => {
+          let keep = true;
+          if (priorities) {
+            keep = priorities.reduce((accum, cur) => {
+              return (accum || item.Priority === cur);
+            }, false);
+          }
+          return keep;
+        });
       })
-      .filter(item => {
-        let keep = true;
-        if (reqType) {
-          keep = (item.IncidentOrServiceReq === reqType);
-        }
-        return keep;
-      })
-      .filter(item => {
-        let keep = true;
-        if (status) {
-          keep = status.reduce((accum, cur) => {
-            return (accum || item.CurrentStatus === cur);
-          }, false);
-        }
-        return keep;
-      })
-      .filter(item => {
-        let keep = true;
-        if (priorities) {
-          keep = priorities.reduce((accum, cur) => {
-            return (accum || item.Priority === cur);
-          }, false);
-        }
-        return keep;
-      }).map(t => {
-        return {
-          ID: t.ID,
-          ParentID: t.ParentID,
-          RespondBy: t.RespondBy,
-          Summary: t.Summary,
-          Type: t.Type,
-          Requestor: t.Requestor,
-          RequestedDate: t.RequestedDate,
-          ResolutionDate: t.ResolutionDate,
-          ElapsedTime: t.ElapsedType, // FIX THIS WHEN USING DB
-          Priority: t.Priority,
-          DueDate: t.DueDate,
-          AssignedTechnician: t.AssignedTechnician,
-          DateCompleted: t.DateCompleted,
-          Hours: t.Hours,
-          Department: t.Department,
-          Notes: t.Notes,
-          Resolution: t.Resolution,
-          CurrentStatus: t.CurrentStatus,
-          IncidentOrServiceReq: t.IncidentOrServiceReq,
-          HotList: t.HotList,
-          DateResponded: t.DateResponded,
-          WorkOrderTypeName: t.WorkOrderTypeName,
-          Subtype: t.Subtype,
-          Text1: t.Text1,
-          Text4: t.Text4,
-          ForwardProject: t.ForwardProject,
-          OrgImpact: t.OrgImpact,
-          RequestorPriority: t.RequestorPriority,
-          TaskLookup6: t.TaskLookup6,
-          TaskLookup7: t.TaskLookup7,
-          ITInvolvement: t.ITInvolvement,        
-        };
+      .catch((err) => {
+        throw new Error(`Got an error in crimes: ${JSON.stringify(err)}`);
       });
     },
   },
