@@ -12,5 +12,4 @@ const resolverMap = {
 module.exports = merge(
   resolverMap,
   require('./data/simplicity').resolvers,
-  require('./data/mda').resolvers
 );

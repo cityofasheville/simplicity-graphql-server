@@ -7,5 +7,4 @@ const baseSchema = `
 
 module.exports = baseSchema.concat(
   require('./data/simplicity').schema,
-  require('./data/mda').schema
 );
