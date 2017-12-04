@@ -1,3 +1,4 @@
+const dsdSlaSchema = require('./dsd_sla_schema');
 module.exports = `
 type PermitComment {
   comment_seq_number: Int
@@ -25,4 +26,5 @@ type Permit {
   comments: [PermitComment]
 }
 
+${dsdSlaSchema}
 `;
