@@ -11,5 +11,5 @@ const resolverMap = {
 
 module.exports = merge(
   resolverMap,
-  require('./data/simplicity').resolvers,
+  require('./api').resolvers,
 );

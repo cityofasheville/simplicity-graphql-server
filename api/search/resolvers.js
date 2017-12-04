@@ -334,6 +334,30 @@ const resolvers = {
       });
     },
   },
+
+  TypedSearchResult: {
+    type(obj) {return obj.type;},
+    results(obj, args, context) {
+      return obj.results;
+    },
+  },
+
+  SearchResult: {
+    __resolveType(data, context, info) {
+      if (data.type === 'civicAddressId') {
+        return info.schema.getType('AddressResult');
+      } else if (data.type === 'address') {
+        return info.schema.getType('AddressResult');
+      } else if (data.type === 'property') {
+        return info.schema.getType('PropertyResult');
+      } else if (data.type === 'pin') {
+        return info.schema.getType('PropertyResult');
+      } else if (data.type === 'street') {
+        return info.schema.getType('StreetResult');
+      }
+      return info.schema.getType('SillyResult');
+    },
+  },
 };
 
 module.exports = resolvers;

@@ -1,9 +1,4 @@
 const baseSchema = `
-  type UserDashboards {
-      email: String!
-      groups: [String]
-      subscriptions: String
-  }
 
   extend type Query {
     search ( searchString: String!, searchContexts: [String] ): [TypedSearchResult]!
@@ -11,7 +6,6 @@ const baseSchema = `
     addresses_by_street (centerline_ids: [Float]): [Address]
     properties_by_street (centerline_ids: [Float], radius: Int): [Property]
     properties (pins: [String]!): [Property]
-    my_simplicity: UserDashboards
     budgetHistory: [SimpleBudgetDetail]!
     budgetSummary ( breakdown: String!, maxCategories: Int ): [SimpleBudgetSummary]!
     budgetCashFlow ( accountType: String! ): [BudgetCashFlow]!  
@@ -27,15 +21,14 @@ const baseSchema = `
   }
 `;
 const searchSchema = require('./search').schema;
-const addressSchema = require('./address_schema');
-const propertySchema = require('./property_schema');
-const crimeSchema = require('./crime_schema');
-const developmentSchema = require('./development_schema');
-const itProjectSchema = require('./it_project_schema');
+const addressSchema = require('./address/address_schema');
+const propertySchema = require('./property/property_schema');
+const crimeSchema = require('./crime/crime_schema');
+const developmentSchema = require('./development/development_schema');
+const itProjectSchema = require('./internal');
 
 const schema = [
-  require('./budget_schema.js'),
-  require('./dsd_sla_schema'),
+  require('./budget/budget_schema.js'),
   itProjectSchema,
   developmentSchema,
   crimeSchema,
