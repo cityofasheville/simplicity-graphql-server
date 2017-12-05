@@ -9,8 +9,10 @@ const resolvers = {
       const after = args.after;
 
       const pool = context.pool;
-      const query = "SELECT * from amd.workorders where requested_date > '2017-01-01'";
-
+      let query = 'SELECT * from amd.workorders';
+      if (after) {
+        query += ` where requested_date > '${after}'`;
+      }
       return pool.query(query)
       .then((result) => {
         if (result.rows.length === 0) return [];
