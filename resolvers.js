@@ -11,5 +11,5 @@ const resolverMap = {
 
 module.exports = merge(
   resolverMap,
-  require('./api').resolvers,
+  require('./api').resolvers
 );
