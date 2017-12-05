@@ -5,6 +5,6 @@ const baseSchema = `
   }
 `;
 
-module.exports = baseSchema.concat(
-  require('./api').schema,
-);
+const apiSchema = require('./api').schema;
+
+module.exports = baseSchema.concat(apiSchema);
