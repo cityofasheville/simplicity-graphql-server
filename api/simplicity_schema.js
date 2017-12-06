@@ -1,5 +1,12 @@
 const baseSchema = `
 
+  type Point {
+    x: Float
+    y: Float
+  }
+  type Polygon {
+    points: [Point]
+  }
   extend type Query {
     search ( searchString: String!, searchContexts: [String] ): [TypedSearchResult]!
     addresses (civicaddress_ids: [String]! ): [Address]
@@ -28,6 +35,7 @@ const developmentSchema = require('./development/development_schema');
 const itProjectSchema = require('./internal');
 
 const schema = [
+  baseSchema,
   require('./budget/budget_schema.js'),
   itProjectSchema,
   developmentSchema,
@@ -35,7 +43,6 @@ const schema = [
   addressSchema,
   propertySchema,
   searchSchema,
-  baseSchema,
 ];
 
 module.exports = schema;

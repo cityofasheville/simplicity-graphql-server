@@ -23,5 +23,6 @@ type Property {
   market_value: Float
   owner: String
   owner_address: String
+  polygons: [Polygon]
 }
 `;

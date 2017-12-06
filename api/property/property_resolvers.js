@@ -1,3 +1,4 @@
+const convertToPolygons = require('../common/convert_to_polygons').convertToPolgyons;
 
 const resolvers = {
   Query: {
@@ -11,7 +12,7 @@ const resolvers = {
       const query = 'SELECT pin, pinext, pinnum, address, exempt, acreage, owner, cityname, '
       + 'zipcode, totalmarketvalue, appraisedvalue, taxvalue, landvalue, buildingvalue, '
       + 'propcard, deedurl, platurl, appraisalarea, neighborhoodcode, civicaddress_id, '
-      + 'lattitude, longitude, zoning, owner_address '
+      + 'lattitude, longitude, zoning, owner_address, polygon '
       + 'FROM amd.v_simplicity_properties '
       + `WHERE pinnum in (${pinList})`;
       // console.log(`properties query: ${query}`);
@@ -44,6 +45,7 @@ const resolvers = {
             market_value: itm.totalmarketvalue,
             owner: itm.owner,
             owner_address: itm.owner_address,
+            polygon: [],
           };
         });
       })
@@ -62,11 +64,13 @@ const resolvers = {
         ids,
         radius,
       ];
+      console.log('here');
       return pool.query(query, fargs)
       .then(result => {
         if (result.rows.length === 0) return [];
         return result.rows.map(itm => {
           const taxExempt = (itm.exempt !== '');
+          // console.log(`Got the ${itm.pinnum} geom: ${itm.polygon}`);
           return {
             civic_address_id: itm.civicaddress_id,
             pinnum: itm.pin,
@@ -91,6 +95,7 @@ const resolvers = {
             market_value: itm.totalmarketvalue,
             owner: itm.owner,
             owner_address: itm.owner_address,
+            polygon: itm.polygon,
           };
         });
       })
@@ -100,6 +105,11 @@ const resolvers = {
           throw new Error(err);
         }
       });
+    },
+  },
+  Property: {
+    polygons(obj) {
+      return convertToPolygons(obj.polygon);
     },
   },
 };

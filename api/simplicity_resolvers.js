@@ -3,7 +3,13 @@ const { merge } = require('lodash');
 const resolvers = {
   Query: {
   },
-
+  Point: {
+    x(obj) {return obj.x;},
+    y(obj) {return obj.y;},
+  },
+  Polygon: {
+    points(obj) { return obj.points; },
+  },
 };
 module.exports = merge(resolvers,
   require('./search/resolvers'),
