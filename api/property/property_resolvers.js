@@ -45,7 +45,7 @@ const resolvers = {
             market_value: itm.totalmarketvalue,
             owner: itm.owner,
             owner_address: itm.owner_address,
-            polygon: [],
+            polygon: itm.polygon,
           };
         });
       })
