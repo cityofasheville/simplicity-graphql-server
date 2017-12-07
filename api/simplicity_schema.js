@@ -7,12 +7,18 @@ const baseSchema = `
   type Polygon {
     points: [Point]
   }
+
+  type Line {
+    points: [Point]
+  }
+  
   extend type Query {
     search ( searchString: String!, searchContexts: [String] ): [TypedSearchResult]!
     addresses (civicaddress_ids: [String]! ): [Address]
     addresses_by_street (centerline_ids: [Float]): [Address]
     properties_by_street (centerline_ids: [Float], radius: Int): [Property]
     properties (pins: [String]!): [Property]
+    streets (centerline_ids: [Float]): [Street]
     budgetHistory: [SimpleBudgetDetail]!
     budgetSummary ( breakdown: String!, maxCategories: Int ): [SimpleBudgetSummary]!
     budgetCashFlow ( accountType: String! ): [BudgetCashFlow]!  
@@ -33,7 +39,7 @@ const propertySchema = require('./property/property_schema');
 const crimeSchema = require('./crime/crime_schema');
 const developmentSchema = require('./development/development_schema');
 const itProjectSchema = require('./internal');
-
+const streetSchema = require('./street/street_schema');
 const schema = [
   baseSchema,
   require('./budget/budget_schema.js'),
@@ -41,6 +47,7 @@ const schema = [
   developmentSchema,
   crimeSchema,
   addressSchema,
+  streetSchema,
   propertySchema,
   searchSchema,
 ];

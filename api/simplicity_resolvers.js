@@ -10,11 +10,15 @@ const resolvers = {
   Polygon: {
     points(obj) { return obj.points; },
   },
+  Line: {
+    points(obj) { return obj.points; },
+  },
 };
 module.exports = merge(resolvers,
   require('./search/resolvers'),
   require('./internal/internal_resolvers'),
   require('./address/address_resolvers'),
+  require('./street/street_resolvers'),
   require('./property/property_resolvers'),
   require('./development/development_resolvers'),
   require('./crime/crime_resolvers'),

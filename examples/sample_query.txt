@@ -75,6 +75,20 @@ query {
 }
 
 query {
+  streets (centerline_ids: [9648296918]) {
+    centerline_id
+    left_zipcode
+    right_zipcode
+    lines {
+      points {
+        x
+        y
+      }
+    }
+  }
+}
+
+query {
 	crimes_by_street (centerline_ids: [
    9648296918, 9648198882
   ], radius: 100) {
