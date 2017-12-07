@@ -171,6 +171,8 @@ const resolvers = {
     permits_by_street(obj, args, context) {
       const pool = context.pool;
       const radius = (args.radius) ? Number(args.radius) : 100; // State plane units are feet
+      const before = args.before;
+      const after = args.after;
       const ids = args.centerline_ids;
       if (ids.length <= 0) return [];
       const query = 'SELECT * FROM amd.get_permits_along_streets($1, $2)';
@@ -200,7 +202,23 @@ const resolvers = {
             contractor_name: itm.contractor_name,
             contractor_license_number: itm.contractor_license_number,
             comments: [],
-        };
+          };
+        });
+      })
+      .then(results => {
+        return results
+        .filter((item) => {
+          let keep = true;
+          if (after || before) {
+            const date1 = new Date(item.applied_date);
+            if (after && date1 < new Date(`${after} 00:00:00 GMT-0500`)) {
+              keep = false;
+            }
+            if (keep && before && date1 > new Date(`${before} 00:00:00 GMT-0500`)) {
+              keep = false;
+            }
+          }
+          return keep;
         });
       })
       .catch((err) => {

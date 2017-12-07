@@ -60,6 +60,8 @@ const resolvers = {
       const radius = (args.radius) ? Number(args.radius) : 100; // State plane units are feet
       const ids = args.centerline_ids;
       if (ids.length <= 0) return [];
+      const before = args.before;
+      const after = args.after;
       const query = 'SELECT * FROM amd.get_crimes_along_streets($1, $2)';
       const fargs = [
         ids,
@@ -86,6 +88,22 @@ const resolvers = {
             offense_group_level: itm.offense_group_level,
             offense_group_short_description: itm.offense_group_short_description,
           };
+        });
+      })
+      .then(results => {
+        return results
+        .filter((item) => {
+          let keep = true;
+          if (after || before) {
+            const date1 = new Date(item.date_occurred);
+            if (after && date1 < new Date(`${after} 00:00:00 GMT-0500`)) {
+              keep = false;
+            }
+            if (keep && before && date1 > new Date(`${before} 00:00:00 GMT-0500`)) {
+              keep = false;
+            }
+          }
+          return keep;
         });
       })
       .catch((err) => {

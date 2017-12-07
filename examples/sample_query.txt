@@ -99,6 +99,16 @@ query {
   }
 }
 
+query {
+	crimes_by_street (centerline_ids: [
+   9648296918, 9648198882
+  ], radius: 100, after: "2016-12-01") {
+    date_occurred,
+    incident_id,
+    offense_long_description
+  }
+}
+
 {
   crimes(incident_ids: [586612, 638093]) {
       case_number
@@ -177,4 +187,11 @@ query {
     budget
   }
   
+  {
+  permits_by_address(civicaddress_id: 230126, radius: 100, before: "2015-03-12", after: "2013-08-28") {
+    applied_date
+    applicant_name
+    civic_address_id
+  }
+
 }
