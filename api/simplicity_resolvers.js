@@ -10,9 +10,6 @@ const resolvers = {
   Polygon: {
     points(obj) { return obj.points; },
   },
-  Line: {
-    points(obj) { return obj.points; },
-  },
 };
 module.exports = merge(resolvers,
   require('./search/resolvers'),

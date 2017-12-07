@@ -7,10 +7,6 @@ const baseSchema = `
   type Polygon {
     points: [Point]
   }
-
-  type Line {
-    points: [Point]
-  }
   
   extend type Query {
     search ( searchString: String!, searchContexts: [String] ): [TypedSearchResult]!

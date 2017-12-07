@@ -4,6 +4,6 @@ type Street {
   address: String
   left_zipcode: String
   right_zipcode: String
-  lines: Line
+  line: [Point]
 }
 `;

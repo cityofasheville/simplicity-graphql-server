@@ -34,9 +34,9 @@ const resolvers = {
     },
   },
   Street: {
-    lines(obj) {
+    line(obj) {
       const result = convertLines(obj.lines);
-      return { points: result };
+      return result;
     },
   },
 };
