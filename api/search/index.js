@@ -37,6 +37,14 @@ const schema = `
     centerline_ids: [Float]!    
   }
 
+  type NeighborhoodResult implements SearchResult {
+    score: Int!
+    type: String!
+    name: String!
+    nbhd_id: String   
+    abbreviation: String
+  }
+
   interface SearchResult {
     type: String!
     score: Int!
