@@ -65,6 +65,36 @@ function searchPin(searchString, context) {
   });
 }
 
+function searchNeighborhood(searchString, context) {
+  const myQuery = 'SELECT name, nbhd_id, abbreviation, narrative FROM amd.coa_asheville_neighborhoods '
+  + `where name ILIKE '%${searchString}%'`;
+  console.log(`QUERY: ${myQuery}`);
+  return context.pool.query(myQuery)
+  .then(result => {
+    if (result.rows.length === 0) return { type: 'neighborhood', results: [] };
+    console.log(`ROWS: ${JSON.stringify(result.rows)}`);
+    const finalResult = {
+      type: 'neighborhood',
+      results: result.rows.map(row => {
+        return {
+          score: 0,
+          type: 'neighborhood',
+          name: row.name,
+          nbhd_id: row.nbhd_id,
+          abbreviation: row.abbreviation,
+        };
+      }),
+    };
+    return finalResult;
+  })
+  .catch((err) => {
+    if (err) {
+      console.log(`Got an error in searchNeighborhood: ${JSON.stringify(err)}`);
+      throw new Error(err);
+    }
+  });
+}
+
 function searchProperty(searchString, geoCodeResponse, context) {
   if (geoCodeResponse.locName.length === 0) {
     return Promise.resolve(
@@ -250,6 +280,9 @@ function performSearch(searchString, searchContext, geoCodeResponse, context) {
     return searchProperty(searchString, geoCodeResponse, context);
   } else if (searchContext === 'street') {
     return searchAddress(searchContext, searchString, geoCodeResponse, context);
+  } else if (searchContext === 'neighborhood') {
+    console.log('Got nbhrood');
+    return searchNeighborhood(searchString, context);
   }
   throw new Error(`Unknown search context ${searchContext}`);
 }
@@ -354,6 +387,8 @@ const resolvers = {
         return info.schema.getType('PropertyResult');
       } else if (data.type === 'street') {
         return info.schema.getType('StreetResult');
+      } else if (data.type === 'neighborhood') {
+        return info.schema.getType('NeighborhoodResult');
       }
       return info.schema.getType('SillyResult');
     },

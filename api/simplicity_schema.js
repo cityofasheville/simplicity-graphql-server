@@ -15,6 +15,7 @@ const baseSchema = `
     properties_by_street (centerline_ids: [Float], radius: Int): [Property]
     properties (pins: [String]!): [Property]
     streets (centerline_ids: [Float]): [Street]
+    neighborhoods (nbrhd_ids: [String]): [Neighborhood]
     budgetHistory: [SimpleBudgetDetail]!
     budgetSummary ( breakdown: String!, maxCategories: Int ): [SimpleBudgetSummary]!
     budgetCashFlow ( accountType: String! ): [BudgetCashFlow]!  
@@ -36,6 +37,8 @@ const crimeSchema = require('./crime/crime_schema');
 const developmentSchema = require('./development/development_schema');
 const itProjectSchema = require('./internal');
 const streetSchema = require('./street/street_schema');
+const neighborhoodSchema = require('./neighborhood/neighborhood_schema');
+
 const schema = [
   baseSchema,
   require('./budget/budget_schema.js'),
@@ -45,6 +48,7 @@ const schema = [
   addressSchema,
   streetSchema,
   propertySchema,
+  neighborhoodSchema,
   searchSchema,
 ];
 
