@@ -66,13 +66,13 @@ function searchPin(searchString, context) {
 }
 
 function searchNeighborhood(searchString, context) {
-  const myQuery = 'SELECT name, nbhd_id abbreviation narrative FROM amd.coa_avl_neighborhoodsf '
+  const myQuery = 'SELECT name, nbhd_id, abbreviation, narrative FROM amd.coa_asheville_neighborhoods '
   + `where name ILIKE '%${searchString}%'`;
-
+  console.log(`QUERY: ${myQuery}`);
   return context.pool.query(myQuery)
   .then(result => {
     if (result.rows.length === 0) return { type: 'neighborhood', results: [] };
-
+    console.log(`ROWS: ${JSON.stringify(result.rows)}`);
     const finalResult = {
       type: 'neighborhood',
       results: result.rows.map(row => {
@@ -281,6 +281,7 @@ function performSearch(searchString, searchContext, geoCodeResponse, context) {
   } else if (searchContext === 'street') {
     return searchAddress(searchContext, searchString, geoCodeResponse, context);
   } else if (searchContext === 'neighborhood') {
+    console.log('Got nbhrood');
     return searchNeighborhood(searchString, context);
   }
   throw new Error(`Unknown search context ${searchContext}`);
