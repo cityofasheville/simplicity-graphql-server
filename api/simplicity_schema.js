@@ -24,9 +24,11 @@ const baseSchema = `
     crimes(incident_ids: [Int]!): [CrimeIncident]
     crimes_by_address(civicaddress_id: Int!, radius: Int, after: String, before: String): [CrimeIncident]
     crimes_by_street (centerline_ids: [Float], radius: Int, after: String, before: String): [CrimeIncident]
+    crimes_by_neighborhood (nbrhd_ids: [String], after: String, before: String): [CrimeIncident]
     permits(permit_numbers: [String]!): [Permit]
     permits_by_address(civicaddress_id: Int!, radius: Int, after: String, before: String): [Permit]
     permits_by_street(centerline_ids: [Float], radius: Int, after: String, before: String): [Permit]
+    permits_by_neighborhood(nbrhd_ids: [String], after: String, before: String): [Permit]
     projects (status: [String], priority: [String], reqtype: String, after: String, before: String): [ITProject]
   }
 `;

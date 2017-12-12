@@ -113,6 +113,62 @@ const resolvers = {
         }
       });
     },
+    crimes_by_neighborhood(obj, args, context) {
+      const pool = context.pool;
+      const ids = args.nbrhd_ids;
+      if (ids.length <= 0) return [];
+      const before = args.before;
+      const after = args.after;
+      const query = 'SELECT * FROM amd.get_crimes_by_neighborhood($1)';
+      const fargs = [
+        ids,
+      ];
+      return pool.query(query, fargs)
+      .then(result => {
+        if (result.rows.length === 0) return [];
+        return result.rows.map(itm => {
+          return {
+            incident_id: itm.incident_id,
+            agency: itm.agency,
+            date_occurred: itm.date_occurred,
+            case_number: itm.case_number,
+            address: itm.address,
+            geo_beat: itm.geo_beat,
+            geo_report_area: itm.geo_report_area,
+            x: itm.x_wgs,
+            y: itm.y_wgs,
+            offense_short_description: itm.offense_short_description,
+            offense_long_description: itm.offense_long_description,
+            offense_code: itm.offense_code,
+            offense_group_code: itm.offense_group_code,
+            offense_group_level: itm.offense_group_level,
+            offense_group_short_description: itm.offense_group_short_description,
+          };
+        });
+      })
+      .then(results => {
+        return results
+        .filter((item) => {
+          let keep = true;
+          if (after || before) {
+            const date1 = new Date(item.date_occurred);
+            if (after && date1 < new Date(`${after} 00:00:00 GMT-0500`)) {
+              keep = false;
+            }
+            if (keep && before && date1 > new Date(`${before} 00:00:00 GMT-0500`)) {
+              keep = false;
+            }
+          }
+          return keep;
+        });
+      })
+      .catch((err) => {
+        if (err) {
+          console.log(`Got an error in crimes_by_neighborhood: ${JSON.stringify(err)}`);
+          throw new Error(err);
+        }
+      });
+    },
     crimes(obj, args, context) {
       const pool = context.pool;
       const ids = args.incident_ids;

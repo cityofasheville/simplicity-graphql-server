@@ -228,6 +228,64 @@ const resolvers = {
         }
       });
     },
+    permits_by_neighborhood(obj, args, context) {
+      const pool = context.pool;
+      const before = args.before;
+      const after = args.after;
+      const ids = args.nbrhd_ids;
+      if (ids.length <= 0) return [];
+      const query = 'SELECT * FROM amd.get_permits_by_neighborhood($1)';
+      const fargs = [
+        ids,
+      ];
+      return pool.query(query, fargs)
+      .then(result => {
+        if (result.rows.length === 0) return [];
+        return result.rows.map(itm => {
+          return {
+            permit_number: itm.permit_num,
+            permit_group: itm.permit_group,
+            permit_type: itm.permit_type,
+            permit_subtype: itm.permit_subtype,
+            permit_category: itm.permit_category,
+            permit_description: itm.permit_description,
+            applicant_name: itm.applicant_name,
+            applied_date: itm.applied_date,
+            status_current: itm.status_current,
+            status_date: itm.status_date,
+            civic_address_id: itm.civic_address_id,
+            address: itm.address,
+            x: itm.x,
+            y: itm.y,
+            contractor_name: itm.contractor_name,
+            contractor_license_number: itm.contractor_license_number,
+            comments: [],
+          };
+        });
+      })
+      .then(results => {
+        return results
+        .filter((item) => {
+          let keep = true;
+          if (after || before) {
+            const date1 = new Date(item.applied_date);
+            if (after && date1 < new Date(`${after} 00:00:00 GMT-0500`)) {
+              keep = false;
+            }
+            if (keep && before && date1 > new Date(`${before} 00:00:00 GMT-0500`)) {
+              keep = false;
+            }
+          }
+          return keep;
+        });
+      })
+      .catch((err) => {
+        if (err) {
+          console.log(`Got an error in permits_by_neighborhood: ${JSON.stringify(err)}`);
+          throw new Error(err);
+        }
+      });
+    },
     firstReviewSLAItems(obj, args, context) {
       const pool = context.pool;
       return pool.query(
