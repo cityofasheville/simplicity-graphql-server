@@ -37,6 +37,13 @@ const schema = `
     centerline_ids: [Float]!    
   }
 
+  type OwnerResult implements SearchResult {
+    score: Int!
+    type: String!
+    name: String
+    pinnums: [String]
+  }
+  
   type NeighborhoodResult implements SearchResult {
     score: Int!
     type: String!
