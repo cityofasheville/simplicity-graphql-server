@@ -217,4 +217,11 @@ query {
     civic_address_id
   }
 
+query {
+  permits_by_neighborhood (nbrhd_ids: ["NBHD34"], after: "2017-01-01") {
+    address
+    applied_date
+  }
+}
+
 }

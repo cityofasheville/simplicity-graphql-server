@@ -164,7 +164,7 @@ const resolvers = {
       })
       .catch((err) => {
         if (err) {
-          console.log(`Got an error in crimes_by_street: ${JSON.stringify(err)}`);
+          console.log(`Got an error in crimes_by_neighborhood: ${JSON.stringify(err)}`);
           throw new Error(err);
         }
       });
