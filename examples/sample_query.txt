@@ -192,6 +192,20 @@ query {
     }
   }
 
+query {
+	search(searchString: "Jackson philip", searchContexts: ["owner"]) {
+    type
+    results {
+      type
+      ... on OwnerResult {
+        name
+        pinnums
+      }
+    }
+  }
+}
+
+
   mda_address (id: 11111) {
     street_name
   }
