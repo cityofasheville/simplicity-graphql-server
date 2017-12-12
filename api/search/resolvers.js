@@ -67,7 +67,7 @@ function searchPin(searchString, context) {
 
 function searchNeighborhood(searchString, context) {
   const myQuery = 'SELECT name, nbhd_id, abbreviation, narrative FROM amd.coa_asheville_neighborhoods '
-  + `where name ILIKE '%${searchString}%'`;
+  + `where name ILIKE '%${searchString}%' AND narrative IN ('Active', 'In transition')`;
   console.log(`QUERY: ${myQuery}`);
   return context.pool.query(myQuery)
   .then(result => {

@@ -7,6 +7,19 @@
   }
 }
 
+{
+  search(searchString: "mo", searchContexts: ["neighborhood"]) {
+    results {
+      type
+      ... on NeighborhoodResult {
+        name
+        nbhd_id
+        abbreviation
+      }
+    }
+  }
+}
+
 query {
   search (searchString: "60 N. Market St apt 503", searchContexts: ["address"]) {
 		type
