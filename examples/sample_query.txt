@@ -113,6 +113,16 @@ query {
 }
 
 query {
+	crimes_by_neighborhood (nbrhd_ids: ["NBHD34"]) {
+    x, 
+    y,
+    incident_id,
+    offense_long_description
+    address
+  }
+}
+
+query {
 	crimes_by_street (centerline_ids: [
    9648296918, 9648198882
   ], radius: 100, after: "2016-12-01") {
