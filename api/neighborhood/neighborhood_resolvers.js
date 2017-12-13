@@ -1,3 +1,4 @@
+const convertToPolygons = require('../common/convert_to_polygons').convertToPolgyons;
 
 const resolvers = {
   Query: {
@@ -8,20 +9,21 @@ const resolvers = {
       const idList = ids.map(p => {
         return `'${p}'`;
       }).join(',');
-      const query = 'SELECT name, nbhd_id, abbreviation, narrative '
+      const query = 'SELECT name, nbhd_id, abbreviation, narrative, '
+      + 'st_astext(st_transform(shape, 4326)) AS polygon '
       + 'FROM amd.coa_asheville_neighborhoods '
       + `WHERE nbhd_id in (${idList})`;
-      console.log(`neighborhoods query: ${query}`);
       return pool.query(query)
       .then(result => {
         if (result.rows.length === 0) return [];
         return result.rows.map(itm => {
-          console.log(JSON.stringify(itm));
+          const p = convertToPolygons(itm.polygon);
           return {
             name: itm.name,
             nbhd_id: itm.nbhd_id,
             abbreviation: itm.abbreviation,
             narrative: itm.narrative,
+            polygon: (p && p.length > 0) ? p[0] : null,
           };
         });
       })
@@ -31,6 +33,9 @@ const resolvers = {
       });
     },
   },
+  Neighborhood: {
+    polygon(obj) { return obj.polygon; },
+  }
 };
 
 module.exports = resolvers;

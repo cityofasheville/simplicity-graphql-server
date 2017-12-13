@@ -4,5 +4,6 @@ type Neighborhood {
   nbhd_id: String
   abbreviation: String
   narrative: String
+  polygon: Polygon
 }
 `;

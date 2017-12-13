@@ -15,6 +15,24 @@
         name
         nbhd_id
         abbreviation
+        polygon {
+          points {
+            x
+            y
+          }
+        }
+      }
+    }
+  }
+}
+
+{
+  neighborhoods(nbrhd_ids: ["NBHD34", "NBHD27"]) {
+    name
+    polygon {
+      points {
+        x
+        y
       }
     }
   }

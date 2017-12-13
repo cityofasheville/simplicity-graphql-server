@@ -50,6 +50,7 @@ const schema = `
     name: String!
     nbhd_id: String   
     abbreviation: String
+    polygon: Polygon
   }
 
   interface SearchResult {
