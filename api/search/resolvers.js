@@ -213,10 +213,11 @@ function searchProperty(searchString, geoCodeResponse, context) {
 }
 
 function searchStreet(searchContext, searchString, geoCodeResponse, context) {
+  const s = searchString.replace(/\./g, '').replace(/,/g, '').replace(/\s+/g, ' ');
   const fquery = 'SELECT centerline_id, full_street_name, lzip, rzip '
   + 'from amd.bc_street '
-  + `where full_street_name ILIKE ${searchString}`;
-
+  + `where full_street_name ILIKE '%${s}%'`;
+  console.log(fquery);
   const idMap = {};
   return context.pool.query(fquery)
   .then(result => {
