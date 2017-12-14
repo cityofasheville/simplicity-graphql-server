@@ -120,7 +120,7 @@ function searchOwner(searchString, context) {
           score: 0,
           type: 'owner',
           name: itm.formatted_owner_name,
-          pinnums: [itm.pinnum]
+          pinnums: [itm.pinnum],
         };
       } else {
         nameMap[itm.formatted_owner_name].pinnums.push(itm.pinnum);
@@ -207,6 +207,68 @@ function searchProperty(searchString, geoCodeResponse, context) {
   .catch((err) => {
     if (err) {
       console.log(`Got an error in property search: ${JSON.stringify(err)}`);
+      throw new Error(err);
+    }
+  });
+}
+
+function searchStreet(searchContext, searchString, geoCodeResponse, context) {
+  const fquery = 'SELECT centerline_id, full_street_name, lzip, rzip '
+  + 'from amd.bc_street '
+  + `where full_street_name ILIKE ${searchString}`;
+
+  const idMap = {};
+  return context.pool.query(fquery)
+  .then(result => {
+    const r = [];
+    result.rows.forEach(row => {
+      let idx = `${row.full_street_name}.${row.lzip}`;
+      if (!idMap.hasOwnProperty(idx)) {
+        idMap[idx] = {
+          score: 0,
+          type: 'street',
+          full_street_name: row.full_street_name,
+          zip_code: row.lzip,
+          centerline_ids: {},
+        };
+        idMap[idx].centerline_ids[row.centerline_id] = row.centerline_id;
+      } else {
+        idMap[idx].centerline_ids[row.centerline_id] = row.centerline_id;
+      }
+      if (row.lzip !== row.rzip) {
+        idx = `${row.full_street_name}.${row.rzip}`;
+        if (!idMap.hasOwnProperty(idx)) {
+          idMap[idx] = {
+            score: 0,
+            type: 'street',
+            full_street_name: row.full_street_name,
+            zip_code: row.rzip,
+            centerline_ids: {},
+          };
+          idMap[idx].centerline_ids[row.centerline_id] = row.centerline_id;
+        } else {
+          idMap[idx].centerline_ids[row.centerline_id] = row.centerline_id;
+        }
+      }
+    });
+    for (const k in idMap) {
+      if (idMap.hasOwnProperty(k)) {
+        idMap[k].centerline_ids = Object.keys(idMap[k].centerline_ids);
+        r.push(idMap[k]);
+      }
+    }
+    return r;
+  })
+  .then(clist => {
+    const result = {
+      type: 'street',
+      results: clist,
+    };
+    return Promise.resolve(result);
+  })
+  .catch((err) => {
+    if (err) {
+      console.log(`Got an error in street search: ${JSON.stringify(err)}`);
       throw new Error(err);
     }
   });
@@ -328,7 +390,7 @@ function performSearch(searchString, searchContext, geoCodeResponse, context) {
   } else if (searchContext === 'property') {
     return searchProperty(searchString, geoCodeResponse, context);
   } else if (searchContext === 'street') {
-    return searchAddress(searchContext, searchString, geoCodeResponse, context);
+    return searchStreet(searchContext, searchString, geoCodeResponse, context);
   } else if (searchContext === 'neighborhood') {
     return searchNeighborhood(searchString, context);
   } else if (searchContext === 'owner') {
@@ -421,11 +483,6 @@ const resolvers = {
   NeighborhoodResult: {
     polygon(obj) {
       return obj.polygon;
-      const p = convertToPolygons(obj.polygon);
-      if (p && p.length > 0) {
-        return null;
-      }
-      return p[0];
     },
   },
 
