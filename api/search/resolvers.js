@@ -213,13 +213,51 @@ function searchProperty(searchString, geoCodeResponse, context) {
 }
 
 function searchStreet(searchContext, searchString, geoCodeResponse, context) {
-  const s = searchString.replace(/\./g, '').replace(/,/g, '').replace(/\s+/g, ' ');
-  const fquery = 'SELECT centerline_id, full_street_name, lzip, rzip '
-  + 'from amd.bc_street '
-  + `where full_street_name ILIKE '%${s}%'`;
-  console.log(fquery);
+  if (geoCodeResponse.locName.length === 0) {
+    return Promise.resolve(
+      {
+        type: 'street',
+        results: [],
+      }
+    );
+  }
+  // console.log(JSON.stringify(geoCodeResponse));
+  // const nameList = geoCodeResponse.locName
+  // .filter((value, index, self) => {
+  //   return self.indexOf(value) === index;
+  // })
+  // .map(itm => `'${itm}'`)
+  // .join(',');
+
+  const nmap = {
+    test: {},
+    name: [],
+    city: [],
+    zip: [],
+  };
+  geoCodeResponse.locName.forEach((name, index) => {
+    const zip = geoCodeResponse.locZipcode[index];
+    const city = geoCodeResponse.locCity[index]
+    const test = `${name}-${zip}-${city}`;
+    if (!nmap.test.hasOwnProperty(test)) {
+      nmap.test[test] = true;
+      nmap.name.push(name);
+      nmap.city.push(city);
+      nmap.zip.push(zip);
+    }
+  });
+  const fquery = 'SELECT centerline_id, full_street_name, left_zipcode, right_zipcode '
+  + 'from amd.get_search_streets($1, $2) ';
+  const args = [
+    nmap.name,
+    nmap.zip,
+  ];
+
+  // const fquery = 'SELECT centerline_id, full_street_name, lzip, rzip '
+  // + 'from amd.bc_street '
+  // + `WHERE street_name IN (${nameList})`;
   const idMap = {};
-  return context.pool.query(fquery)
+  return context.pool.query(fquery, args)
   .then(result => {
     const r = [];
     result.rows.forEach(row => {
@@ -284,6 +322,7 @@ function searchAddress(searchContext, searchString, geoCodeResponse, context) {
       }
     );
   }
+  console.log('running searchaddress');
   const fquery = 'SELECT A.civicaddress_id, A.address_full, A.address_city, A.address_zipcode, '
   + 'A.address_number, A.address_unit, A.address_street_prefix, A.address_street_name, '
   + 'A.centerline_id, B.full_street_name, B.lzip, B.rzip '
@@ -400,10 +439,10 @@ function performSearch(searchString, searchContext, geoCodeResponse, context) {
   throw new Error(`Unknown search context ${searchContext}`);
 }
 
-function requestGeo(searchString) {
-  const maxCandidates = 500;
+function callGeocoder(searchString, searchContext = 'address') {
   const minCandidateScore = 50;
-  const geoLocator = 'BC_address_unit'; // BC_address_unit or BC_street_address
+  let geoLocator = 'BC_address_unit'; // BC_address_unit or BC_street_address
+  if (searchContext === 'street') geoLocator = 'bc_street_intersection';
   const baseLocator = `http://arcgis.ashevillenc.gov/arcgis/rest/services/Geolocators/${geoLocator}/GeocodeServer/findAddressCandidates`;
   const geolocatorUrl = `${baseLocator}?Street=&City=&ZIP=`
   + `&Single+Line+Input=${encodeURIComponent(searchString)}&category=`
@@ -413,38 +452,9 @@ function requestGeo(searchString) {
 
   return axios.get(geolocatorUrl, { timeout: 5000 })
   .then(response => {
-    const candidates = response.data.candidates.filter(c => {
+    return Promise.resolve(response.data.candidates.filter(c => {
       return (c.score >= minCandidateScore);
-    });
-    const result = {
-      locNumber: [],
-      locName: [],
-      locType: [],
-      locPrefix: [],
-      locUnit: [],
-      locZipcode: [],
-      locCity: [],
-    };
-    if (candidates.length === 0) {
-      return Promise.resolve(result);
-    }
-    candidates.forEach((c, i) => {
-      if (i < maxCandidates) {
-        result.locNumber.push(c.attributes.House);
-        result.locName.push(c.attributes.StreetName);
-        result.locType.push(c.attributes.SufType);
-        result.locPrefix.push(c.attributes.PreDir);
-        result.locUnit.push(c.attributes.SubAddrUnit);
-        result.locZipcode.push(c.attributes.ZIP);
-        if (c.attributes.City === null || c.attributes.City === '') {
-          // result.locCity.push('ASHE');
-          result.locCity.push(c.attributes.City);
-        } else {
-          result.locCity.push(c.attributes.City);
-        }
-      }
-    });
-    return Promise.resolve(result);
+    }));
   })
   .catch((err) => {
     if (err) {
@@ -454,18 +464,65 @@ function requestGeo(searchString) {
   });
 }
 
+function mergeGeocoderResults(candidateSet) {
+  const maxCandidates = 500;
+  console.log(`Length of candidateset: ${candidateSet.length}`);
+  const result = {
+    locNumber: [],
+    locName: [],
+    locType: [],
+    locPrefix: [],
+    locUnit: [],
+    locZipcode: [],
+    locCity: [],
+  };
+  let total = 0;
+  candidateSet.forEach((candidates, i) => {
+    console.log(`Work on candidateset ${i} of length ${candidates.length}`);
+    candidates.forEach((c) => {
+      ++total;
+      if (total < maxCandidates) {
+        result.locNumber.push(c.attributes.House);
+        result.locName.push(c.attributes.StreetName);
+        result.locType.push(c.attributes.SufType);
+        result.locPrefix.push(c.attributes.PreDir);
+        result.locUnit.push(c.attributes.SubAddrUnit);
+        result.locZipcode.push(c.attributes.ZIP);
+        if (c.attributes.City === null || c.attributes.City === '') {
+          result.locCity.push(c.attributes.City);
+        } else {
+          result.locCity.push(c.attributes.City);
+        }
+      }
+    });
+  });
+  return result;
+}
+
 const resolvers = {
   Query: {
     search(obj, args, context) {
       const searchString = args.searchString;
       const searchContexts = args.searchContexts;
-      let geoCodeResponse = Promise.resolve(null);
+      const geoCodeResponse = [];
+
       if (searchContexts.indexOf('address') >= 0 ||
        searchContexts.indexOf('property') >= 0 ||
        searchContexts.indexOf('street') >= 0) {
-        geoCodeResponse = requestGeo(searchString);
+        // geoCodeResponse.push(requestGeo(searchString, 'address'));
+        geoCodeResponse.push(callGeocoder(searchString, 'address'));
       }
-      return geoCodeResponse.then(result => {
+      if (searchContexts.indexOf('street') >= 0) {
+        // geoCodeResponse.push(requestGeo(searchString, 'street'));
+        geoCodeResponse.push(callGeocoder(searchString, 'street'));
+      }
+      if (geoCodeResponse.length === 0) geoCodeResponse.push(Promise.resolve(null));
+
+      return Promise.all(geoCodeResponse).then(results => {
+        console.log('Call mergeGeocoderResults');
+        const result = mergeGeocoderResults(results);
+        console.log('back from mergeGeocoderResults');
+        // console.log(JSON.stringify(result));
         return Promise.all(searchContexts.map((searchContext) => {
           console.log(`Perform search for context ${searchContext}`);
           const ret = performSearch(searchString, searchContext, result, context);
