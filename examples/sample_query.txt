@@ -74,6 +74,21 @@ query {
 }
 
 query {
+  search (searchString: " Market", searchContexts: ["street"]) {
+		type
+    results {
+      type
+      score
+      ... on StreetResult {
+        type
+        centerline_ids
+        full_street_name
+      }
+    }
+  }
+}
+
+query {
   search (searchString: "Ox Creek", searchContexts: ["street"]) {
 		type
     results {
