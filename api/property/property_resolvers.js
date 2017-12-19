@@ -64,7 +64,6 @@ const resolvers = {
         ids,
         radius,
       ];
-      console.log('here');
       return pool.query(query, fargs)
       .then(result => {
         if (result.rows.length === 0) return [];
