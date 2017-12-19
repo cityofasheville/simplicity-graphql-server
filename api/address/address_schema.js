@@ -17,7 +17,8 @@ type Address {
   recycling_pickup_day: String,
   centerline_id: String
   pinnum: String
-  pinnumext: String
+  pin: String
+  pinext: String
   owner_name: String
   owner_address: String
   owner_cityname: String

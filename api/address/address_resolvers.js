@@ -64,7 +64,7 @@ const resolvers = {
       + 'lattitude, longitude, '
       + 'trash_pickup_day, recycling_pickup_district, recycling_pickup_day, '
       + 'zoning, owner_name, owner_address, owner_cityname, owner_state, '
-      + 'owner_zipcode, property_pin, property_pinext, centerline_id, jurisdiction_type '
+      + 'owner_zipcode, property_pinnum, property_pin, property_pinext, centerline_id, jurisdiction_type '
       + `FROM amd.coa_bc_address_master WHERE centerline_id in (${idList}) `;
       return pool.query(query)
       .then((result) => {
@@ -88,8 +88,9 @@ const resolvers = {
             recycling_pickup_district: itm.recycling_pickup_district,
             recycling_pickup_day: itm.recycling_pickup_day,
             centerline_id: itm.centerline_id,
-            pinnum: itm.property_pin,
-            pinnumext: itm.property_pinext,
+            pinnum: itm.property_pinnum,
+            pin: itm.property_pin,
+            pinext: itm.property_pinext,
             owner_name: itm.owner_name,
             owner_address: itm.owner_address,
             owner_cityname: itm.owner_cityname,
