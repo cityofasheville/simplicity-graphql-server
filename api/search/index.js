@@ -23,10 +23,12 @@ const schema = `
     score: Int!
     type: String!
     pinnum: String
-    pinnumext: String
+    pin: String
+    pinext: String
     address: String
     city: String
     zipcode: String
+    civic_address_id: String
   }
 
   type StreetResult implements SearchResult {

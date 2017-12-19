@@ -179,23 +179,43 @@ function searchProperty(searchString, geoCodeResponse, context) {
       return `'${row.property_pinnum}'`;
     }).join(',');
 
-    const pQuery = 'SELECT pin, pinext, address, cityname, zipcode FROM amd.bc_property '
-    + `WHERE pinnum IN (${pinList})`;
+    const pQuery = 'SELECT pin, pinext, pinnum, address, cityname, '
+    + 'zipcode, civicaddress_id '
+    + 'FROM amd.v_simplicity_properties '
+        + `WHERE pinnum IN (${pinList})`;
     return context.pool.query(pQuery)
     .then(props => {
       return props.rows.map(row => {
         return {
           score: 0,
           type: 'property',
-          pinnum: row.pin,
-          pinnumext: row.pinext,
+          pinnum: row.pinnum,
+          pin: row.pin,
+          pinext: row.pinext,
           address: row.address,
-          city: row.city,
+          city: row.cityname,
           zipcode: row.zipcode,
+          civicaddress_id: row.civicaddress_id,
         };
       });
-    })
-    ;
+    });
+
+    // const pQuery = 'SELECT pin, pinext, address, cityname, zipcode FROM amd.bc_property '
+    // + `WHERE pinnum IN (${pinList})`;
+    // return context.pool.query(pQuery)
+    // .then(props => {
+    //   return props.rows.map(row => {
+    //     return {
+    //       score: 0,
+    //       type: 'property',
+    //       pinnum: row.pin,
+    //       pinnumext: row.pinext,
+    //       address: row.address,
+    //       city: row.city,
+    //       zipcode: row.zipcode,
+    //     };
+    //   });
+    // });
   })
   .then(clist => {
     const result = {
