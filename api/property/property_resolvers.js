@@ -22,7 +22,7 @@ const resolvers = {
         return result.rows.map(itm => {
           const taxExempt = (itm.exempt !== '');
           return {
-            civic_address_id: itm.civicaddress_id,
+            civic_address_ids: [itm.civicaddress_id],
             pinnum: itm.pin,
             pinnumext: itm.pinext,
             address: itm.address,

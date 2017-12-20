@@ -211,6 +211,34 @@ query {
   }
 }
 
+WITH HOLES
+{
+	properties(pins: ["964902050600000"]) {
+    civic_address_id
+    pinnum
+    pinnumext
+    address
+    city
+    zipcode
+    tax_exempt
+		neighborhood
+    appraisal_area
+    acreage
+    zoning
+    deed_link
+    latitude
+    longitude
+    building_value
+    appraised_value
+    market_value
+    plat_link
+    property_card_link
+    tax_value
+    owner
+    owner_address
+  }
+}
+
 {
   version
   search(searchString: "11111", searchContexts: ["civicAddressId"]) {
