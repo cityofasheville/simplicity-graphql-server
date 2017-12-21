@@ -71,7 +71,7 @@ const resolvers = {
           const taxExempt = (itm.exempt !== '');
           // console.log(`Got the ${itm.pinnum} geom: ${itm.polygon}`);
           return {
-            civic_address_id: itm.civicaddress_id,
+            civic_address_ids: [itm.civicaddress_id],
             pinnum: itm.pin,
             pinnumext: itm.pinext,
             address: itm.address,
