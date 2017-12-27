@@ -57,7 +57,6 @@ const resolvers = {
       }).join(',');
       const query = 'SELECT * FROM amd.v_simplicity_properties '
       + `WHERE pinnum in (${pinList})`;
-      console.log(`properties query: ${query}`);
       return pool.query(query)
       .then(result => {
         return prepareProperties(result.rows);
@@ -91,8 +90,8 @@ const resolvers = {
   },
   Property: {
     polygons(obj) {
-      console.log(`POLYGON: ${obj.polygon}`);
-      return convertToPolygons(obj.polygon);
+      const p = convertToPolygons(obj.polygon);
+      return p;
     },
   },
 };

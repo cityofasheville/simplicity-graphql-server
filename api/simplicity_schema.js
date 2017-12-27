@@ -4,8 +4,14 @@ const baseSchema = `
     x: Float
     y: Float
   }
-  type Polygon {
+
+  type SimplePolygon {
     points: [Point]
+  }
+
+  type Polygon {
+    outer: SimplePolygon
+    holes: [SimplePolygon]
   }
   
   extend type Query {

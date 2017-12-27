@@ -7,9 +7,16 @@ const resolvers = {
     x(obj) {return obj.x;},
     y(obj) {return obj.y;},
   },
-  Polygon: {
-    points(obj) { return obj.points; },
+  SimplePolygon: {
+    points(obj) {
+      return obj.points;
+    },
   },
+  Polygon: {
+    outer(obj) { return obj.outer; },
+    holes(obj) { return obj.holes; },
+  },
+
 };
 module.exports = merge(resolvers,
   require('./search/resolvers'),
