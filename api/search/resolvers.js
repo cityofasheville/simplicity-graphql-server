@@ -187,7 +187,6 @@ function searchProperty(searchString, geoCodeResponse, context) {
     return context.pool.query(pQuery)
     .then(props => {
       return props.rows.map(row => {
-        console.log(`Sending back pin: ${row.pin}, pinnum: ${row.pinnum}`);
         return {
           score: 0,
           type: 'property',
