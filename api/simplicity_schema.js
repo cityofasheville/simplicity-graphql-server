@@ -18,6 +18,7 @@ const baseSchema = `
     search ( searchString: String!, searchContexts: [String] ): [TypedSearchResult]!
     addresses (civicaddress_ids: [String]! ): [Address]
     addresses_by_street (centerline_ids: [Float]): [Address]
+    addresses_by_neighborhood (nbrhd_ids: [String]): [Address]
     properties_by_street (centerline_ids: [Float], radius: Int): [Property]
     properties (pins: [String]!): [Property]
     streets (centerline_ids: [Float]): [Street]
