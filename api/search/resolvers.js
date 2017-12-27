@@ -73,7 +73,6 @@ function searchNeighborhood(searchString, context) {
   + 'st_astext(st_transform(shape, 4326)) AS polygon '
   + 'FROM amd.coa_asheville_neighborhoods '
   + `where name ILIKE '%${searchString}%' AND narrative IN ('Active', 'In transition')`;
-  console.log(myQuery);
   return context.pool.query(myQuery)
   .then(result => {
     if (result.rows.length === 0) return { type: 'neighborhood', results: [] };
@@ -113,7 +112,7 @@ function searchOwner(searchString, context) {
   });
   return context.pool.query(query)
   .then(result => {
-    if (result.rows.length === 0) return { type: 'neighborhood', results: [] };
+    if (result.rows.length === 0) return { type: 'owner', results: [] };
     const nameMap = {};
     result.rows.forEach(itm => {
       if (!nameMap.hasOwnProperty(itm.formatted_owner_name)) {
@@ -487,7 +486,6 @@ function callGeocoder(searchString, searchContext = 'address') {
 
 function mergeGeocoderResults(candidateSet) {
   const maxCandidates = 500;
-  console.log(`Length of candidateset: ${candidateSet.length}`);
   const result = {
     locNumber: [],
     locName: [],
@@ -497,26 +495,27 @@ function mergeGeocoderResults(candidateSet) {
     locZipcode: [],
     locCity: [],
   };
-  let total = 0;
-  candidateSet.forEach((candidates, i) => {
-    console.log(`Work on candidateset ${i} of length ${candidates.length}`);
-    candidates.forEach((c) => {
-      ++total;
-      if (total < maxCandidates) {
-        result.locNumber.push(c.attributes.House);
-        result.locName.push(c.attributes.StreetName);
-        result.locType.push(c.attributes.SufType);
-        result.locPrefix.push(c.attributes.PreDir);
-        result.locUnit.push(c.attributes.SubAddrUnit);
-        result.locZipcode.push(c.attributes.ZIP);
-        if (c.attributes.City === null || c.attributes.City === '') {
-          result.locCity.push(c.attributes.City);
-        } else {
-          result.locCity.push(c.attributes.City);
+  if (candidateSet.length > 0 && candidateSet[0] !== null) {
+    let total = 0;
+    candidateSet.forEach((candidates, i) => {
+      candidates.forEach((c) => {
+        ++total;
+        if (total < maxCandidates) {
+          result.locNumber.push(c.attributes.House);
+          result.locName.push(c.attributes.StreetName);
+          result.locType.push(c.attributes.SufType);
+          result.locPrefix.push(c.attributes.PreDir);
+          result.locUnit.push(c.attributes.SubAddrUnit);
+          result.locZipcode.push(c.attributes.ZIP);
+          if (c.attributes.City === null || c.attributes.City === '') {
+            result.locCity.push(c.attributes.City);
+          } else {
+            result.locCity.push(c.attributes.City);
+          }
         }
-      }
+      });
     });
-  });
+  }
   return result;
 }
 

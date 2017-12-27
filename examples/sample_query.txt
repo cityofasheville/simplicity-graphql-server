@@ -8,6 +8,28 @@
 }
 
 {
+  properties(pins: ["964902050600000"]) {
+    pinnum
+    civic_address_ids
+    address
+    owner_address
+    polygons {
+      outer {
+        points {
+          x
+          y
+        }
+      }
+      holes {
+        points {
+          x
+          y
+        }
+      }
+    }
+  }
+}
+{
   search(searchString: "mo", searchContexts: ["neighborhood"]) {
     results {
       type
@@ -16,9 +38,16 @@
         nbhd_id
         abbreviation
         polygon {
-          points {
-            x
-            y
+          outer {
+            points {
+              x
+              y
+            }
+          }
+          holes {
+            points {
+              x
+            }
           }
         }
       }
@@ -30,10 +59,12 @@
   neighborhoods(nbrhd_ids: ["NBHD34", "NBHD27"]) {
     name
     polygon {
-      points {
-        x
-        y
-      }
+      outer {
+      	points {
+          x
+          y
+        }
+    	}
     }
   }
 }
