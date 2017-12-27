@@ -35,7 +35,7 @@ function searchCivicAddressId(searchString, context) {
 }
 
 function searchPin(searchString, context) {
-  const myQuery = 'SELECT pin, pinext, address, cityname, zipcode FROM amd.bc_property '
+  const myQuery = 'SELECT pin, pinnum, pinext, address, cityname, zipcode FROM amd.bc_property '
   + `where cast(pin as TEXT) = '${searchString}' OR `
   + `cast(pinnum as TEXT) = '${searchString}' limit 5`;
 
@@ -49,7 +49,8 @@ function searchPin(searchString, context) {
         return {
           score: 0,
           type: 'pin',
-          pinnum: row.pin,
+          pinnum: row.pinnum,
+          pin: row.pin,
           pinnumext: row.pinext,
           address: row.address,
           city: row.city,
@@ -186,6 +187,7 @@ function searchProperty(searchString, geoCodeResponse, context) {
     return context.pool.query(pQuery)
     .then(props => {
       return props.rows.map(row => {
+        console.log(`Sending back pin: ${row.pin}, pinnum: ${row.pinnum}`);
         return {
           score: 0,
           type: 'property',
