@@ -20,6 +20,7 @@ const baseSchema = `
     addresses_by_street (centerline_ids: [Float]): [Address]
     addresses_by_neighborhood (nbrhd_ids: [String]): [Address]
     properties_by_street (centerline_ids: [Float], radius: Int): [Property]
+    properties_by_neighborhood (nbrhd_ids: [String]): [Property]
     properties (pins: [String]!): [Property]
     streets (centerline_ids: [Float]): [Street]
     neighborhoods (nbrhd_ids: [String]): [Neighborhood]

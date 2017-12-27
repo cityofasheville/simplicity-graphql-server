@@ -87,6 +87,25 @@ const resolvers = {
         }
       });
     },
+    properties_by_neighborhood(obj, args, context) {
+      const pool = context.pool;
+      const ids = args.nbrhd_ids;
+      if (ids.length <= 0) return [];
+      const query = 'SELECT * FROM amd.get_properties_by_neighborhood($1)';
+      const fargs = [
+        ids,
+      ];
+      return pool.query(query, fargs)
+      .then(result => {
+        return prepareProperties(result.rows);
+      })
+      .catch((err) => {
+        if (err) {
+          console.log(`Got an error in properties_by_neighborhood: ${JSON.stringify(err)}`);
+          throw new Error(err);
+        }
+      });
+    },
   },
   Property: {
     polygons(obj) {
