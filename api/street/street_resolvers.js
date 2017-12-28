@@ -12,12 +12,10 @@ const resolvers = {
       const query = 'SELECT centerline_id, full_street_name, left_zipcode, right_zipcode, line '
       + 'FROM amd.v_simplicity_streets '
       + `WHERE centerline_id in (${idList})`;
-      console.log(`properties query: ${query}`);
       return pool.query(query)
       .then(result => {
         if (result.rows.length === 0) return [];
         return result.rows.map(itm => {
-          console.log(JSON.stringify(itm));
           return {
             centerline_id: itm.centerline_id,
             address: itm.full_street_name,
