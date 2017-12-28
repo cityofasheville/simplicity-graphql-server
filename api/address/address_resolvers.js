@@ -18,7 +18,7 @@ function prepareAddresses(rows) {
       recycling_pickup_district: itm.recycling_pickup_district,
       recycling_pickup_day: itm.recycling_pickup_day,
       centerline_id: itm.centerline_id,
-      pinnum: itm.property_pinnum,
+      pinnum: itm.property_pin + itm.property_pinext,
       pin: itm.property_pin,
       pinext: itm.property_pinext,
       owner_name: itm.owner_name,
