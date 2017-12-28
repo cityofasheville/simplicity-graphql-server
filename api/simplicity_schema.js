@@ -37,6 +37,7 @@ const baseSchema = `
     permits_by_address(civicaddress_id: Int!, radius: Int, after: String, before: String): [Permit]
     permits_by_street(centerline_ids: [Float], radius: Int, after: String, before: String): [Permit]
     permits_by_neighborhood(nbrhd_ids: [String], after: String, before: String): [Permit]
+    cip_projects(names: [String], categories: [String], zipcodes: [String]): [CIPProject]
     projects (status: [String], priority: [String], reqtype: String, after: String, before: String): [ITProject]
   }
 `;
@@ -48,6 +49,7 @@ const developmentSchema = require('./development/development_schema');
 const itProjectSchema = require('./internal');
 const streetSchema = require('./street/street_schema');
 const neighborhoodSchema = require('./neighborhood/neighborhood_schema');
+const cipSchema = require('./cip/cip_schema');
 
 const schema = [
   baseSchema,
@@ -60,6 +62,7 @@ const schema = [
   propertySchema,
   neighborhoodSchema,
   searchSchema,
+  cipSchema,
 ];
 
 module.exports = schema;

@@ -27,5 +27,6 @@ module.exports = merge(resolvers,
   require('./property/property_resolvers'),
   require('./development/development_resolvers'),
   require('./crime/crime_resolvers'),
-  require('./budget/budget_resolvers')
+  require('./budget/budget_resolvers'),
+  require('./cip/cip_resolvers')
 );
