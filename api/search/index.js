@@ -55,6 +55,16 @@ const schema = `
     polygon: Polygon
   }
 
+  type PlaceResult implements SearchResult {
+    score: Int!
+    type: String!
+    name: String
+    address: String
+    id: String
+    place_id: String
+    types: [String]
+  }
+
   interface SearchResult {
     type: String!
     score: Int!
