@@ -1,5 +1,4 @@
-const axios = require('axios');
-
+const { callGeocoder, mergeGeocoderResults } = require('./geocoder');
 const searchCivicAddressId = require('./contexts/searchCivicAddressId');
 const searchPin = require('./contexts/searchPin');
 const searchNeighborhood = require('./contexts/searchNeighborhood');
@@ -31,91 +30,25 @@ function performSearch(searchString, searchContext, geoCodeResponse, context) {
   throw new Error(`Unknown search context ${searchContext}`);
 }
 
-function callGeocoder(searchString, searchContext = 'address') {
-  const minCandidateScore = 50;
-  let geoLocator = 'BC_address_unit'; // BC_address_unit or BC_street_address
-  if (searchContext === 'street') geoLocator = 'bc_street_intersection';
-  const baseLocator = `http://arcgis.ashevillenc.gov/arcgis/rest/services/Geolocators/${geoLocator}/GeocodeServer/findAddressCandidates`;
-  const geolocatorUrl = `${baseLocator}?Street=&City=&ZIP=`
-  + `&Single+Line+Input=${encodeURIComponent(searchString)}&category=`
-  + '&outFields=House%2C+PreDir%2C+StreetName%2C+SufType%2C+SubAddrUnit%2C+City%2C+ZIP'
-  + '&maxLocations=&outSR=&searchExtent='
-  + '&location=&distance=&magicKey=&f=pjson';
-
-  return axios.get(geolocatorUrl, { timeout: 5000 })
-  .then(response => {
-    return Promise.resolve(response.data.candidates.filter(c => {
-      return (c.score >= minCandidateScore);
-    }));
-  })
-  .catch((err) => {
-    if (err) {
-      console.log(`Got an error in geocoder lookup: ${JSON.stringify(err)}`);
-      throw new Error(err);
-    }
-  });
-}
-
-function mergeGeocoderResults(candidateSet) {
-  const maxCandidates = 500;
-  const result = {
-    locNumber: [],
-    locName: [],
-    locType: [],
-    locPrefix: [],
-    locUnit: [],
-    locZipcode: [],
-    locCity: [],
-  };
-  if (candidateSet.length > 0 && candidateSet[0] !== null) {
-    let total = 0;
-    candidateSet.forEach((candidates, i) => {
-      candidates.forEach((c) => {
-        ++total;
-        if (total < maxCandidates) {
-          result.locNumber.push(c.attributes.House);
-          result.locName.push(c.attributes.StreetName);
-          result.locType.push(c.attributes.SufType);
-          result.locPrefix.push(c.attributes.PreDir);
-          result.locUnit.push(c.attributes.SubAddrUnit);
-          result.locZipcode.push(c.attributes.ZIP);
-          if (c.attributes.City === null || c.attributes.City === '') {
-            result.locCity.push(c.attributes.City);
-          } else {
-            result.locCity.push(c.attributes.City);
-          }
-        }
-      });
-    });
-  }
-  return result;
-}
-
 const resolvers = {
   Query: {
     search(obj, args, context) {
-      const searchString = args.searchString;
-      const searchContexts = args.searchContexts;
       const geoCodeResponse = [];
 
-      if (searchContexts.indexOf('address') >= 0 ||
-       searchContexts.indexOf('property') >= 0 ||
-       searchContexts.indexOf('street') >= 0) {
-        // geoCodeResponse.push(requestGeo(searchString, 'address'));
-        geoCodeResponse.push(callGeocoder(searchString, 'address'));
+      if (args.searchContexts.indexOf('address') >= 0 ||
+          args.searchContexts.indexOf('property') >= 0 ||
+          args.searchContexts.indexOf('street') >= 0) {
+        geoCodeResponse.push(callGeocoder(args.searchString, 'address'));
       }
-      if (searchContexts.indexOf('street') >= 0) {
-        // geoCodeResponse.push(requestGeo(searchString, 'street'));
-        geoCodeResponse.push(callGeocoder(searchString, 'street'));
+      if (args.searchContexts.indexOf('street') >= 0) {
+        geoCodeResponse.push(callGeocoder(args.searchString, 'street'));
       }
       if (geoCodeResponse.length === 0) geoCodeResponse.push(Promise.resolve(null));
 
       return Promise.all(geoCodeResponse).then(results => {
         const result = mergeGeocoderResults(results);
-        // console.log(JSON.stringify(result));
-        return Promise.all(searchContexts.map((searchContext) => {
-          console.log(`Perform search for context ${searchContext}`);
-          const ret = performSearch(searchString, searchContext, result, context);
+        return Promise.all(args.searchContexts.map((searchContext) => {
+          const ret = performSearch(args.searchString, searchContext, result, context);
           return ret;
         }));
       })
