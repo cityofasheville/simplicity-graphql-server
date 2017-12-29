@@ -7,15 +7,18 @@ function prepareProperties(rows) {
     const taxExempt = (itm.exempt !== '');
     if (pinMap.hasOwnProperty(itm.pinnum)) {
       pinMap[itm.pinnum].civic_address_ids.push(itm.civicaddress_id);
+      pinMap[itm.pinnum].address.push(itm.address);
+      pinMap[itm.pinnum].city.push(itm.cityname);
+      pinMap[itm.pinnum].zipcode.push(itm.zipcode);
     } else {
       pinMap[itm.pinnum] = {
         civic_address_ids: [itm.civicaddress_id],
         pinnum: itm.pinnum,
         pin: itm.pin,
         pinext: itm.pinext,
-        address: itm.address,
-        city: itm.cityname,
-        zipcode: itm.zipcode,
+        address: [itm.address],
+        city: [itm.cityname],
+        zipcode: [itm.zipcode],
         tax_exempt: taxExempt,
         neighborhood: itm.neighborhoodcode,
         appraisal_area: itm.appraisalarea,
