@@ -33,12 +33,11 @@ function prepareAddresses(rows) {
 const resolvers = {
   Query: {
     addresses(obj, args, context) {
-      const pool = context.pool;
-      const ids = args.civicaddress_ids;
-      if (ids.length <= 0) return [];
-
       const query = 'SELECT * FROM amd.v_simplicity_addresses WHERE civicaddress_id = ANY ($1)';
-      return pool.query(query, [ids])
+
+      if (args.civicaddress_ids.length <= 0) return [];
+
+      return context.pool.query(query, [args.civicaddress_ids])
       .then((result) => {
         return prepareAddresses(result.rows);
       })
@@ -47,14 +46,11 @@ const resolvers = {
       });
     },
     addresses_by_neighborhood(obj, args, context) {
-      const pool = context.pool;
-      const ids = args.nbrhd_ids;
-      if (ids.length <= 0) return [];
       const query = 'SELECT * FROM amd.get_addresses_by_neighborhood($1)';
-      const fargs = [
-        ids,
-      ];
-      return pool.query(query, fargs)
+
+      if (args.nbrhd_ids.length <= 0) return [];
+
+      return context.pool.query(query, [args.nbrhd_ids])
       .then(result => {
         return prepareAddresses(result.rows);
       })
@@ -64,11 +60,9 @@ const resolvers = {
     },
 
     addresses_by_street(obj, args, context) {
-      const pool = context.pool;
-      const ids = args.centerline_ids;
-      if (ids.length <= 0) return [];
+      if (args.centerline_ids.length <= 0) return [];
       const query = 'SELECT * FROM amd.v_simplicity_addresses WHERE centerline_id = ANY ($1)';
-      return pool.query(query, [ids])
+      return context.pool.query(query, [args.centerline_ids])
       .then((result) => {
         return prepareAddresses(result.rows);
       })
