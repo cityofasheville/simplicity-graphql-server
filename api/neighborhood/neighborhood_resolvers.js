@@ -3,17 +3,11 @@ const convertToPolygons = require('../common/convert_to_polygons').convertToPolg
 const resolvers = {
   Query: {
     neighborhoods(obj, args, context) {
-      const pool = context.pool;
-      const ids = args.nbrhd_ids;
-      if (ids.length <= 0) return [];
-      const idList = ids.map(p => {
-        return `'${p}'`;
-      }).join(',');
+      if (args.nbrhd_ids.length <= 0) return [];
       const query = 'SELECT name, nbhd_id, abbreviation, narrative, '
       + 'st_astext(st_transform(shape, 4326)) AS polygon '
-      + 'FROM amd.coa_asheville_neighborhoods '
-      + `WHERE nbhd_id in (${idList})`;
-      return pool.query(query)
+      + 'FROM amd.coa_asheville_neighborhoods WHERE nbhd_id = ANY ($1)';
+      return context.pool.query(query, [args.nbrhd_ids])
       .then(result => {
         if (result.rows.length === 0) return [];
         return result.rows.map(itm => {

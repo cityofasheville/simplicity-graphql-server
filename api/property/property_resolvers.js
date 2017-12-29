@@ -52,15 +52,10 @@ function prepareProperties(rows) {
 const resolvers = {
   Query: {
     properties(obj, args, context) {
-      const pool = context.pool;
-      const pins = args.pins;
-      if (pins.length <= 0) return [];
-      const pinList = pins.map(p => {
-        return `'${p}'`;
-      }).join(',');
+      if (args.pins.length <= 0) return [];
       const query = 'SELECT * FROM amd.v_simplicity_properties '
-      + `WHERE pinnum in (${pinList})`;
-      return pool.query(query)
+      + 'WHERE pinnum = ANY ($1)';
+      return context.pool.query(query, [args.pins])
       .then(result => {
         return prepareProperties(result.rows);
       })
@@ -70,16 +65,10 @@ const resolvers = {
       });
     },
     properties_by_street(obj, args, context) {
-      const pool = context.pool;
       const radius = (args.radius) ? Number(args.radius) : 100; // State plane units are feet
-      const ids = args.centerline_ids;
-      if (ids.length <= 0) return [];
+      if (args.centerline_ids.length <= 0) return [];
       const query = 'SELECT * FROM amd.get_properties_along_streets($1, $2)';
-      const fargs = [
-        ids,
-        radius,
-      ];
-      return pool.query(query, fargs)
+      return context.pool.query(query, [args.centerline_ids, radius])
       .then(result => {
         return prepareProperties(result.rows);
       })
@@ -91,14 +80,9 @@ const resolvers = {
       });
     },
     properties_by_neighborhood(obj, args, context) {
-      const pool = context.pool;
-      const ids = args.nbrhd_ids;
-      if (ids.length <= 0) return [];
+      if (args.nbrhd_ids.length <= 0) return [];
       const query = 'SELECT * FROM amd.get_properties_by_neighborhood($1)';
-      const fargs = [
-        ids,
-      ];
-      return pool.query(query, fargs)
+      return context.pool.query(query, [args.nbrhd_ids])
       .then(result => {
         return prepareProperties(result.rows);
       })
