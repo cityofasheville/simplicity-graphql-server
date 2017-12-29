@@ -1,3 +1,16 @@
+const ToAdd = `
+CIPProjectBudget {
+  account_status: String
+  account_type: String
+  actuals2011: Float
+  actuals2012: Float
+  actuals2013: Float
+  actuals2014: Float
+  actuals2015: Float
+  actuals2016: Float
+  actuals2017: Float
+  actuals2018: Float
+}`;
 module.exports = `
 type CIPProject {
   gis_id: String
@@ -37,3 +50,4 @@ type CIPProject {
   contact: String
 }
 `;
+

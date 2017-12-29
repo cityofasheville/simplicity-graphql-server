@@ -36,13 +36,9 @@ const resolvers = {
       const pool = context.pool;
       const ids = args.civicaddress_ids;
       if (ids.length <= 0) return [];
-      const idList = ids.map(id => {
-        return `'${id}'`;
-      }).join(',');
 
-      const query = 'SELECT * '
-      + `FROM amd.v_simplicity_addresses WHERE civicaddress_id in (${idList}) `;
-      return pool.query(query)
+      const query = 'SELECT * FROM amd.v_simplicity_addresses WHERE civicaddress_id = ANY ($1)';
+      return pool.query(query, [ids])
       .then((result) => {
         return prepareAddresses(result.rows);
       })
@@ -61,6 +57,9 @@ const resolvers = {
       return pool.query(query, fargs)
       .then(result => {
         return prepareAddresses(result.rows);
+      })
+      .catch((err) => {
+        throw new Error(`Got an error in addresses_by_neighborhood: ${JSON.stringify(err)}`);
       });
     },
 
@@ -68,12 +67,8 @@ const resolvers = {
       const pool = context.pool;
       const ids = args.centerline_ids;
       if (ids.length <= 0) return [];
-      const idList = ids.map(id => {
-        return `'${id}'`;
-      }).join(',');
-      const query = 'SELECT * '
-      + `FROM amd.v_simplicity_addresses WHERE centerline_id in (${idList}) `;
-      return pool.query(query)
+      const query = 'SELECT * FROM amd.v_simplicity_addresses WHERE centerline_id = ANY ($1)';
+      return pool.query(query, [ids])
       .then((result) => {
         return prepareAddresses(result.rows);
       })
