@@ -79,7 +79,6 @@ const resolvers = {
           query += `zip_code in (${zList})`;
         }
       }
-      console.log(query);
       return pool.query(query)
       .then(result => {
         return prepareProjects(result.rows);

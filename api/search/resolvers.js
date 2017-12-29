@@ -318,7 +318,6 @@ function searchAddress(searchContext, searchString, geoCodeResponse, context) {
       }
     );
   }
-  console.log('running searchaddress');
   const fquery = 'SELECT A.civicaddress_id, A.address_full, A.address_city, A.address_zipcode, '
   + 'A.address_number, A.address_unit, A.address_street_prefix, A.address_street_name, '
   + 'A.centerline_id, B.full_street_name, B.lzip, B.rzip '

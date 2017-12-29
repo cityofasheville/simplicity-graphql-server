@@ -30,45 +30,35 @@ function prepareAddresses(rows) {
   });
 }
 
+function doQuery(query, args, queryName, context) {
+  return context.pool.query(query, args)
+  .then((result) => {
+    return prepareAddresses(result.rows);
+  })
+  .catch((err) => {
+    throw new Error(`Got an error in ${queryName}: ${JSON.stringify(err)}`);
+  });
+}
+
 const resolvers = {
   Query: {
     addresses(obj, args, context) {
-      const query = 'SELECT * FROM amd.v_simplicity_addresses WHERE civicaddress_id = ANY ($1)';
-
+      console.log(`Here with ids ${JSON.stringify(args)}`);
       if (args.civicaddress_ids.length <= 0) return [];
-
-      return context.pool.query(query, [args.civicaddress_ids])
-      .then((result) => {
-        return prepareAddresses(result.rows);
-      })
-      .catch((err) => {
-        throw new Error(`Got an error in addresses: ${JSON.stringify(err)}`);
-      });
+      const query = 'SELECT * FROM amd.v_simplicity_addresses WHERE civicaddress_id = ANY ($1)';
+      return doQuery(query, [args.civicaddress_ids], 'addresses', context);
     },
+
     addresses_by_neighborhood(obj, args, context) {
-      const query = 'SELECT * FROM amd.get_addresses_by_neighborhood($1)';
-
       if (args.nbrhd_ids.length <= 0) return [];
-
-      return context.pool.query(query, [args.nbrhd_ids])
-      .then(result => {
-        return prepareAddresses(result.rows);
-      })
-      .catch((err) => {
-        throw new Error(`Got an error in addresses_by_neighborhood: ${JSON.stringify(err)}`);
-      });
+      const query = 'SELECT * FROM amd.get_addresses_by_neighborhood($1)';
+      return doQuery(query, [args.nbrhd_ids], 'addresses_by_neighborhood', context);
     },
 
     addresses_by_street(obj, args, context) {
       if (args.centerline_ids.length <= 0) return [];
       const query = 'SELECT * FROM amd.v_simplicity_addresses WHERE centerline_id = ANY ($1)';
-      return context.pool.query(query, [args.centerline_ids])
-      .then((result) => {
-        return prepareAddresses(result.rows);
-      })
-      .catch((err) => {
-        throw new Error(`Got an error in addresses_by_street: ${JSON.stringify(err)}`);
-      });
+      return doQuery(query, [args.centerline_ids], 'addresses_by_street', context);
     },
   },
 };
