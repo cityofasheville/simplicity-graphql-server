@@ -15,6 +15,10 @@ function searchPlace(searchString, context) {
         place_id: place.place_id,
         types: place.types,
       };
+    })
+    .filter(p => {
+      return (p.address !== 'Asheville' &&
+       p.address !== 'United States');
     });
   })
   .then(results => {
