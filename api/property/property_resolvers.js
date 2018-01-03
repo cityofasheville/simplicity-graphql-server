@@ -5,20 +5,20 @@ function prepareProperties(rows) {
   if (rows.length === 0) return [];
   rows.forEach(itm => {
     const taxExempt = (itm.exempt !== '');
-    if (pinMap.hasOwnProperty(itm.pinnum)) {
-      pinMap[itm.pinnum].civic_address_ids.push(itm.civicaddress_id);
-      pinMap[itm.pinnum].address.push(itm.address);
-      pinMap[itm.pinnum].city.push(itm.cityname);
-      pinMap[itm.pinnum].zipcode.push(itm.zipcode);
-    } else {
+    console.log(`Location type is ${itm.location_type}`);
+    if (!pinMap.hasOwnProperty(itm.pinnum)) {
       pinMap[itm.pinnum] = {
-        civic_address_ids: [itm.civicaddress_id],
         pinnum: itm.pinnum,
         pin: itm.pin,
         pinext: itm.pinext,
-        address: [itm.address],
-        city: [itm.cityname],
-        zipcode: [itm.zipcode],
+        property_civic_address_id: itm.civicaddress_id,
+        property_address: itm.address,
+        property_city: itm.cityname,
+        property_zipcode: itm.zipcode,
+        civic_address_ids: [],
+        address: [],
+        city: [],
+        zipcode: [],
         tax_exempt: taxExempt,
         neighborhood: itm.neighborhoodcode,
         appraisal_area: itm.appraisalarea,
@@ -39,6 +39,17 @@ function prepareProperties(rows) {
         polygon: itm.polygon,
       };
     }
+    if (itm.location_type === 1) {
+      pinMap[itm.pinnum].civic_address_ids.push(itm.civicaddress_id);
+      pinMap[itm.pinnum].address.push(itm.address);
+      pinMap[itm.pinnum].city.push(itm.cityname);
+      pinMap[itm.pinnum].zipcode.push(itm.zipcode);
+    } else { // Overwrite if location_type = 0
+      pinMap[itm.pinnum].property_civic_address_id = itm.civicaddress_id;
+      pinMap[itm.pinnum].property_address = itm.address;
+      pinMap[itm.pinnum].property_city = itm.cityname;
+      pinMap[itm.pinnum].property_zipcode = itm.zipcode;
+  }
   });
   const result = [];
   for (const k in pinMap) {

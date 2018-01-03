@@ -1,9 +1,13 @@
 module.exports = `
 type Property {
-  civic_address_ids: [String]
   pinnum: String
   pin: String
   pinext: String
+  property_civic_address_id: String
+  property_address: String
+  property_city: String
+  property_zipcode: String
+  civic_address_ids: [String]
   address: [String]
   city: [String]
   zipcode: [String]

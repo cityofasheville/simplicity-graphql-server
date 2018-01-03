@@ -245,9 +245,12 @@ query {
 WITH HOLES
 {
 	properties(pins: ["964902050600000"]) {
-    civic_address_id
+    property_civic_address_id
+    property_address
+    property_city
+    property_zipcode
+    civic_address_ids
     pinnum
-    pinnumext
     address
     city
     zipcode
@@ -256,15 +259,6 @@ WITH HOLES
     appraisal_area
     acreage
     zoning
-    deed_link
-    latitude
-    longitude
-    building_value
-    appraised_value
-    market_value
-    plat_link
-    property_card_link
-    tax_value
     owner
     owner_address
   }
