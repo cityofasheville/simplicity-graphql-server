@@ -35,5 +35,6 @@ type CIPProject {
   project_updates: String
   where: String
   contact: String
+  show_pm_fields: Boolean
 }
 `;

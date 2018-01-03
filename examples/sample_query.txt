@@ -56,7 +56,7 @@
 }
 
 {
-  neighborhoods(nbrhd_ids: ["NBHD34", "NBHD27"]) {
+  neighborhoods(nbrhd_ids: ["NBHD34", "NBHD27", "NBHD59"]) {
     name
     polygon {
       outer {
@@ -330,4 +330,23 @@ query {
   }
 }
 
+query {
+	permits_by_address(civicaddress_id: 230126, radius: 500) {
+    address
+    applied_date
+    applicant_name
+    permit_number
+    permit_type
+    permit_subtype
+    contractor_name
+    permit_category
+    status_date
+    status_current
+    address
+    comments {
+      comment_seq_number
+      comments
+    }
+  }
+}
 }

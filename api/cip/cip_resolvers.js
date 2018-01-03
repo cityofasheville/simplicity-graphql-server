@@ -1,3 +1,13 @@
+const hidePMFields = {
+  'Affordable Housing Investments': true,
+  'Velodrome Resurfacing': true,
+  'New Leicester Hwy Sidewalks': true,
+  'Swannanoa River Greenway Phase 1': true,
+  'Coxe Ave - Feasibility & Design': true,
+  'Eagle Market Place': true,
+  'I - 26 Connector': true,
+  'Lee Walker Heights Redevelopment': true,
+};
 
 function prepareProjects(rows) {
   if (rows.length === 0) return [];
@@ -24,7 +34,7 @@ function prepareProjects(rows) {
       total_project_funding_budget_document: itm.total_project_funding__budget_document_,
       preliminary_project_budget_planning_phase_estimate: itm.preliminary_project_budget__planning_phase_estimate_,
       estimated_total_project_cost: itm.estimated_total_project_cost,
-      total_spent: itm.total_spent,
+      total_spent: itm.ltd_actuals ? itm.ltd_actuals : 0,
       target_construction_start: itm.target_construction_start,
       target_construction_end: itm.target_construction_end,
       actual_construction_end: itm.actual_construction_end,
@@ -38,6 +48,7 @@ function prepareProjects(rows) {
       project_updates: itm.project_updates,
       where: itm.where_,
       contact: itm.contact,
+      show_pm_fields: !hidePMFields.hasOwnProperty(itm.project),
     };
   });
 }
@@ -48,7 +59,10 @@ const resolvers = {
     // one or both of categories & zipcodes
     cip_projects(obj, args, context) {
       const pool = context.pool;
-      let query = 'SELECT * FROM amd.coa_cip_project_information ';
+      let query = 'select * from amd.coa_cip_project_information as A '
+      + 'left join amd.project_ltd_actuals as B '
+      + 'on A.munis_project_number = B.projectid ';
+      // let query = 'SELECT * FROM amd.coa_cip_project_information ';
       const names = args.names;
       if (names && names.length > 0) {
         if (names.length <= 0) return [];

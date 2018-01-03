@@ -4,9 +4,9 @@ type Property {
   pinnum: String
   pin: String
   pinext: String
-  address: String
-  city: String
-  zipcode: String,
+  address: [String]
+  city: [String]
+  zipcode: [String]
   tax_exempt: Boolean
   neighborhood: String
   appraisal_area: String

@@ -21,8 +21,8 @@ type Permit {
   address: String
   x: Float
   y: Float
-  contractor_name: String
-  contractor_license_number: String
+  contractor_names: [String]
+  contractor_license_numbers: [String]
   comments: [PermitComment]
 }
 

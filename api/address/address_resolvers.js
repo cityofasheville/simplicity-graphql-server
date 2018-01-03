@@ -30,56 +30,35 @@ function prepareAddresses(rows) {
   });
 }
 
+function doQuery(query, args, queryName, context) {
+  return context.pool.query(query, args)
+  .then((result) => {
+    return prepareAddresses(result.rows);
+  })
+  .catch((err) => {
+    throw new Error(`Got an error in ${queryName}: ${JSON.stringify(err)}`);
+  });
+}
+
 const resolvers = {
   Query: {
     addresses(obj, args, context) {
-      const pool = context.pool;
-      const ids = args.civicaddress_ids;
-      if (ids.length <= 0) return [];
-      const idList = ids.map(id => {
-        return `'${id}'`;
-      }).join(',');
-
-      const query = 'SELECT * '
-      + `FROM amd.v_simplicity_addresses WHERE civicaddress_id in (${idList}) `;
-      return pool.query(query)
-      .then((result) => {
-        return prepareAddresses(result.rows);
-      })
-      .catch((err) => {
-        throw new Error(`Got an error in addresses: ${JSON.stringify(err)}`);
-      });
+      console.log(`Here with ids ${JSON.stringify(args)}`);
+      if (args.civicaddress_ids.length <= 0) return [];
+      const query = 'SELECT * FROM amd.v_simplicity_addresses WHERE civicaddress_id = ANY ($1)';
+      return doQuery(query, [args.civicaddress_ids], 'addresses', context);
     },
+
     addresses_by_neighborhood(obj, args, context) {
-      const pool = context.pool;
-      const ids = args.nbrhd_ids;
-      if (ids.length <= 0) return [];
+      if (args.nbrhd_ids.length <= 0) return [];
       const query = 'SELECT * FROM amd.get_addresses_by_neighborhood($1)';
-      const fargs = [
-        ids,
-      ];
-      return pool.query(query, fargs)
-      .then(result => {
-        return prepareAddresses(result.rows);
-      });
+      return doQuery(query, [args.nbrhd_ids], 'addresses_by_neighborhood', context);
     },
 
     addresses_by_street(obj, args, context) {
-      const pool = context.pool;
-      const ids = args.centerline_ids;
-      if (ids.length <= 0) return [];
-      const idList = ids.map(id => {
-        return `'${id}'`;
-      }).join(',');
-      const query = 'SELECT * '
-      + `FROM amd.v_simplicity_addresses WHERE centerline_id in (${idList}) `;
-      return pool.query(query)
-      .then((result) => {
-        return prepareAddresses(result.rows);
-      })
-      .catch((err) => {
-        throw new Error(`Got an error in addresses_by_street: ${JSON.stringify(err)}`);
-      });
+      if (args.centerline_ids.length <= 0) return [];
+      const query = 'SELECT * FROM amd.v_simplicity_addresses WHERE centerline_id = ANY ($1)';
+      return doQuery(query, [args.centerline_ids], 'addresses_by_street', context);
     },
   },
 };
