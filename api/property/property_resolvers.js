@@ -5,7 +5,6 @@ function prepareProperties(rows) {
   if (rows.length === 0) return [];
   rows.forEach(itm => {
     const taxExempt = (itm.exempt !== '');
-    console.log(`Location type is ${itm.location_type}`);
     if (!pinMap.hasOwnProperty(itm.pinnum)) {
       pinMap[itm.pinnum] = {
         pinnum: itm.pinnum,
