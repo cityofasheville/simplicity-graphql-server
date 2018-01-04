@@ -48,7 +48,7 @@ function prepareProperties(rows) {
       pinMap[itm.pinnum].property_address = itm.address;
       pinMap[itm.pinnum].property_city = itm.cityname;
       pinMap[itm.pinnum].property_zipcode = itm.zipcode;
-  }
+    }
   });
   const result = [];
   for (const k in pinMap) {
