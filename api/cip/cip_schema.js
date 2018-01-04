@@ -36,5 +36,7 @@ type CIPProject {
   where: String
   contact: String
   show_pm_fields: Boolean
+  latitude: [Float]
+  longitude: [Float]
 }
 `;
