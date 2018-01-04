@@ -1,3 +1,5 @@
+const axios = require('axios');
+
 const hidePMFields = {
   'Affordable Housing Investments': true,
   'Velodrome Resurfacing': true,
@@ -9,9 +11,19 @@ const hidePMFields = {
   'Lee Walker Heights Redevelopment': true,
 };
 
+let xyCache = null;
+let cacheDate = null;
+
 function prepareProjects(rows) {
   if (rows.length === 0) return [];
   return rows.map(itm => {
+    let latitude = [];
+    let longitude = [];
+    if (xyCache.hasOwnProperty(itm.project)) {
+      latitude = xyCache[itm.project].latitude;
+      longitude = xyCache[itm.project].longitude;  
+    }
+
     return {
       gis_id: itm.gis_id,
       munis_project_number: itm.munis_project_number,
@@ -49,6 +61,8 @@ function prepareProjects(rows) {
       where: itm.where_,
       contact: itm.contact,
       show_pm_fields: !hidePMFields.hasOwnProperty(itm.project),
+      latitude,
+      longitude,
     };
   });
 }
@@ -93,8 +107,41 @@ const resolvers = {
           query += `zip_code in (${zList})`;
         }
       }
-      console.log(query);
       return pool.query(query)
+      .then(result => {
+        const timeout = 1000 * 3600;
+        if (cacheDate === null || (new Date()).getTime() - cacheDate.getTime() > timeout) {
+          console.log('Updating CIP project XY cache');
+          const fsUrl = 'http://services.arcgis.com/aJ16ENn1AaqdFlqx/ArcGIS/rest/services/CIP_Storymap/FeatureServer/0/query?where=1%3D1&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnGeometry=true&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=pjson&token=';
+          return axios.get(fsUrl, { timeout: 5000 })
+          .then(xyResult => {
+            xyCache = {};
+            xyResult.data.features.forEach(feature => {
+              const f = feature.attributes;
+              const fname = f.NAME.replace(/^\s+|\s+$/g, '')
+              if (!xyCache.hasOwnProperty(fname)) {
+                xyCache[fname] = {
+                  name: fname,
+                  tab_name: f.TAB_NAME,
+                  short_desc: f.SHORT_DESC,
+                  website: f.WEBSITE,
+                  pic_url: f.PIC_URL,
+                  thumb_url: f.THUMB_URL,
+                  longitude: [],
+                  latitude: [],
+                };
+              }
+              // console.log(JSON.stringify(xyCache[f.NAME]));
+              xyCache[fname].longitude.push(f.LONG);
+              xyCache[fname].latitude.push(f.LAT);
+            });
+            cacheDate = new Date();
+            console.log('New cache date is ' + cacheDate);
+            return result;
+          });
+        }
+        return Promise.resolve(result);
+      })
       .then(result => {
         return prepareProjects(result.rows);
       })
