@@ -15,6 +15,7 @@ type Address {
   trash_day: String
   recycling_pickup_district: String,
   recycling_pickup_day: String,
+  street_maintenance: String,
   centerline_id: String
   pinnum: String
   pin: String

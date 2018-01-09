@@ -1,6 +1,7 @@
 function prepareAddresses(rows) {
   if (rows.length === 0) return [];
   return rows.map((itm) => {
+    const maint = (itm.maintenance_entity) ? itm.maintenance_entity : null;
     return {
       civic_address_id: itm.civicaddress_id,
       address: itm.address_full,
@@ -17,6 +18,7 @@ function prepareAddresses(rows) {
       trash_day: itm.trash_pickup_day,
       recycling_pickup_district: itm.recycling_pickup_district,
       recycling_pickup_day: itm.recycling_pickup_day,
+      street_maintenance: maint,
       centerline_id: itm.centerline_id,
       pinnum: itm.property_pin + itm.property_pinext,
       pin: itm.property_pin,
@@ -45,7 +47,10 @@ const resolvers = {
     addresses(obj, args, context) {
       console.log(`Here with ids ${JSON.stringify(args)}`);
       if (args.civicaddress_ids.length <= 0) return [];
-      const query = 'SELECT * FROM amd.v_simplicity_addresses WHERE civicaddress_id = ANY ($1)';
+      const query = 'SELECT a.*, b.maintenance_entity FROM amd.v_simplicity_addresses AS a '
+      + 'LEFT JOIN amd.v_address_maintenance as b '
+      + 'ON a.civicaddress_id = b.civicaddress_id WHERE a.civicaddress_id = ANY ($1)';
+      console.log(query);
       return doQuery(query, [args.civicaddress_ids], 'addresses', context);
     },
 
