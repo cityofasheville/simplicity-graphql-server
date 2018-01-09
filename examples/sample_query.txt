@@ -137,6 +137,14 @@ query {
   }
 }
 
+// Multi-segment street maintenance
+query {
+  addresses(civicaddress_ids: ["21696"]) {
+    address
+    street_maintenance
+  }
+}
+
 query {
 	addresses_by_street (centerline_ids: [
     9762054992,
