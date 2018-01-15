@@ -124,7 +124,7 @@ const resolvers = {
       let query = `${stdQuery}`
       + 'from amd.v_mda_permits_xy as A '
       + 'left outer join amd.coa_bc_address_master as M '
-      + 'on ST_Point_Inside_Circle(ST_SetSRID(ST_Point(M.address_x, M.address_y),2264), M.address_x, M.address_y, $2) '
+      + 'on ST_Point_Inside_Circle(ST_SetSRID(ST_Point(A.address_x, A.address_y),2264), M.address_x, M.address_y, $2) '
       + 'LEFT JOIN amd.mda_permit_comments AS B on A.permit_num = B.permit_num '
       + 'where M.civicaddress_id = $1 '; // Future function name change - ST_PointInsideCircle
       const qargs = [String(args.civicaddress_id), radius];
