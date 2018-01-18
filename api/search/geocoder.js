@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 function callGeocoder(searchString, searchContext = 'address') {
-  const minCandidateScore = 50;
+  const minCandidateScore = 0;
   let geoLocator = 'BC_address_unit'; // BC_address_unit or BC_street_address
   if (searchContext === 'street') geoLocator = 'bc_street_intersection';
   const baseLocator = `http://arcgis.ashevillenc.gov/arcgis/rest/services/Geolocators/${geoLocator}/GeocodeServer/findAddressCandidates`;
@@ -13,9 +13,10 @@ function callGeocoder(searchString, searchContext = 'address') {
 
   return axios.get(geolocatorUrl, { timeout: 5000 })
   .then(response => {
-    return Promise.resolve(response.data.candidates.filter(c => {
+    const result = response.data.candidates.filter(c => {
       return (c.score >= minCandidateScore);
-    }));
+    });
+    return Promise.resolve(result);
   })
   .catch((err) => {
     if (err) {
