@@ -7,13 +7,15 @@ function callGeocoder(searchString, searchContext = 'address') {
   const baseLocator = `http://arcgis.ashevillenc.gov/arcgis/rest/services/Geolocators/${geoLocator}/GeocodeServer/findAddressCandidates`;
   const geolocatorUrl = `${baseLocator}?Street=&City=&ZIP=`
   + `&Single+Line+Input=${encodeURIComponent(searchString)}&category=`
-  + '&outFields=House%2C+PreDir%2C+StreetName%2C+SufType%2C+SubAddrUnit%2C+City%2C+ZIP'
+  + '&outFields=House%2C+PreType%2C+PreDir%2C+StreetName%2C+SufType%2C+SubAddrUnit%2C+City%2C+ZIP'
   + '&maxLocations=&outSR=&searchExtent='
   + '&location=&distance=&magicKey=&f=pjson';
 
   return axios.get(geolocatorUrl, { timeout: 5000 })
   .then(response => {
+    // console.log(`Geocoder ${geoLocator} result length: ${response.data.candidates.length}`);
     const result = response.data.candidates.filter(c => {
+      // console.log(JSON.stringify(c));
       return (c.score >= minCandidateScore);
     });
     return Promise.resolve(result);
@@ -44,7 +46,11 @@ function mergeGeocoderResults(candidateSet) {
         ++total;
         if (total < maxCandidates) {
           result.locNumber.push(c.attributes.House);
-          result.locName.push(c.attributes.StreetName);
+          if (c.attributes.PreType === null || c.attributes.PreType === '') {
+            result.locName.push(c.attributes.StreetName);
+          } else {
+            result.locName.push(`${c.attributes.PreType} ${c.attributes.StreetName}`);
+          }
           result.locType.push(c.attributes.SufType);
           result.locPrefix.push(c.attributes.PreDir);
           result.locUnit.push(c.attributes.SubAddrUnit);
