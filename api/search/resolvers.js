@@ -34,7 +34,7 @@ const resolvers = {
   Query: {
     search(obj, args, context) {
       const geoCodeResponse = [];
-
+      let startTime = new Date().getTime();
       if (args.searchContexts.indexOf('address') >= 0 ||
           args.searchContexts.indexOf('property') >= 0 ||
           args.searchContexts.indexOf('street') >= 0) {
@@ -46,9 +46,14 @@ const resolvers = {
       if (geoCodeResponse.length === 0) geoCodeResponse.push(Promise.resolve(null));
 
       return Promise.all(geoCodeResponse).then(results => {
+        let endTime = new Date().getTime();
+        console.log(`Geocoder time: ${(endTime - startTime) / 1000.0} seconds`);
+        startTime = endTime;
         const result = mergeGeocoderResults(results);
         return Promise.all(args.searchContexts.map((searchContext) => {
           const ret = performSearch(args.searchString, searchContext, result, context);
+          endTime = new Date().getTime();
+          console.log(`Search time (${searchContext}): ${(endTime - startTime) / 1000.0} seconds`);
           return ret;
         }));
       })
