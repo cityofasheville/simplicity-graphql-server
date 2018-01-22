@@ -1,6 +1,7 @@
 const axios = require('axios');
 
 function callGeocoder(searchString, searchContext = 'address') {
+  const startTime = new Date().getTime();
   const minCandidateScore = 0;
   let geoLocator = 'BC_address_unit'; // BC_address_unit or BC_street_address
   if (searchContext === 'street') geoLocator = 'bc_street_intersection';
@@ -13,7 +14,8 @@ function callGeocoder(searchString, searchContext = 'address') {
 
   return axios.get(geolocatorUrl, { timeout: 5000 })
   .then(response => {
-    // console.log(`Geocoder ${geoLocator} result length: ${response.data.candidates.length}`);
+    const endTime = new Date().getTime();
+    console.log(`Geocoder ${geoLocator} time: ${(endTime - startTime) / 1000} sec`);
     const result = response.data.candidates.filter(c => {
       // console.log(JSON.stringify(c));
       return (c.score >= minCandidateScore);
