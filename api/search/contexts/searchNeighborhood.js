@@ -1,6 +1,7 @@
 const convertToPolygons = require('../../common/convert_to_polygons').convertToPolgyons;
 
 function searchNeighborhood(searchString, context) {
+  const logger = context.logger;
   const myQuery = 'SELECT name, nbhd_id, abbreviation, narrative, '
   + 'st_astext(st_transform(shape, 4326)) AS polygon '
   + 'FROM amd.coa_asheville_neighborhoods '
@@ -27,7 +28,7 @@ function searchNeighborhood(searchString, context) {
   })
   .catch((err) => {
     if (err) {
-      console.log(`Got an error in searchNeighborhood: ${JSON.stringify(err)}`);
+      logger.error(`Got an error in searchNeighborhood: ${JSON.stringify(err)}`);
       throw new Error(err);
     }
   });

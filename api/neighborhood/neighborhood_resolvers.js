@@ -3,6 +3,7 @@ const convertToPolygons = require('../common/convert_to_polygons').convertToPolg
 const resolvers = {
   Query: {
     neighborhoods(obj, args, context) {
+      const logger = context.logger;
       if (args.nbrhd_ids.length <= 0) return [];
       const query = 'SELECT name, nbhd_id, abbreviation, narrative, '
       + 'st_astext(st_transform(shape, 4326)) AS polygon '
@@ -22,14 +23,14 @@ const resolvers = {
         });
       })
       .catch(error => {
-        console.log(`Error in neighborhoods endpoint: ${JSON.stringify(error)}`);
+        logger.error(`Error in neighborhoods endpoint: ${JSON.stringify(error)}`);
         throw new Error(error);
       });
     },
   },
   Neighborhood: {
     polygon(obj) { return obj.polygon; },
-  }
+  },
 };
 
 module.exports = resolvers;

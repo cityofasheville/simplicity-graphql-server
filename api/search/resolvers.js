@@ -33,33 +33,34 @@ function performSearch(searchString, searchContext, geoCodeResponse, context) {
 const resolvers = {
   Query: {
     search(obj, args, context) {
+      const logger = context.logger;
       const geoCodeResponse = [];
-      let startTime = new Date().getTime();
+      const startTime = new Date().getTime();
+      logger.info(`Search for '${args.searchString} in contexts ${args.searchContexts}`);
       if (args.searchContexts.indexOf('address') >= 0 ||
           args.searchContexts.indexOf('property') >= 0 ||
           args.searchContexts.indexOf('street') >= 0) {
-        geoCodeResponse.push(callGeocoder(args.searchString, 'address'));
+        geoCodeResponse.push(callGeocoder(args.searchString, 'address', logger));
       }
       if (args.searchContexts.indexOf('street') >= 0) {
-        geoCodeResponse.push(callGeocoder(args.searchString, 'street'));
+        geoCodeResponse.push(callGeocoder(args.searchString, 'street', logger));
       }
       if (geoCodeResponse.length === 0) geoCodeResponse.push(Promise.resolve(null));
 
       return Promise.all(geoCodeResponse).then(results => {
-        let endTime = new Date().getTime();
-        console.log(`Geocoder time: ${(endTime - startTime) / 1000.0} seconds`);
-        startTime = endTime;
         const result = mergeGeocoderResults(results);
         return Promise.all(args.searchContexts.map((searchContext) => {
           const ret = performSearch(args.searchString, searchContext, result, context);
-          endTime = new Date().getTime();
-          console.log(`Search time (${searchContext}): ${(endTime - startTime) / 1000.0} seconds`);
+          const totalTime = (new Date().getTime() - startTime) / 1000.0;
+          if (totalTime > 4.0) {
+            logger.warn(`Search time (${searchContext}): ${totalTime} seconds`);
+          }
           return ret;
         }));
       })
       .catch((err) => {
         if (err) {
-          console.log(`Got an error in search: ${err}`);
+          logger.error(`Got an error in search: ${err}`);
           throw new Error(err);
         }
       });

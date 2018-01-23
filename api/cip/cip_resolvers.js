@@ -72,6 +72,7 @@ const resolvers = {
     // Note: query can EITHER specify names OR it can specify
     // one or both of categories & zipcodes
     cip_projects(obj, args, context) {
+      const logger = context.logger;
       const pool = context.pool;
       let query = 'select * from amd.coa_cip_project_information as A '
       + 'left join amd.project_ltd_actuals as B '
@@ -131,12 +132,10 @@ const resolvers = {
                   latitude: [],
                 };
               }
-              // console.log(JSON.stringify(xyCache[f.NAME]));
               xyCache[fname].longitude.push(f.LONG);
               xyCache[fname].latitude.push(f.LAT);
             });
             cacheDate = new Date();
-            console.log('New cache date is ' + cacheDate);
             return result;
           });
         }
@@ -146,7 +145,7 @@ const resolvers = {
         return prepareProjects(result.rows);
       })
       .catch(error => {
-        console.log(`Error in cip_projects endpoint: ${JSON.stringify(error)}`);
+        logger.error(`Error in cip_projects endpoint: ${error}`);
         throw new Error(error);
       });
     },

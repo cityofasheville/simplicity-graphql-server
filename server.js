@@ -3,11 +3,14 @@ const { apolloExpress, graphiqlExpress } = require('apollo-server');
 const { makeExecutableSchema } = require('graphql-tools');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const Logger = require('coa-node-logging');
 require('dotenv').config();
 const pg = require('pg');
 const Pool = pg.Pool;
 
 pg.defaults.poolSize = 1;
+const logFile = process.env.logfile ? process.env.logfile : null;
+const logger = new Logger('simplicity', logFile);
 const typeDefs = require('./schema');
 const resolvers = require('./resolvers');
 const executableSchema = makeExecutableSchema({
@@ -18,10 +21,12 @@ const executableSchema = makeExecutableSchema({
 // submodules is needed to avoid problems with webpack (import seems to require
 // beta version of webpack 2).
 const firebase = require('firebase');
+logger.info('Initialize firebase');
 firebase.initializeApp({
   serviceAccount: './SimpliCityII-284f9d0ebb83.json',
   databaseURL: 'https://simplicityii-878be.firebaseio.com',
 });
+logger.info('Firebase initialized');
 
 const dbConfig = {
   host: process.env.dbhost,
@@ -32,18 +37,24 @@ const dbConfig = {
   ssl: false,
 };
 
+logger.info('Connect to database');
+
 const pool = new Pool(dbConfig);
+logger.info('Database connection initialized');
 
 const GRAPHQL_PORT = process.env.PORT || 8080;
-console.log(`The graphql port is ${GRAPHQL_PORT}`);
+
 const graphQLServer = express().use('*', cors());
+logger.info('Initialize graphql server');
 
 graphQLServer.use('/graphql', bodyParser.json(), apolloExpress((req, res) => {
+  logger.info('New client connection');
   if (!req.headers.authorization || req.headers.authorization === 'null') {
     return {
       schema: executableSchema,
       context: {
         pool,
+        logger,
         loggedin: false,
         token: null,
         uid: null,
@@ -52,12 +63,14 @@ graphQLServer.use('/graphql', bodyParser.json(), apolloExpress((req, res) => {
       },
     };
   }
+  logger.info('Attempt login verification');
   return firebase.auth().verifyIdToken(req.headers.authorization).then((decodedToken) => {
-    console.log('auth-verify');
+    logger.info(`Logging in ${decodedToken.email}`);
     return {
       schema: executableSchema,
       context: {
         pool,
+        logger,
         loggedin: true,
         token: req.headers.authorization,
         uid: decodedToken.uid,
@@ -67,12 +80,13 @@ graphQLServer.use('/graphql', bodyParser.json(), apolloExpress((req, res) => {
     };
   }).catch((error) => {
     if (req.headers.authorization !== 'null') {
-      console.log(`Error decoding firebase token: ${JSON.stringify(error)}`);
+      logger.error(`Error decoding authentication token: ${error}`);
     }
     return {
       schema: executableSchema,
       context: {
         pool,
+        logger,
         loggedin: false,
         token: null,
         uid: null,
@@ -86,27 +100,9 @@ graphQLServer.use('/graphql', bodyParser.json(), apolloExpress((req, res) => {
 graphQLServer.use('/graphiql', graphiqlExpress({
   endpointURL: '/graphql',
 }));
+logger.info(`Start listening on port ${GRAPHQL_PORT}`);
 
 graphQLServer.listen(GRAPHQL_PORT, () => console.log(
-  `GraphQL Server is now running on http://localhost:${GRAPHQL_PORT}/graphql`
+  `SimpliCity: GraphQL Server is now running on host/${GRAPHQL_PORT}/graphql`
 ));
 
-// Killing the subscription server for now.
-/*
-// WebSocket server for subscriptions
-const websocketServer = createServer((request, response) => {
-  response.writeHead(404);
-  response.end();
-});
-
-websocketServer.listen(WS_PORT, () => console.log( // eslint-disable-line no-console
-  `Websocket Server is now running on http://localhost:${WS_PORT}`
-));
-
-
-// eslint-disable-next-line
-new SubscriptionServer(
-  { subscriptionManager },
-  websocketServer
-);
-*/

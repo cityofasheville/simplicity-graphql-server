@@ -1,4 +1,5 @@
 function searchStreet(searchContext, searchString, geoCodeResponse, context) {
+  const logger = context.logger;
   if (geoCodeResponse.locName.length === 0) {
     return Promise.resolve(
       {
@@ -32,9 +33,6 @@ function searchStreet(searchContext, searchString, geoCodeResponse, context) {
     nmap.zip,
   ];
 
-  // const fquery = 'SELECT centerline_id, full_street_name, lzip, rzip '
-  // + 'from amd.bc_street '
-  // + `WHERE street_name IN (${nameList})`;
   const idMap = {};
   return context.pool.query(fquery, args)
   .then(result => {
@@ -86,7 +84,7 @@ function searchStreet(searchContext, searchString, geoCodeResponse, context) {
   })
   .catch((err) => {
     if (err) {
-      console.log(`Got an error in street search: ${JSON.stringify(err)}`);
+      logger.error(`Got an error in street search: ${JSON.stringify(err)}`);
       throw new Error(err);
     }
   });
