@@ -1,6 +1,7 @@
 const axios = require('axios');
 
 function searchPlace(searchString, context) {
+  const logger = context.logger;
   const keyword = searchString.replace(/\s/g, '%20');
   const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=AIzaSyBy-YYl13oQZBLm-v1udn5Thk1JSPuOVR0&location=35.5951,-82.5515&radius=50000&keyword=${keyword}`;
   return axios.get(url, { timeout: 5000 })
@@ -29,7 +30,7 @@ function searchPlace(searchString, context) {
   })
   .catch((err) => {
     if (err) {
-      console.log(`Got an error in geocoder lookup: ${JSON.stringify(err)}`);
+      logger.error(`Got an error in geocoder lookup: ${JSON.stringify(err)}`);
       throw new Error(err);
     }
   });

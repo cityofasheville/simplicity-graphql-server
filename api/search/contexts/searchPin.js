@@ -1,4 +1,5 @@
 function searchPin(searchString, context) {
+  const logger = context.logger;
   const myQuery = 'SELECT pin, pinnum, pinext, address, cityname, zipcode FROM amd.bc_property '
   + `where cast(pin as TEXT) = '${searchString}' OR `
   + `cast(pinnum as TEXT) = '${searchString}' limit 5`;
@@ -26,7 +27,7 @@ function searchPin(searchString, context) {
   })
   .catch((err) => {
     if (err) {
-      console.log(`Got an error in searchPin: ${JSON.stringify(err)}`);
+      logger.error(`Got an error in searchPin: ${JSON.stringify(err)}`);
       throw new Error(err);
     }
   });

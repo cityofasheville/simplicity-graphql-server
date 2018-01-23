@@ -1,4 +1,5 @@
 function searchAddress(searchContext, searchString, geoCodeResponse, context) {
+  const logger = context.logger;
   if (geoCodeResponse.locName.length === 0) {
     return Promise.resolve(
       {
@@ -96,7 +97,7 @@ function searchAddress(searchContext, searchString, geoCodeResponse, context) {
   })
   .catch((err) => {
     if (err) {
-      console.log(`Got an error in address search: ${JSON.stringify(err)}`);
+      logger.error(`Got an error in address search: ${JSON.stringify(err)}`);
       throw new Error(err);
     }
   });

@@ -105,6 +105,7 @@ const resolvers = {
       });
     },
     permits(obj, args, context) {
+      const logger = context.logger;
       if (args.permit_numbers.length <= 0) return [];
       const query = `${stdQuery}`
       + 'FROM amd.v_mda_permits_xy AS A '
@@ -120,6 +121,7 @@ const resolvers = {
       });
     },
     permits_by_address(obj, args, context) {
+      const logger = context.logger;
       const radius = args.radius ? Number(args.radius) : 10; // State plane units are feet
       let query = `${stdQuery}`
       + 'from amd.v_mda_permits_xy as A '
@@ -144,11 +146,12 @@ const resolvers = {
         return preparePermits(result.rows, args.before, args.after);
       })
       .catch((err) => {
-        console.log(`Got an error in permits_by_address: ${JSON.stringify(err)}`);
-        throw new Error(`Got an error in permits_by_address: ${JSON.stringify(err)}`);
+        logger.error(`Got an error in permits_by_address: ${err}`);
+        throw new Error(`Got an error in permits_by_address: ${err}`);
       });
     },
     permits_by_street(obj, args, context) {
+      const logger = context.logger;
       const radius = (args.radius) ? Number(args.radius) : 100; // State plane units are feet
       if (args.centerline_ids.length <= 0) return [];
       const query = 'SELECT * FROM amd.get_permits_along_streets($1, $2) '
@@ -159,12 +162,13 @@ const resolvers = {
       })
       .catch((err) => {
         if (err) {
-          console.log(`Got an error in permits_by_street: ${JSON.stringify(err)}`);
+          logger.error(`Got an error in permits_by_street: ${err}`);
           throw new Error(err);
         }
       });
     },
     permits_by_neighborhood(obj, args, context) {
+      const logger = context.logger;
       if (args.nbrhd_ids.length <= 0) return [];
       const query = 'SELECT * FROM amd.get_permits_by_neighborhood($1) '
       + 'ORDER BY permit_num DESC, comment_seq_number ASC ';
@@ -174,7 +178,7 @@ const resolvers = {
       })
       .catch((err) => {
         if (err) {
-          console.log(`Got an error in permits_by_neighborhood: ${JSON.stringify(err)}`);
+          logger.error(`Got an error in permits_by_neighborhood: ${err}`);
           throw new Error(err);
         }
       });

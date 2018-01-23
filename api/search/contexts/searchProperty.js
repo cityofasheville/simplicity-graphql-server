@@ -1,5 +1,6 @@
 
 function searchProperty(searchString, geoCodeResponse, context) {
+  const logger = context.logger;
   if (geoCodeResponse.locName.length === 0) {
     return Promise.resolve(
       {
@@ -57,12 +58,11 @@ function searchProperty(searchString, geoCodeResponse, context) {
       type: 'searchContext',
       results: clist,
     };
-    console.log()
     return Promise.resolve(result);
   })
   .catch((err) => {
     if (err) {
-      console.log(`Got an error in property search: ${JSON.stringify(err)}`);
+      logger.error(`Got an error in property search: ${JSON.stringify(err)}`);
       throw new Error(err);
     }
   });

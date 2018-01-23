@@ -37,6 +37,7 @@ function prepareCrimes(rows, before = null, after = null) {
 const resolvers = {
   Query: {
     crimes_by_address(obj, args, context) {
+      const logger = context.logger;
       const civicaddressId = String(args.civicaddress_id);
       const radius = Number(args.radius); // State plane units are feet
       const query = 'SELECT A.incident_id, A.date_occurred, A.case_number, '
@@ -53,11 +54,12 @@ const resolvers = {
         return prepareCrimes(result.rows, args.before, args.after);
       })
       .catch((err) => {
-        console.log(`Got an error in crimes_by_address: ${JSON.stringify(err)}`);
-        throw new Error(`Got an error in crimes_by_address: ${JSON.stringify(err)}`);
+        logger.error(`Got an error in crimes_by_address: ${err}`);
+        throw new Error(`Got an error in crimes_by_address: ${err}`);
       });
     },
     crimes_by_street(obj, args, context) {
+      const logger = context.logger;
       const radius = (args.radius) ? Number(args.radius) : 100; // State plane units are feet
       const ids = args.centerline_ids;
       if (ids.length <= 0) return [];
@@ -68,12 +70,13 @@ const resolvers = {
       })
       .catch((err) => {
         if (err) {
-          console.log(`Got an error in crimes_by_street: ${JSON.stringify(err)}`);
+          logger.error(`Got an error in crimes_by_street: ${err}`);
           throw new Error(err);
         }
       });
     },
     crimes_by_neighborhood(obj, args, context) {
+      const logger = context.logger;
       if (args.nbrhd_ids.length <= 0) return [];
       const query = 'SELECT * FROM amd.get_crimes_by_neighborhood($1)';
 
@@ -83,12 +86,13 @@ const resolvers = {
       })
       .catch((err) => {
         if (err) {
-          console.log(`Got an error in crimes_by_neighborhood: ${JSON.stringify(err)}`);
+          logger.error(`Got an error in crimes_by_neighborhood: ${err}`);
           throw new Error(err);
         }
       });
     },
     crimes(obj, args, context) {
+      const logger = context.logger;
       if (args.incident_ids.length <= 0) return [];
       const query = 'SELECT incident_id, agency, date_occurred, case_number, '
       + 'address, geo_beat, geo_report_area, x, y, x_wgs, y_wgs, offense_short_description, '
@@ -101,8 +105,8 @@ const resolvers = {
         return prepareCrimes(result.rows);
       })
       .catch((err) => {
-        console.log(`ERROR: ${err}`);
-        throw new Error(`Got an error in crimes: ${JSON.stringify(err)}`);
+        logger.error(`ERROR: ${err}`);
+        throw new Error(`Got an error in crimes: ${err}`);
       });
     },
   },

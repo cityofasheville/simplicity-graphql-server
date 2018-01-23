@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-function callGeocoder(searchString, searchContext = 'address') {
+function callGeocoder(searchString, searchContext = 'address', logger) {
   const startTime = new Date().getTime();
   const minCandidateScore = 0;
   let geoLocator = 'BC_address_unit'; // BC_address_unit or BC_street_address
@@ -14,17 +14,18 @@ function callGeocoder(searchString, searchContext = 'address') {
 
   return axios.get(geolocatorUrl, { timeout: 5000 })
   .then(response => {
-    const endTime = new Date().getTime();
-    console.log(`Geocoder ${geoLocator} time: ${(endTime - startTime) / 1000} sec`);
+    const totalTime = (new Date().getTime() - startTime) / 1000.0;
+    if (totalTime > 4) {
+      logger.warn(`Geocoder ${geoLocator} time: ${totalTime} sec`);
+    }
     const result = response.data.candidates.filter(c => {
-      // console.log(JSON.stringify(c));
       return (c.score >= minCandidateScore);
     });
     return Promise.resolve(result);
   })
   .catch((err) => {
     if (err) {
-      console.log(`Got an error in geocoder lookup: ${JSON.stringify(err)}`);
+      logger.error(`Got an error in geocoder lookup: ${JSON.stringify(err)}`);
       throw new Error(err);
     }
   });

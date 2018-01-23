@@ -2,6 +2,7 @@
 const resolvers = {
   Query: {
     budgetSummary(obj, args, context) {
+      const logger = context.logger;
       const pool = context.pool;
       const which = args.breakdown;
       let categoryColumn = 'department_name';
@@ -37,11 +38,12 @@ const resolvers = {
       })
       .catch((err) => {
         if (err) {
-          console.log(`Got an error in property: ${JSON.stringify(err)}`);
+          logger.error(`Got an error in property: ${err}`);
         }
       });
     },
     budgetHistory(obj, args, context) {
+      const logger = context.logger;
       const pool = context.pool;
       return pool.query(
         'SELECT * from coagis.v_budget_proposed_plus_history where year >= 2015'
@@ -53,11 +55,12 @@ const resolvers = {
       })
       .catch((err) => {
         if (err) {
-          console.log(`Got an error in property: ${JSON.stringify(err)}`);
+          logger.error(`Got an error in property: ${err}`);
         }
       });
     },
     budgetCashFlow(obj, args, context) {
+      const logger = context.logger;
       const pool = context.pool;
       let query = `
         SELECT account_type, department_name, dept_id, fund_id, fund_name,
@@ -85,7 +88,7 @@ const resolvers = {
       })
       .catch((err) => {
         if (err) {
-          console.log(`Got an error in property: ${JSON.stringify(err)}`);
+          logger.error(`Got an error in property: ${err}`);
         }
       });
     },
