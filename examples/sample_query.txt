@@ -320,13 +320,39 @@ query {
     year
     budget
   }
-  
-  {
-  permits_by_address(civicaddress_id: 230126, radius: 100, before: "2015-03-12", after: "2013-08-28") {
+  query {
+  permits_by_neighborhood (nbrhd_ids: ["NBHD56"], after: "2017-03-01", before: "2017-04-01") {
+    address
+    applicant_name
+    applied_date
+    permit_group
+    permit_type
+    permit_subtype
+  }
+}
+
+{
+  permits_by_address(civicaddress_id: 230126, radius: 1000,  after: "2017-03-01", before: "2017-04-01") {
     applied_date
     applicant_name
-    civic_address_id
+    permit_type
+    permit_subtype
+    permit_category
+    permit_group
+    permit_number
+	}
+}
+
+query {
+  permits_by_street (centerline_ids: [9649413286], after: "2017-03-01", before: "2018-04-01") {
+    address
+    applicant_name
+    applied_date
+    permit_group
+    permit_type
+    permit_subtype
   }
+}
 
 query {
   permits_by_neighborhood (nbrhd_ids: ["NBHD34"], after: "2017-01-01") {

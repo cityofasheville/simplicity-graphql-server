@@ -4,7 +4,6 @@ function preparePermits(rows, before = null, after = null) {
   let curContractors = {};
   let curComments = {};
   const fResults = [];
-  console.log('Count 1: ' + rows.length);
   // We get a row per unique contractor per unique comment id, so we have
   // to filter down to just the unique information.
   rows.forEach(itm => {
@@ -48,8 +47,8 @@ function preparePermits(rows, before = null, after = null) {
       curComments[itm.comment_seq_number] = true;
     }
   });
-  console.log('Count 1: ' + fResults.length);
-  return fResults.filter((item) => {
+  console.log(`Count before date filter: ${fResults.length}`);
+  const final = fResults.filter((item) => {
     let keep = true;
     if (after || before) {
       const date1 = new Date(item.applied_date);
@@ -62,6 +61,7 @@ function preparePermits(rows, before = null, after = null) {
     }
     return keep;
   });
+  return final;
 }
 const stdQuery = 'SELECT A.permit_num, A.permit_group, A.permit_type, '
               + 'A.permit_subtype, A.permit_category, A.permit_description, '
@@ -128,7 +128,8 @@ const resolvers = {
       + 'left outer join amd.coa_bc_address_master as M '
       + 'on ST_Point_Inside_Circle(ST_SetSRID(ST_Point(A.address_x, A.address_y),2264), M.address_x, M.address_y, $2) '
       + 'LEFT JOIN amd.mda_permit_comments AS B on A.permit_num = B.permit_num '
-      + 'where M.civicaddress_id = $1 '; // Future function name change - ST_PointInsideCircle
+      + 'where M.civicaddress_id = $1 '
+      + "AND A.permit_group <> 'Services'"; // Future function name change - ST_PointInsideCircle
       const qargs = [String(args.civicaddress_id), radius];
       let nextParam = '$3';
       if (args.before !== undefined) {
@@ -141,6 +142,7 @@ const resolvers = {
         query += `and applied_date > ${nextParam} `;
       }
       query += 'ORDER BY A.permit_num DESC, B.comment_seq_number ASC ';
+      console.log(query);
       return context.pool.query(query, qargs)
       .then(result => {
         return preparePermits(result.rows, args.before, args.after);
@@ -155,6 +157,7 @@ const resolvers = {
       const radius = (args.radius) ? Number(args.radius) : 100; // State plane units are feet
       if (args.centerline_ids.length <= 0) return [];
       const query = 'SELECT * FROM amd.get_permits_along_streets($1, $2) '
+      + "WHERE permit_group <> 'Services'"
       + 'ORDER BY permit_num DESC, comment_seq_number ASC ';
       return context.pool.query(query, [args.centerline_ids, radius])
       .then(result => {
@@ -171,6 +174,7 @@ const resolvers = {
       const logger = context.logger;
       if (args.nbrhd_ids.length <= 0) return [];
       const query = 'SELECT * FROM amd.get_permits_by_neighborhood($1) '
+      + "WHERE permit_group <> 'Services'"
       + 'ORDER BY permit_num DESC, comment_seq_number ASC ';
       return context.pool.query(query, [args.nbrhd_ids])
       .then(result => {
