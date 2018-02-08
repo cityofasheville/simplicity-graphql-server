@@ -21,7 +21,7 @@ function prepareProjects(rows) {
     let longitude = [];
     if (xyCache.hasOwnProperty(itm.project)) {
       latitude = xyCache[itm.project].latitude;
-      longitude = xyCache[itm.project].longitude;  
+      longitude = xyCache[itm.project].longitude;
     }
 
     return {
@@ -119,7 +119,7 @@ const resolvers = {
             xyCache = {};
             xyResult.data.features.forEach(feature => {
               const f = feature.attributes;
-              const fname = f.NAME.replace(/^\s+|\s+$/g, '')
+              const fname = f.NAME.replace(/^\s+|\s+$/g, '');
               if (!xyCache.hasOwnProperty(fname)) {
                 xyCache[fname] = {
                   name: fname,
