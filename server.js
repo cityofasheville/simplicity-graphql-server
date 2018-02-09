@@ -44,10 +44,17 @@ logger.info('Database connection initialized');
 
 const GRAPHQL_PORT = process.env.PORT || 8080;
 
-const graphQLServer = express().use('*', cors());
+const graphQLServer = express();
+graphQLServer.use('*', cors());
+graphQLServer.use((req, res, next) => {
+  // This is middleware in prep for new authentication
+  // console.log('I am in this middleware');
+  return next();
+});
+graphQLServer.use(bodyParser.json());
 logger.info('Initialize graphql server');
 
-graphQLServer.use('/graphql', bodyParser.json(), apolloExpress((req, res) => {
+graphQLServer.use('/graphql', apolloExpress((req, res) => {
   logger.info('New client connection');
   if (!req.headers.authorization || req.headers.authorization === 'null') {
     return {
