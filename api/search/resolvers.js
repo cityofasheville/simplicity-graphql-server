@@ -36,22 +36,21 @@ const resolvers = {
       const logger = context.logger;
       const geoCodeResponse = [];
       const startTime = new Date().getTime();
-      const searchString = args.searchString.trim();
-      logger.info(`Search for '${searchString} in contexts ${args.searchContexts}`);
+      logger.info(`Search for '${args.searchString} in contexts ${args.searchContexts}`);
       if (args.searchContexts.indexOf('address') >= 0 ||
           args.searchContexts.indexOf('property') >= 0 ||
           args.searchContexts.indexOf('street') >= 0) {
-        geoCodeResponse.push(callGeocoder(searchString, 'address', logger));
+        geoCodeResponse.push(callGeocoder(args.searchString, 'address', logger));
       }
       if (args.searchContexts.indexOf('street') >= 0) {
-        geoCodeResponse.push(callGeocoder(searchString, 'street', logger));
+        geoCodeResponse.push(callGeocoder(args.searchString, 'street', logger));
       }
       if (geoCodeResponse.length === 0) geoCodeResponse.push(Promise.resolve(null));
 
       return Promise.all(geoCodeResponse).then(results => {
         const result = mergeGeocoderResults(results);
         return Promise.all(args.searchContexts.map((searchContext) => {
-          const ret = performSearch(searchString, searchContext, result, context);
+          const ret = performSearch(args.searchString, searchContext, result, context);
           const totalTime = (new Date().getTime() - startTime) / 1000.0;
           if (totalTime > 4.0) {
             logger.warn(`Search time (${searchContext}): ${totalTime} seconds`);

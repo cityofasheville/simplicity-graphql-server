@@ -18,7 +18,6 @@ function prepareProperties(rows) {
         address: [],
         city: [],
         zipcode: [],
-        is_in_city: (itm.jurisdiction_type === 'Asheville Corporate Limits'),
         tax_exempt: taxExempt,
         neighborhood: itm.neighborhoodcode,
         appraisal_area: itm.appraisalarea,
