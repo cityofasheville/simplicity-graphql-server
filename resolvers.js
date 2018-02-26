@@ -1,10 +1,9 @@
 const { merge } = require('lodash');
-
+const { version } = require('./package.json');
 const resolverMap = {
   Query: {
     version(obj, args, context) {
-      console.log('Here is the version');
-      return '1.0';
+      return version;
     },
   },
 };
