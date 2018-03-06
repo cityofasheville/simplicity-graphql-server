@@ -11,6 +11,7 @@ type Property {
   address: [String]
   city: [String]
   zipcode: [String]
+  is_in_city: Boolean
   tax_exempt: Boolean
   neighborhood: String
   appraisal_area: String
