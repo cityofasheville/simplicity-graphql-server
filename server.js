@@ -1,5 +1,5 @@
 const express = require('express');
-const { apolloExpress, graphiqlExpress } = require('apollo-server');
+const { graphqlExpress, graphiqlExpress } = require('graphql-server-express');
 const { makeExecutableSchema } = require('graphql-tools');
 const bodyParser = require('body-parser');
 const cors = require('cors');
@@ -54,7 +54,7 @@ graphQLServer.use((req, res, next) => {
 graphQLServer.use(bodyParser.json());
 logger.info('Initialize graphql server');
 
-graphQLServer.use('/graphql', apolloExpress((req, res) => {
+graphQLServer.use('/graphql', graphqlExpress((req, res) => {
   logger.info('New client connection');
   if (!req.headers.authorization || req.headers.authorization === 'null') {
     return {
