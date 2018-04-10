@@ -1,5 +1,16 @@
 Example of calling a function with parameters in pgAdmin:
   SELECT  * FROM amd.get_properties_along_streets('{9639859244,9639952037}', 100) ORDER BY pinnum
+OR
+
+SELECT amd.get_search_addresses(
+	'{12}', 
+	'{"MAULTSBY"}', 
+	'{"LN"}', 
+	'{""}', 
+	'{""}', 
+	'{28805}',
+	'{"ASHE"}'
+)
 
 {
   projects(after: "2017-11-20", status: ["In Progress", "Open"]) {
