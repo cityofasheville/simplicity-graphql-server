@@ -84,6 +84,27 @@ SELECT amd.get_search_addresses(
 }
 
 query {
+  search (searchString: "14 mountain", searchContexts: ["address"]) {
+		type
+    results {
+      type
+      score
+      ... on AddressResult {
+        civic_address_id
+        address
+        street_name
+        street_prefix
+        street_number
+        unit
+        city
+        is_in_city
+        zipcode
+      }
+    }
+  }
+}
+
+query {
   search (searchString: "60 N. Market St apt 503", searchContexts: ["address"]) {
 		type
     results {
