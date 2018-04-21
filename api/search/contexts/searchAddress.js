@@ -10,7 +10,7 @@ function searchAddress(searchContext, searchString, geoCodeResponse, context) {
   }
   const fquery = 'SELECT A.civicaddress_id, A.address_full, A.address_city, A.address_zipcode, '
   + 'A.address_number, A.address_unit, A.address_street_prefix, A.address_street_name, '
-  + 'A.centerline_id, B.full_street_name, B.lzip, B.rzip '
+  + 'A.centerline_id, A.jurisdiction_type, B.full_street_name, B.lzip, B.rzip '
   + 'from amd.get_search_addresses($1, $2, $3, $4, $5, $6, $7) AS A '
   + 'LEFT OUTER JOIN amd.bc_street AS B on A.centerline_id = B.centerline_id ';
   const args = [
@@ -78,6 +78,7 @@ function searchAddress(searchContext, searchString, geoCodeResponse, context) {
         street_number: row.address_number,
         unit: row.address_unit,
         city: row.address_city,
+        is_in_city: (row.jurisdiction_type === 'Asheville Corporate Limits'),
         zipcode: row.address_zipcode,
       };
     })

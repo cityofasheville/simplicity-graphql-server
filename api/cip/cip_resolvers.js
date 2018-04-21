@@ -108,6 +108,8 @@ const resolvers = {
           query += `zip_code in (${zList})`;
         }
       }
+      query += ' ORDER BY A.display_name';
+
       return pool.query(query)
       .then(result => {
         const timeout = 1000 * 3600;

@@ -16,6 +16,7 @@ const schema = `
     street_number: String
     unit: String
     city: String
+    is_in_city: Boolean
     zipcode: String
   }
 
