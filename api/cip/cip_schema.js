@@ -22,6 +22,7 @@ type CIPProject {
   preliminary_project_budget_planning_phase_estimate: String
   estimated_total_project_cost: String
   total_spent: String
+  encumbered: String
   target_construction_start: String
   target_construction_end: String
   actual_construction_end: String
