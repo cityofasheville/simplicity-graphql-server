@@ -62,6 +62,25 @@ const resolvers = {
         }
       });
     },
+    budgetParameters(obj, args, context) {
+      const pool = context.pool;
+      return pool.query('SELECT * from amd.budget_parameters_view')
+      .then(bp => {
+        if (bp.rows.length === 0) return null;
+        const inBudgetSeason = bp.rows[0].in_budget_season === 'true';
+        const defaultYear = bp.rows[0].defaultyear;
+        const currentYear = bp.rows[0].currentyear;
+        let endYear = currentYear;
+        if ((inBudgetSeason && currentYear === defaultYear) ||
+            (defaultYear > currentYear)) endYear = currentYear + 1;
+        const startYear = inBudgetSeason ? currentYear - 2 : defaultYear - 3;
+        return {
+          start_year: startYear,
+          end_year: endYear,
+          in_budget_season: (inBudgetSeason && currentYear === defaultYear),
+        };
+      });
+    },
     budgetHistory(obj, args, context) {
       if (!newBudgetFlag) return getOldBudgetHistory(obj, args, context);
       const logger = context.logger;
@@ -70,18 +89,18 @@ const resolvers = {
       .then(bp => {
         if (bp.rows.length === 0) return null;
         const inBudgetSeason = bp.rows[0].in_budget_season === 'true';
-        let isProposed = inBudgetSeason && currentYear === defaultYear;
         const defaultYear = bp.rows[0].defaultyear;
         const currentYear = bp.rows[0].currentyear;
+        const isProposed = inBudgetSeason && currentYear === defaultYear;
         console.log(`inBudgetSeason = ${inBudgetSeason}, defaultYear = ${defaultYear}, current = ${currentYear}`);
         let endYear = currentYear;
         if ((inBudgetSeason && currentYear === defaultYear) ||
             (defaultYear > currentYear)) endYear = currentYear + 1;
         const startYear = inBudgetSeason ? currentYear - 2 : defaultYear - 3;
         console.log(`Start year is ${startYear}, end year is ${endYear}`);
-        return pool.query(
-          'SELECT * from coagis.v_budget_proposed_plus_history where year >= 2015'
-        )
+        const bhQuery = `SELECT * from amd.v_gl_5yr_plus_budget_mapped where year >= ${startYear} AND year <= ${endYear}`;
+        console.log(`BHQUERY: ${bhQuery}`);
+        return pool.query(bhQuery)
         .then((result) => {
           if (result.rows.length === 0) return null;
           return result.rows.map((itm) => {
@@ -90,36 +109,39 @@ const resolvers = {
             if (year > currentYear || year === defaultYear) {
               useActual = false;
             }
+            let derivedBudget = itm.adopted_budget;
+            if (isProposed && year === endYear) derivedBudget = itm.proposed_budget;
             // Set isProposed on each line, so it only applies to new budget year
             return {
               account_type: itm.account_type,
-              account_name: itm.account_name,
+              account_name: itm.object_name,
               fund_name: itm.fund_name,
               department_name: itm.department_name,
               division_name: itm.division_name,
               costcenter_name: itm.costcenter_name,
               function_name: itm.function_name,
-              charcode_name: itm.charcode_name,
+              charcode_name: null,
               organization_name: itm.organization_name,
               category_name: itm.category_name,
               budget_section_name: itm.budget_section_name,
               object_name: itm.object_name,
               year: itm.year,
-              budget: itm.budget,
+              budget: derivedBudget,
               actual: itm.actual,
-              full_account_id: itm.full_account_id,
-              org_id: itm.org_id,
-              obj_id: itm.obj_id,
+              full_account_id: null,
+              org_id: itm.organization_id,
+              obj_id: itm.object_id,
               fund_id: itm.fund_id,
-              dept_id: itm.dept_id,
-              div_id: itm.div_id,
-              cost_id: itm.cost_id,
-              func_id: itm.func_id,
-              charcode: itm.charcode,
-              category_id: itm.category_id,
-              budget_section_id: itm.budget_section_id,
-              proj_id: itm.proj_id,
-              is_proposed: isProposed,
+              dept_id: itm.department_id,
+              div_id: itm.division_id,
+              cost_id: itm.costcenter_id,
+              func_id: itm.function_id,
+              charcode: null,
+              category_id: itm.category_name,
+              budget_section_id: itm.budget_section_name,
+              proj_id: itm.project_id,
+              is_proposed: isProposed && itm.year === endYear,
+              use_actual: useActual,
             };
           });
         })
