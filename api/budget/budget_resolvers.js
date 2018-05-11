@@ -26,6 +26,8 @@ const resolvers = {
       const pool = context.pool;
       const which = args.breakdown;
       let categoryColumn = 'department_name';
+      let accountType = 'E';
+      if (args.accountType) accountType = args.accountType;
       let view = 'amd.budget_summary_by_dept_view';
       if (which === 'use') {
         categoryColumn = 'category_name';
@@ -48,9 +50,10 @@ const resolvers = {
           SELECT  account_type, year, total_proposed_budget, total_adopted_budget, total_actual,
                   ${categoryColumn} AS category_name
           FROM ${view}
-          WHERE year >= ${startYear} and year <= ${endYear}
+          WHERE year >= ${startYear} and year <= ${endYear} AND account_type = '${accountType}'
           ORDER BY year desc, account_type
         `;
+        console.log(query);
         return pool.query(query)
         .then((result) => {
           if (result.rows.length === 0) return null;
