@@ -94,7 +94,7 @@ const resolvers = {
       const logger = context.logger;
       const pool = context.pool;
       const which = args.breakdown;
-      if (newBudgetFlag && which !== 'use') {
+      if (newBudgetFlag) {
         return newBudgetSummary(obj, args, context);
       }
       let categoryColumn = 'department_name';
