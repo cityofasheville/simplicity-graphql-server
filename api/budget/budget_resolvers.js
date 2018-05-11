@@ -46,17 +46,10 @@ function newBudgetSummary(obj, args, context) {
     console.log(`Start year is ${startYear}, end year is ${endYear}`);
 
     const query = `
-      SELECT account_type, category_name, year, SUM(total_proposed_budget) as total_proposed_budget,
-        SUM(total_adopted_budget) as total_adopted_budget,
-        SUM(total_actual) AS total_actual
-      FROM (
-        select 
-          account_type, year, total_proposed_budget, total_adopted_budget, total_actual,
-          ${categoryColumn} AS category_name
-        from ${view}
-        where year >= ${startYear} and year <= ${endYear}
-      ) as ii
-      GROUP BY account_type, category_name, year
+      SELECT  account_type, year, total_proposed_budget, total_adopted_budget, total_actual,
+              ${categoryColumn} AS category_name
+      FROM ${view}
+      WHERE year >= ${startYear} and year <= ${endYear}
       ORDER BY year desc, account_type
     `;
     return pool.query(query)
@@ -70,6 +63,7 @@ function newBudgetSummary(obj, args, context) {
         // }
         let derivedBudget = itm.total_adopted_budget;
         if (isProposed && year === endYear) derivedBudget = itm.total_proposed_budget;
+        console.log(`${year}: ${itm.category_name} - actual: ${itm.total_actual}, budget: ${derivedBudget}`);
         return {
           account_type: itm.account_type,
           category_name: itm.category_name,
