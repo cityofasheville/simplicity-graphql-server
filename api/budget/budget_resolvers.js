@@ -1,24 +1,3 @@
-const newBudgetFlag = true;
-
-function getOldBudgetHistory(obj, args, context) {
-  console.log('I am in the old budget');
-  const logger = context.logger;
-  const pool = context.pool;
-  return pool.query(
-    'SELECT * from coagis.v_budget_proposed_plus_history where year >= 2015'
-  )
-  .then((result) => {
-    if (result.rows.length === 0) return null;
-    const p = result.rows;
-    return p;
-  })
-  .catch((err) => {
-    if (err) {
-      logger.error(`Got an error in property: ${err}`);
-    }
-  });
-}
-
 const resolvers = {
   Query: {
     budgetSummary(obj, args, context) {
@@ -28,11 +7,14 @@ const resolvers = {
       let categoryColumn = 'department_name';
       let accountType = 'E';
       if (args.accountType) accountType = args.accountType;
+      let maxCategories = 10;
+      if ('maxCategories' in args) maxCategories = parseInt(args.maxCategories, 10);
       let view = 'amd.budget_summary_by_dept_view';
       if (which === 'use') {
         categoryColumn = 'category_name';
         view = 'amd.budget_summary_by_use_view';
       }
+
       return pool.query('SELECT * from amd.budget_parameters_view')
       .then(bp => {
         if (bp.rows.length === 0) return null;
@@ -40,12 +22,11 @@ const resolvers = {
         const defaultYear = bp.rows[0].defaultyear;
         const currentYear = bp.rows[0].currentyear;
         const isProposed = inBudgetSeason && currentYear === defaultYear;
-        console.log(`inBudgetSeason = ${inBudgetSeason}, defaultYear = ${defaultYear}, current = ${currentYear}`);
         let endYear = currentYear;
         if ((inBudgetSeason && currentYear === defaultYear) ||
             (defaultYear > currentYear)) endYear = currentYear + 1;
         const startYear = inBudgetSeason ? currentYear - 2 : defaultYear - 3;
-    
+
         const query = `
           SELECT  account_type, year, total_proposed_budget, total_adopted_budget, total_actual,
                   ${categoryColumn} AS category_name
@@ -53,21 +34,67 @@ const resolvers = {
           WHERE year >= ${startYear} and year <= ${endYear} AND account_type = '${accountType}'
           ORDER BY year desc, account_type
         `;
-        console.log(query);
+
+        const byYear = {};
+        const sumByCategory = {};
         return pool.query(query)
         .then((result) => {
           if (result.rows.length === 0) return null;
-          const p = result.rows.map(itm => {
+          result.rows.forEach(itm => {
             const year = parseInt(itm.year, 10);
             let derivedBudget = itm.total_adopted_budget;
             if (isProposed && year === endYear) derivedBudget = itm.total_proposed_budget;
-            return {
+            let useActual = true;
+            if (year > currentYear || year === defaultYear) {
+              useActual = false;
+            }
+            const val = useActual ? parseFloat(itm.total_actual) : parseFloat(derivedBudget);
+            if (!sumByCategory.hasOwnProperty(itm.category_name)) {
+              sumByCategory[itm.category_name] = val;
+            } else {
+              sumByCategory[itm.category_name] += val;
+            }
+            if (!byYear.hasOwnProperty(itm.year)) byYear[itm.year] = [];
+            byYear[itm.year].push({
               account_type: itm.account_type,
               category_name: itm.category_name,
               year,
               total_budget: derivedBudget,
               total_actual: itm.total_actual,
+              use_actual: useActual,
+            });
+          });
+          const topCategories = {};
+          Object.keys(sumByCategory)
+          .map(key => { return { name: key, value: sumByCategory[key] }; })
+          .sort((a, b) => {
+            return b.value - a.value;
+          })
+          .filter((cat, index) => {
+            return (index < maxCategories - 1);
+          })
+          .forEach(cat => {
+            topCategories[cat.name] = true;
+          });
+          const p = [];
+          Object.keys(byYear).forEach(yr => {
+            const other = {
+              account_type: accountType,
+              category_name: 'Other',
+              year: yr,
+              total_budget: 0,
+              total_actual: 0,
+              use_actual: byYear[yr][0].use_actual,
             };
+            byYear[yr].forEach(yearCat => {
+              if (!topCategories.hasOwnProperty(yearCat.category_name)) {
+                if (yearCat.total_budget) other.total_budget += parseFloat(yearCat.total_budget);
+                if (yearCat.total_actual) other.total_actual += parseFloat(yearCat.total_actual);
+              } else {
+                p.push(yearCat);
+              }
+            });
+            p.push(other);
           });
           return p;
         })
@@ -78,6 +105,7 @@ const resolvers = {
         });
       });
     },
+
     budgetParameters(obj, args, context) {
       const pool = context.pool;
       return pool.query('SELECT * from amd.budget_parameters_view')
@@ -97,8 +125,8 @@ const resolvers = {
         };
       });
     },
+
     budgetHistory(obj, args, context) {
-      if (!newBudgetFlag) return getOldBudgetHistory(obj, args, context);
       const logger = context.logger;
       const pool = context.pool;
       return pool.query('SELECT * from amd.budget_parameters_view')
@@ -108,14 +136,13 @@ const resolvers = {
         const defaultYear = bp.rows[0].defaultyear;
         const currentYear = bp.rows[0].currentyear;
         const isProposed = inBudgetSeason && currentYear === defaultYear;
-        console.log(`inBudgetSeason = ${inBudgetSeason}, defaultYear = ${defaultYear}, current = ${currentYear}`);
         let endYear = currentYear;
         if ((inBudgetSeason && currentYear === defaultYear) ||
             (defaultYear > currentYear)) endYear = currentYear + 1;
         const startYear = inBudgetSeason ? currentYear - 2 : defaultYear - 3;
-        console.log(`Start year is ${startYear}, end year is ${endYear}`);
-        const bhQuery = `SELECT * from amd.v_gl_5yr_plus_budget_mapped where year >= ${startYear} AND year <= ${endYear}`;
-        console.log(`BHQUERY: ${bhQuery}`);
+        const bhQuery = 'SELECT * from amd.v_gl_5yr_plus_budget_mapped '
+        + `where year >= ${startYear} AND year <= ${endYear}`;
+
         return pool.query(bhQuery)
         .then((result) => {
           if (result.rows.length === 0) return null;
@@ -168,6 +195,7 @@ const resolvers = {
         });
       });
     },
+
     budgetCashFlow(obj, args, context) {
       const logger = context.logger;
       const pool = context.pool;
@@ -178,12 +206,9 @@ const resolvers = {
         const defaultYear = bp.rows[0].defaultyear;
         const currentYear = bp.rows[0].currentyear;
         const isProposed = inBudgetSeason && currentYear === defaultYear;
-        console.log(`inBudgetSeason = ${inBudgetSeason}, defaultYear = ${defaultYear}, current = ${currentYear}`);
         let endYear = currentYear;
         if ((inBudgetSeason && currentYear === defaultYear) ||
             (defaultYear > currentYear)) endYear = currentYear + 1;
-        const startYear = inBudgetSeason ? currentYear - 2 : defaultYear - 3;
-        console.log(`Start year is ${startYear}, end year is ${endYear}`);
 
         let query = `
           SELECT account_type, department_name, department_name as dept_id, fund_id, fund_name,
@@ -228,7 +253,6 @@ const resolvers = {
             return (itm.budget !== null && itm.budget !== 0.0);
           })
           .map(itm => {
-            // console.log(itm);
             return itm;
           });
           return p;

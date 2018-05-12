@@ -37,6 +37,7 @@ type SimpleBudgetSummary {
   year: Int,
   total_budget: Float,
   total_actual: Float
+  use_actual: String
 }
 
 type BudgetCashFlow {
