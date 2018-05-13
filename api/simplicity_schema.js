@@ -25,8 +25,9 @@ const baseSchema = `
     streets (centerline_ids: [Float]): [Street]
     neighborhoods (nbrhd_ids: [String]): [Neighborhood]
     budgetHistory: [SimpleBudgetDetail]!
-    budgetSummary ( breakdown: String!, maxCategories: Int ): [SimpleBudgetSummary]!
-    budgetCashFlow ( accountType: String! ): [BudgetCashFlow]!  
+    budgetSummary ( breakdown: String!, maxCategories: Int, accountType: String ): [SimpleBudgetSummary]!
+    budgetCashFlow ( accountType: String! ): [BudgetCashFlow]!
+    budgetParameters: BudgetParameters
     firstReviewSLAItems: [FirstReviewSLAItem]!
     firstReviewSLASummary (tasks: [String]) : [FirstReviewSLASummaryItem]!
     crimes(incident_ids: [Int]!): [CrimeIncident]

@@ -47,6 +47,7 @@ function prepareProjects(rows) {
       preliminary_project_budget_planning_phase_estimate: itm.preliminary_project_budget__planning_phase_estimate_,
       estimated_total_project_cost: itm.estimated_total_project_cost,
       total_spent: itm.ltd_actuals ? itm.ltd_actuals : 0,
+      encumbered: itm.encumbrances ? itm.encumbrances : 0,
       target_construction_start: itm.target_construction_start,
       target_construction_end: itm.target_construction_end,
       actual_construction_end: itm.actual_construction_end,
