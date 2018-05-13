@@ -34,6 +34,32 @@ const resolvers = {
   Query: {
     pcard_transactions(obj, args, context) {
       const logger = context.logger;
+      let query = 'SELECT * FROM amd.pcard_transaction ';
+      const qargs = [];
+      if (args.before !== undefined || args.after !== undefined) query += 'WHERE ';
+      let nextParam = '$1';
+      if (args.before !== undefined) {
+        qargs.push(`'${args.before}'`);
+        query += `charge_date < ${nextParam} `;
+        nextParam = '$2';
+      }
+      if (args.after !== undefined) {
+        if (qargs.length > 0) query += 'AND ';
+        qargs.push(`'${args.after}'`);
+        query += `charge_date > ${nextParam} `;
+      }
+      return context.pool.query(query, qargs)
+      .then((result) => {
+        return result.rows;
+      })
+      .catch((err) => {
+        logger.error(`Got an error in pcard_transactions: ${err}`);
+        throw new Error(`Got an error in pcard_transactions: ${err}`);
+      });
+    },
+
+    pcard_statements_status(obj, args, context) {
+      const logger = context.logger;
       let query = 'SELECT * FROM amd.pcard_statement_status_history ';
       const qargs = [];
       if (args.before !== undefined || args.after !== undefined) query += 'WHERE ';
@@ -50,17 +76,13 @@ const resolvers = {
       }
       return context.pool.query(query, qargs)
       .then((result) => {
-        return loadTransactions(result.rows);
+        return result.rows;
       })
       .catch((err) => {
-        logger.error(`Got an error in pcard_transactions: ${err}`);
-        throw new Error(`Got an error in pcard_transactions: ${err}`);
+        logger.error(`Got an error in pcard_statements_status: ${err}`);
+        throw new Error(`Got an error in pcard_statements_status: ${err}`);
       });
     },
-
-    // pcard_transactions_missing_receipts(obj, args, context) {
-
-    // },
   },
 };
 

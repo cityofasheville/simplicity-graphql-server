@@ -41,6 +41,7 @@ const baseSchema = `
     cip_projects(names: [String], categories: [String], zipcodes: [String]): [CIPProject]
     projects (status: [String], priority: [String], reqtype: String, after: String, before: String): [ITProject]
     pcard_transactions (before: String, after: String): [PCardTransaction]
+    pcard_statements_status (before: String, after: String): [PCardStatementStatus]
   }
 `;
 const searchSchema = require('./search').schema;

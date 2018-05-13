@@ -1,5 +1,5 @@
 module.exports = `
-type PCardTransaction {
+type PCardStatementStatus {
   dept_id: String
   department: String 
   div_id: String
@@ -10,11 +10,6 @@ type PCardTransaction {
   statement_status: String
   fiscal_year: Int
   fiscal_period: Int
-  charge_date: String
-  amount: Float
-  vendor_id: String
-  vendor_name: String
-  description: String
   invoiced_date: String
   reconciled_date: String
   days_invoiced_to_reconciled: Int
@@ -24,4 +19,18 @@ type PCardTransaction {
   days_since_reconciled: Int
 }
 
+type PCardTransaction {
+  dept_id: String
+  department: String 
+  div_id: String
+  division: String 
+  cardholder: String 
+  statement_id: Int
+  charge_date: String
+  amount: Float
+  vendor_id: String
+  vendor_name: String
+  description: String
+  receipt: String
+}
 `;
