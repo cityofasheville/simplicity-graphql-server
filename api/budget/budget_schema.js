@@ -28,6 +28,7 @@ type SimpleBudgetDetail {
   budget_section_id: String,
   proj_id: String,
   is_proposed: String
+  use_actual: String
 }
 
 type SimpleBudgetSummary {
@@ -36,6 +37,7 @@ type SimpleBudgetSummary {
   year: Int,
   total_budget: Float,
   total_actual: Float
+  use_actual: String
 }
 
 type BudgetCashFlow {
@@ -48,5 +50,11 @@ type BudgetCashFlow {
   fund_name: String,
   budget: Float,
   year: Int
+}
+
+type BudgetParameters {
+  start_year: Int
+  end_year: Int
+  in_budget_season: Boolean
 }
 `;
