@@ -94,7 +94,7 @@ const resolvers = {
                 p.push(yearCat);
               }
             });
-            p.push(other);
+            if (Math.abs(other.total_budget) > 0 || Math.abs(other.total_actual)) p.push(other);
           });
           return p;
         })
