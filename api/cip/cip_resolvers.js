@@ -76,8 +76,8 @@ const resolvers = {
       const logger = context.logger;
       const pool = context.pool;
       let query = 'select * from amd.coa_cip_project_information as A '
-      + 'left join amd.project_ltd_actuals as B '
-      + 'on A.munis_project_number = B.projectid ';
+      + 'left join amd.cip_ltd_view as B '
+      + 'on A.munis_project_number = B.project_id ';
       // let query = 'SELECT * FROM amd.coa_cip_project_information ';
       const names = args.names;
       if (names && names.length > 0) {
