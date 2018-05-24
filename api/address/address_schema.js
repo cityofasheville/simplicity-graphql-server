@@ -10,11 +10,14 @@ type Address {
   unit: String
   city: String
   zipcode: String
+  neighborhood: String
+  neighborhood_id: String
   is_in_city: Boolean
   zoning: String
   trash_day: String
   recycling_pickup_district: String,
   recycling_pickup_day: String,
+  brushweek: String,
   street_maintenance: String,
   centerline_id: String
   pinnum: String
