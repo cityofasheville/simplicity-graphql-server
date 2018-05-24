@@ -41,6 +41,8 @@ function prepareProjects(rows) {
       project_description: itm.project_description,
       status: itm.status,
       total_project_funding_budget_document: itm.total_project_funding__budget_document_,
+      total_spent: itm.ltd_actuals ? itm.ltd_actuals : 0,
+      encumbered: itm.encumbrances ? itm.encumbrances : 0,
       target_construction_start: itm.target_construction_start,
       target_construction_end: itm.target_construction_end,
       actual_construction_end: itm.actual_construction_end,

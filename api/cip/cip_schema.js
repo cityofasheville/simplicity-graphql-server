@@ -16,6 +16,8 @@ type CIPProject {
   project_description: String
   status: String
   total_project_funding_budget_document: String
+  total_spent: String
+  encumbered: String
   target_construction_start: String
   target_construction_end: String
   actual_construction_end: String
