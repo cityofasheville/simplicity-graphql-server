@@ -53,6 +53,7 @@ function prepareProjects(rows) {
       communication_plan: itm.communication_plan,
       photo_url: itm.photo_url,
       project_updates: itm.project_updates,
+      show_pm_fields: true,
       latitude,
       longitude,
     };
@@ -66,7 +67,7 @@ const resolvers = {
     cip_projects(obj, args, context) {
       const logger = context.logger;
       const pool = context.pool;
-      let query = 'select * from amd.coa_cip_projects as A '
+      let query = 'select * from amd.capital_projects_master as A '
       + 'left join amd.cip_ltd_view as B '
       + 'on A.munis_project_number = B.project_id ';
       // let query = 'SELECT * FROM amd.coa_cip_project_information ';
