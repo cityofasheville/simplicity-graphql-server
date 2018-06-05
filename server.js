@@ -55,52 +55,65 @@ graphQLServer.use(bodyParser.json());
 logger.info('Initialize graphql server');
 
 graphQLServer.use('/graphql', graphqlExpress((req, res) => {
+  const baseConfig = {
+    schema: executableSchema,
+    context: {
+      pool,
+      logger,
+      loggedin: false,
+      token: null,
+      uid: null,
+      name: null,
+      email: null,
+      employee_id: 0,
+      department: null,
+      division: null,
+      groups: [],
+    },
+  };
   logger.info('New client connection');
   if (!req.headers.authorization || req.headers.authorization === 'null') {
-    return {
-      schema: executableSchema,
-      context: {
-        pool,
-        logger,
-        loggedin: false,
-        token: null,
-        uid: null,
-        name: null,
-        email: null,
-      },
-    };
+    return baseConfig;
   }
   logger.info('Attempt login verification');
   return firebase.auth().verifyIdToken(req.headers.authorization).then((decodedToken) => {
     logger.info(`Logging in ${decodedToken.email}`);
-    return {
-      schema: executableSchema,
-      context: {
-        pool,
-        logger,
-        loggedin: true,
-        token: req.headers.authorization,
-        uid: decodedToken.uid,
-        name: decodedToken.name,
-        email: decodedToken.email,
-      },
-    };
+    const decodedEmail = decodedToken.email.toLowerCase();
+    const query = `SELECT emp_id, ad_memberships from amd.ad_info where email_city = '${decodedEmail}'`;
+    if (!decodedEmail.endsWith('@ashevillenc.gov')) return baseConfig;
+    return pool.query(query)
+    .then(eres => {
+      if (eres.rows.length > 0) {
+        const employee = eres.rows[0];
+        const config = {
+          schema: executableSchema,
+          context: {
+            pool,
+            logger,
+            loggedin: true,
+            token: req.headers.authorization,
+            uid: decodedToken.uid,
+            name: decodedToken.name,
+            email: decodedToken.email,
+            employee_id: employee.emp_id,
+            department: null,
+            division: null,
+            groups: employee.ad_memberships.split(','),
+          },
+        };
+        return config;
+      }
+      logger.error(`Unable to match employee by email ${decodedEmail}`);
+      throw new Error('Unable to find employee by email.');
+    })
+    .catch(error => {
+      logger.error(`Error on employee lookup: ${error}`);
+    });
   }).catch((error) => {
     if (req.headers.authorization !== 'null') {
       logger.error(`Error decoding authentication token: ${error}`);
     }
-    return {
-      schema: executableSchema,
-      context: {
-        pool,
-        logger,
-        loggedin: false,
-        token: null,
-        uid: null,
-        name: null,
-        email: null,
-      },
-    };
+    return baseConfig;
   });
 }));
 
