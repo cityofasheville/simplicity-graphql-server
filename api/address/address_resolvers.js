@@ -5,9 +5,12 @@ function prepareAddresses(rows) {
     // if (idx < 10) console.log(JSON.stringify(itm));
     const maint = (itm.maintenance_entity) ? itm.maintenance_entity : null;
     if (!aMap.hasOwnProperty(itm.civicaddress_id)) {
+      const prefix = itm.address_street_prefix ? itm.address_street_prefix : '';
+      const street = itm.address_street_name ? itm.address_street_name : '';
+      const type = itm.address_street_type ? itm.address_street_type : '';
       aMap[itm.civicaddress_id] = {
         civic_address_id: itm.civicaddress_id,
-        address: itm.address_full,
+        address: itm.address_number !== 99999 ? itm.address_full : `${prefix} ${street} ${type} - No address assigned`,
         x: itm.longitude_wgs,
         y: itm.latitude_wgs,
         street_name: itm.address_street_name,
