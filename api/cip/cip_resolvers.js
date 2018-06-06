@@ -23,7 +23,6 @@ function prepareProjects(rows) {
       latitude = xyCache[itm.project].latitude;
       longitude = xyCache[itm.project].longitude;
     }
-    console.log(JSON.stringify(itm));
     return {
       gis_id: itm.gis_id,
       munis_project_number: itm.munis_project_number,
