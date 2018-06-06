@@ -23,7 +23,6 @@ function prepareProjects(rows) {
       latitude = xyCache[itm.project].latitude;
       longitude = xyCache[itm.project].longitude;
     }
-
     return {
       gis_id: itm.gis_id,
       munis_project_number: itm.munis_project_number,
@@ -31,6 +30,7 @@ function prepareProjects(rows) {
       display_name: itm.display_name,
       location_details: itm.location_details,
       zip_code: itm.zip_code,
+      type: itm.type,
       category: itm.category,
       coa_contact: itm.coa_contact,
       phone_number: itm.phone_number,
@@ -39,13 +39,7 @@ function prepareProjects(rows) {
       administering_department: itm.administering_department,
       project_description: itm.project_description,
       status: itm.status,
-      go_bond_funding: itm.go_bond_funding,
-      cip_funding_total: itm.cip_funding__total_,
-      grant_funding_total: itm.grant_funding__total_,
-      other_funding: itm.other_funding,
-      total_project_funding_budget_document: itm.total_project_funding__budget_document_,
-      preliminary_project_budget_planning_phase_estimate: itm.preliminary_project_budget__planning_phase_estimate_,
-      estimated_total_project_cost: itm.estimated_total_project_cost,
+      total_project_funding_budget_document: itm.total_project_funding_budget_d,
       total_spent: itm.ltd_actuals ? itm.ltd_actuals : 0,
       encumbered: itm.encumbrances ? itm.encumbrances : 0,
       target_construction_start: itm.target_construction_start,
@@ -57,11 +51,8 @@ function prepareProjects(rows) {
       project_webpage_more_information: itm.project_webpage__more_information_,
       communication_plan: itm.communication_plan,
       photo_url: itm.photo_url,
-      map_tab: itm.map_tab,
       project_updates: itm.project_updates,
-      where: itm.where_,
-      contact: itm.contact,
-      show_pm_fields: !hidePMFields.hasOwnProperty(itm.project),
+      show_pm_fields: true,
       latitude,
       longitude,
     };
@@ -75,7 +66,7 @@ const resolvers = {
     cip_projects(obj, args, context) {
       const logger = context.logger;
       const pool = context.pool;
-      let query = 'select * from amd.coa_cip_project_information as A '
+      let query = 'select * from amd.capital_projects_master as A '
       + 'left join amd.cip_ltd_view as B '
       + 'on A.munis_project_number = B.project_id ';
       // let query = 'SELECT * FROM amd.coa_cip_project_information ';
