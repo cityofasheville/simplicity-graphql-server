@@ -23,7 +23,7 @@ function prepareProjects(rows) {
       latitude = xyCache[itm.project].latitude;
       longitude = xyCache[itm.project].longitude;
     }
-
+    console.log(JSON.stringify(itm));
     return {
       gis_id: itm.gis_id,
       munis_project_number: itm.munis_project_number,
@@ -40,7 +40,7 @@ function prepareProjects(rows) {
       administering_department: itm.administering_department,
       project_description: itm.project_description,
       status: itm.status,
-      total_project_funding_budget_document: itm.total_project_funding__budget_d,
+      total_project_funding_budget_document: itm.total_project_funding_budget_d,
       total_spent: itm.ltd_actuals ? itm.ltd_actuals : 0,
       encumbered: itm.encumbrances ? itm.encumbrances : 0,
       target_construction_start: itm.target_construction_start,
