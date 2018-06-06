@@ -21,6 +21,7 @@ const resolvers = {
 module.exports = merge(resolvers,
   require('./search/resolvers'),
   require('./internal/internal_resolvers'),
+  require('./municipalities/municipalities_resolvers'),
   require('./address/address_resolvers'),
   require('./street/street_resolvers'),
   require('./neighborhood/neighborhood_resolvers'),

@@ -22,6 +22,7 @@ const baseSchema = `
     properties_by_street (centerline_ids: [Float], radius: Int): [Property]
     properties_by_neighborhood (nbrhd_ids: [String]): [Property]
     properties (pins: [String]!): [Property]
+    municipalities (jurisdictions: [String]): [Municipality]
     streets (centerline_ids: [Float]): [Street]
     neighborhoods (nbrhd_ids: [String]): [Neighborhood]
     budgetHistory: [SimpleBudgetDetail]!
@@ -45,6 +46,7 @@ const baseSchema = `
   }
 `;
 const searchSchema = require('./search').schema;
+const municipalitiesSchema = require('./municipalities/municipalities_schema');
 const addressSchema = require('./address/address_schema');
 const propertySchema = require('./property/property_schema');
 const crimeSchema = require('./crime/crime_schema');
@@ -61,6 +63,7 @@ const schema = [
   itProjectSchema,
   developmentSchema,
   crimeSchema,
+  municipalitiesSchema,
   addressSchema,
   streetSchema,
   propertySchema,
