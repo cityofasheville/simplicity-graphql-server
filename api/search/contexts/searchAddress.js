@@ -75,7 +75,7 @@ function searchAddress(searchContext, searchString, geoCodeResponse, context) {
         score: 0,
         type: 'address',
         civic_address_id: row.civicaddress_id,
-        address: row.address_number !== 99999 ? row.address_full : `${prefix} ${street} ${type} - No address assigned`,
+        address: row.address_number !== 99999 ? row.address_full : `${prefix} ${street} ${type} - No addressable building`,
         street_name: row.address_street_name,
         street_prefix: row.address_street_prefix,
         street_number: row.address_number,

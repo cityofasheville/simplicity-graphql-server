@@ -10,7 +10,7 @@ function prepareAddresses(rows) {
       const type = itm.address_street_type ? itm.address_street_type : '';
       aMap[itm.civicaddress_id] = {
         civic_address_id: itm.civicaddress_id,
-        address: itm.address_number !== 99999 ? itm.address_full : `${prefix} ${street} ${type} - No address assigned`,
+        address: itm.address_number !== 99999 ? itm.address_full : `${prefix} ${street} ${type} - No addressable building`,
         x: itm.longitude_wgs,
         y: itm.latitude_wgs,
         street_name: itm.address_street_name,
