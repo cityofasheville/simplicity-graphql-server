@@ -76,7 +76,8 @@ graphQLServer.use('/graphql', graphqlExpress((req, res) => {
     return baseConfig;
   }
   logger.info('Attempt login verification');
-  return firebase.auth().verifyIdToken(req.headers.authorization).then((decodedToken) => {
+  return firebase.auth().verifyIdToken(req.headers.authorization)
+  .then((decodedToken) => {
     logger.info(`Logging in ${decodedToken.email}`);
     const decodedEmail = decodedToken.email.toLowerCase();
     const query = `SELECT emp_id, ad_memberships from amd.ad_info where email_city = '${decodedEmail}'`;

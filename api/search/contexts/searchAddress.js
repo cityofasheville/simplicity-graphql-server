@@ -20,7 +20,7 @@ function searchAddress(searchContext, searchString, geoCodeResponse, context) {
     geoCodeResponse.locPrefix,
     geoCodeResponse.locUnit,
     geoCodeResponse.locZipcode,
-    geoCodeResponse.locCity,
+    geoCodeResponse.locCity.map(c => { return ''; }), // eslint-disable-line no-unused-vars
   ];
 
   const idMap = {};
