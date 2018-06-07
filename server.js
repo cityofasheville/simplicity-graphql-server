@@ -80,12 +80,16 @@ graphQLServer.use('/graphql', graphqlExpress((req, res) => {
   .then((decodedToken) => {
     logger.info(`Logging in ${decodedToken.email}`);
     const decodedEmail = decodedToken.email.toLowerCase();
-    const query = `SELECT emp_id, ad_memberships from amd.ad_info where email_city = '${decodedEmail}'`;
+    const query = `SELECT emp_id, ad_memberships, active, department, division from amd.employee_main where email_city = '${decodedEmail}'`;
     if (!decodedEmail.endsWith('@ashevillenc.gov')) return baseConfig;
     return pool.query(query)
     .then(eres => {
       if (eres.rows.length > 0) {
         const employee = eres.rows[0];
+        if (employee.active !== 'A') {
+          logger.warn(`Non-active employee ${decodedEmail} login attempt`);
+          return baseConfig;
+        }
         const config = {
           schema: executableSchema,
           context: {
@@ -97,8 +101,8 @@ graphQLServer.use('/graphql', graphqlExpress((req, res) => {
             name: decodedToken.name,
             email: decodedToken.email,
             employee_id: employee.emp_id,
-            department: null,
-            division: null,
+            department: employee.department,
+            division: employee.division,
             groups: employee.ad_memberships.split(','),
           },
         };
