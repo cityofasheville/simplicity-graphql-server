@@ -1,16 +1,5 @@
 const axios = require('axios');
 
-const hidePMFields = {
-  'Affordable Housing Investments': true,
-  'Velodrome Resurfacing': true,
-  'New Leicester Hwy Sidewalks': true,
-  'Swannanoa River Greenway Phase 1': true,
-  'Coxe Ave - Feasibility & Design': true,
-  'Eagle Market Place': true,
-  'I - 26 Connector': true,
-  'Lee Walker Heights Redevelopment': true,
-};
-
 let xyCache = null;
 let cacheDate = null;
 
@@ -52,7 +41,6 @@ function prepareProjects(rows) {
       communication_plan: itm.communication_plan,
       photo_url: itm.photo_url,
       project_updates: itm.project_updates,
-      show_pm_fields: true,
       latitude,
       longitude,
     };
