@@ -57,8 +57,8 @@ graphQLServer.use('/graphql', graphqlExpress((req, res) => {
   };
   return coaWebLogin(pool, logger, req)
   .then(userInfo => {
-    config.user = userInfo.user;
-    config.employee = userInfo.employee;
+    config.context.user = userInfo.user;
+    config.context.employee = userInfo.employee;
     return config;
   })
   .catch(error => {

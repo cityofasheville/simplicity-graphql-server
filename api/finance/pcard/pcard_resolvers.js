@@ -33,6 +33,9 @@ function loadTransactions(rows) {
 const resolvers = {
   Query: {
     pcard_transactions(obj, args, context) {
+      if (context.employee.employee_id <= 0) {
+        throw new Error('You must be logged in as a City of Asheville employee to view this data');
+      }
       const logger = context.logger;
       let query = 'SELECT * FROM amd.pcard_transaction ';
       const qargs = [];
@@ -59,6 +62,9 @@ const resolvers = {
     },
 
     pcard_statements_status(obj, args, context) {
+      if (context.employee.employee_id <= 0) {
+        throw new Error('You must be logged in as a City of Asheville employee to view this data');
+      }
       const logger = context.logger;
       let query = 'SELECT * FROM amd.pcard_statement_status_history ';
       const qargs = [];
