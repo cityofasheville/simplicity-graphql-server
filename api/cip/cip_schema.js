@@ -28,7 +28,6 @@ type CIPProject {
   communication_plan: String
   photo_url: String
   project_updates: String
-  show_pm_fields: Boolean
   latitude: [Float]
   longitude: [Float]
 }
