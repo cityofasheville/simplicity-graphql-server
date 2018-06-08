@@ -1,10 +1,10 @@
 const express = require('express');
 const { graphqlExpress, graphiqlExpress } = require('graphql-server-express');
 const { makeExecutableSchema } = require('graphql-tools');
-const coaWebLogin = require('./coa_web_login');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const Logger = require('coa-node-logging');
+const coaWebLogin = require('coa-web-login');
 require('dotenv').config();
 const pg = require('pg');
 const Pool = pg.Pool;
