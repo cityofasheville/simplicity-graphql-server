@@ -21,6 +21,7 @@ function prepareProjects(rows) {
       zip_code: itm.zip_code,
       type: itm.type,
       category: itm.category,
+      category_number: itm.display_order,
       coa_contact: itm.coa_contact,
       phone_number: itm.phone_number,
       email_address: itm.email_address,
@@ -49,12 +50,27 @@ function prepareProjects(rows) {
 
 const resolvers = {
   Query: {
+    cip_project_categories(obj, args, context) {
+      const pool = context.pool;
+      const query = 'select * from amd.capital_projects_master_categories';
+      return pool.query(query)
+      .then(result => {
+        return result.rows.map(itm => {
+          return {
+            category_name: itm.category_name,
+            category_number: itm.display_order,
+          };
+        });
+      });
+    },
     // Note: query can EITHER specify names OR it can specify
     // one or both of categories & zipcodes
     cip_projects(obj, args, context) {
       const logger = context.logger;
       const pool = context.pool;
-      let query = 'select * from amd.capital_projects_master as A '
+      let query = 'select A.*, B.*, C.display_order from amd.capital_projects_master as A '
+      + 'left join amd.capital_projects_master_categories as C '
+      + 'on A.category = C.category_name '
       + 'left join amd.cip_ltd_view as B '
       + 'on A.munis_project_number = B.project_id ';
       // let query = 'SELECT * FROM amd.coa_cip_project_information ';
