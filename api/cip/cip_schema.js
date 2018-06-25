@@ -8,6 +8,7 @@ type CIPProject {
   zip_code: String
   type: String
   category: String
+  category_number: Int
   coa_contact: String
   phone_number: String
   email_address: String
@@ -30,5 +31,10 @@ type CIPProject {
   project_updates: String
   latitude: [Float]
   longitude: [Float]
+}
+
+type CIPProjectCategory {
+  category_name: String
+  category_number: Int
 }
 `;
