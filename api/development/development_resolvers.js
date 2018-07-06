@@ -66,7 +66,7 @@ function preparePermits(rows, before = null, after = null) {
 const stdQuery = 'SELECT A.permit_num, A.permit_group, A.permit_type, '
               + 'A.permit_subtype, A.permit_category, A.permit_description, '
               + 'A.applicant_name, A.applied_date, A.status_current, A.status_date, '
-              + 'A.civic_address_id, A.address, A.contractor_name, '
+              + 'A.civic_address_id, M.address_full AS address, A.contractor_name, '
               + 'A.contractor_license_number, A.longitude as x, A.lattitude as y, '
               + 'B.comment_seq_number, B.comment_date, B.comments ';
 const resolvers = {
@@ -110,6 +110,7 @@ const resolvers = {
       const query = `${stdQuery}`
       + 'FROM amd.v_mda_permits_xy AS A '
       + 'LEFT JOIN amd.mda_permit_comments AS B on A.permit_num = B.permit_num '
+      + 'LEFT JOIN amd.coa_bc_address_master on A.civic_address_id = M.civicaddress_id'
       + 'WHERE A.permit_num = ANY ($1) '
       + 'ORDER BY A.permit_num DESC, B.comment_seq_number ASC ';
       return context.pool.query(query, [args.permit_numbers])
@@ -156,9 +157,11 @@ const resolvers = {
       const logger = context.logger;
       const radius = (args.radius) ? Number(args.radius) : 100; // State plane units are feet
       if (args.centerline_ids.length <= 0) return [];
-      const query = 'SELECT * FROM amd.get_permits_along_streets($1, $2) '
+      const query = 'SELECT A.*, M.address_full as address FROM amd.get_permits_along_streets($1, $2) AS A '
+      + 'LEFT JOIN amd.coa_bc_address_master as M ON A.civic_address_id::INT = M.civicaddress_id '
       + "WHERE permit_group <> 'Services'"
       + 'ORDER BY permit_num DESC, comment_seq_number ASC ';
+      console.log(query);
       return context.pool.query(query, [args.centerline_ids, radius])
       .then(result => {
         return preparePermits(result.rows, args.before, args.after);
@@ -173,8 +176,9 @@ const resolvers = {
     permits_by_neighborhood(obj, args, context) {
       const logger = context.logger;
       if (args.nbrhd_ids.length <= 0) return [];
-      const query = 'SELECT * FROM amd.get_permits_by_neighborhood($1) '
-      + "WHERE permit_group <> 'Services'"
+      const query = 'SELECT A.*, M.address_full as address FROM amd.get_permits_by_neighborhood($1) AS A '
+      + 'LEFT JOIN amd.coa_bc_address_master as M ON A.civic_address_id::INT = M.civicaddress_id '
+      + "WHERE permit_group <> 'Services' "
       + 'ORDER BY permit_num DESC, comment_seq_number ASC ';
       return context.pool.query(query, [args.nbrhd_ids])
       .then(result => {

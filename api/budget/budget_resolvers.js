@@ -136,13 +136,13 @@ const resolvers = {
         const defaultYear = bp.rows[0].defaultyear;
         const currentYear = bp.rows[0].currentyear;
         const isProposed = inBudgetSeason && currentYear === defaultYear;
+        const byAccount = {};
         let endYear = currentYear;
         if ((inBudgetSeason && currentYear === defaultYear) ||
             (defaultYear > currentYear)) endYear = currentYear + 1;
         const startYear = inBudgetSeason ? currentYear - 2 : defaultYear - 3;
         const bhQuery = 'SELECT * from amd.v_gl_5yr_plus_budget_mapped '
         + `where year >= ${startYear} AND year <= ${endYear}`;
-
         return pool.query(bhQuery)
         .then((result) => {
           if (result.rows.length === 0) return null;
@@ -155,6 +155,12 @@ const resolvers = {
             let derivedBudget = itm.adopted_budget;
             if (isProposed && year === endYear) derivedBudget = itm.proposed_budget;
             // Set isProposed on each line, so it only applies to new budget year
+            const oo = `${itm.organization_name}.${itm.object_name}`;
+            if (!byAccount.hasOwnProperty(oo)) {
+              byAccount[oo] = 0.0;
+            }
+            const actual = itm.actual ? parseFloat(itm.actual) : '0.0';
+            byAccount[oo] += Math.abs(actual + parseFloat(derivedBudget));
             return {
               account_type: itm.account_type,
               account_name: itm.object_name,
@@ -186,6 +192,10 @@ const resolvers = {
               is_proposed: isProposed && itm.year === endYear,
               use_actual: useActual,
             };
+          })
+          .filter(itm => {
+            const oo = `${itm.organization_name}.${itm.object_name}`;
+            return byAccount[oo] > 0.0;
           });
         })
         .catch((err) => {

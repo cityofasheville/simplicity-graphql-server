@@ -62,6 +62,7 @@ graphQLServer.use('/graphql', graphqlExpress((req, res) => {
     return config;
   })
   .catch(error => {
+    console.log('Error in server.js');
     logger.error(error);
     return config;
   });
