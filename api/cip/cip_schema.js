@@ -36,5 +36,7 @@ type CIPProject {
 type CIPProjectCategory {
   category_name: String
   category_number: Int
+  total_count: Int
+  bond_count: Int
 }
 `;

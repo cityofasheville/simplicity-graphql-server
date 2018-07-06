@@ -52,13 +52,20 @@ const resolvers = {
   Query: {
     cip_project_categories(obj, args, context) {
       const pool = context.pool;
-      const query = 'select * from amd.capital_projects_master_categories';
+      const query = 'select C.category_name, C.display_order, '
+      + 'COUNT(M.objectid) AS total_count, '
+      + "SUM(CASE WHEN M.type = 'Bond' THEN 1 ELSE 0 END) AS bond_count "
+      + 'from amd.capital_projects_master_categories C left outer join '
+      + 'amd.capital_projects_master M on M.category = C.category_name '
+      + 'group by C.category_name, C.display_order';
       return pool.query(query)
       .then(result => {
         return result.rows.map(itm => {
           return {
             category_name: itm.category_name,
             category_number: itm.display_order,
+            total_count: itm.total_count,
+            bond_count: itm.bond_count,
           };
         });
       });
