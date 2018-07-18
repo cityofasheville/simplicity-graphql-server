@@ -7,7 +7,7 @@ function prepareAddresses(rows) {
     if (!aMap.hasOwnProperty(itm.civicaddress_id)) {
       const prefix = itm.address_street_prefix ? itm.address_street_prefix : '';
       const street = itm.address_street_name ? itm.address_street_name : '';
-      const type = itm.address_street_type ? itm.address_street_type : '';
+      const streetType = itm.address_street_type ? itm.address_street_type : '';
       aMap[itm.civicaddress_id] = {
         civic_address_id: itm.civicaddress_id,
         address: itm.address_number !== 99999 ? itm.address_full : `${prefix} ${street} ${type} - No addressable building`,
@@ -16,6 +16,7 @@ function prepareAddresses(rows) {
         street_name: itm.address_street_name,
         street_prefix: itm.address_street_prefix,
         street_number: itm.address_number,
+        street_type: streetType,
         unit: itm.address_unit,
         city: itm.address_city,
         zipcode: itm.address_zipcode,

@@ -7,6 +7,7 @@ type Address {
   street_name: String
   street_prefix: String
   street_number: String
+  street_type: String
   unit: String
   city: String
   zipcode: String
