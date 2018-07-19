@@ -17,6 +17,13 @@ To update from Github and redeploy, run:
   sudo systemctl restart simplicitygql1
   sudo systemctl restart simplicitygql2
 ````
+for the production version and
+
+````
+  git pull
+  sudo systemctl restart devsimplicitygql1
+  sudo systemctl restart devsimplicitygql2
+````
 
 To see the status of the node services, run, e.g., ````sudo systemctl status simplicitygql1```` 
 or ````sudo journalctl -u simplicitygql1````.

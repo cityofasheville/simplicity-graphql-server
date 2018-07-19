@@ -1,0 +1,14 @@
+[Service]
+WorkingDirectory=/opt/dev-simplicity-graphql-server
+ExecStart=/usr/bin/node /opt/dev-simplicity-graphql-server/server.js
+Restart=always
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=devsimplicity-gql-1
+User=apiadmin
+Group=apiadmin
+Environment=NODE_ENV=production PORT=5004
+
+[Install]
+WantedBy=multi-user.target
+
