@@ -12,6 +12,7 @@ function prepareProjects(rows) {
       latitude = xyCache[itm.project].latitude;
       longitude = xyCache[itm.project].longitude;
     }
+    console.log(itm);
     return {
       gis_id: itm.gis_id,
       munis_project_number: itm.munis_project_number,
@@ -38,7 +39,7 @@ function prepareProjects(rows) {
       amount_behind_schedule: itm.amount_behind_schedule,
       estimated_construction_duration: itm.estimated_construction_duration,
       project_folder: itm.project_folder,
-      project_webpage_more_information: itm.project_webpage__more_information_,
+      project_webpage_more_information: itm.project_webpage_more_informati,
       communication_plan: itm.communication_plan,
       photo_url: itm.photo_url,
       project_updates: itm.project_updates,
