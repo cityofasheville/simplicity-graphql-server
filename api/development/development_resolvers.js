@@ -116,19 +116,36 @@ const resolvers = {
       });
     },
     permits(obj, args, context) {
-      const logger = context.logger;
-      if (args.permit_numbers.length <= 0) return [];
-      const query = `${stdQuery}`
+      const qargs = [];
+      let query = `${stdQuery}`
       + 'FROM amd.permits_xy_view AS A '
-      + 'LEFT JOIN amd.mda_permit_comments AS B on A.permit_num = B.permit_num '
-      + 'WHERE A.permit_num = ANY ($1) '
-      + 'ORDER BY A.permit_num DESC, B.comment_seq_number ASC ';
-      return context.pool.query(query, [args.permit_numbers])
+      + 'LEFT JOIN amd.mda_permit_comments AS B on A.permit_num = B.permit_num ';
+      const logger = context.logger;
+      if (args.permit_numbers && args.permit_numbers.length > 0) {
+        qargs.push(args.permit_numbers);
+        query += 'WHERE A.permit_num = ANY ($1) ';
+      } else if (args.before || args.after) {
+        const dateField = (args.date_field === 'status_date') ? 'status_date' : 'applied_date';
+        let nextParam = '$1';
+        query += 'where ';
+        if (args.before) {
+          query += `${dateField} < $1 `;
+          nextParam = '$2';
+          if (args.after) query += 'and ';
+          qargs.push(args.before);
+        }
+        if (args.after) {
+          query += `${dateField} > ${nextParam} `;
+          qargs.push(args.after);
+        }
+      }
+      query += 'ORDER BY A.permit_num DESC, B.comment_seq_number ASC ';
+      return context.pool.query(query, qargs)
       .then((result) => {
         return preparePermits(result.rows);
       })
       .catch((err) => {
-        throw new Error(`Got an error in crimes: ${JSON.stringify(err)}`);
+        throw new Error(`Got an error in permits: ${JSON.stringify(err)}`);
       });
     },
     permits_by_address(obj, args, context) {

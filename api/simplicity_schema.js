@@ -35,7 +35,7 @@ const baseSchema = `
     crimes_by_address(civicaddress_id: Int!, radius: Int, after: String, before: String): [CrimeIncident]
     crimes_by_street (centerline_ids: [Float], radius: Int, after: String, before: String): [CrimeIncident]
     crimes_by_neighborhood (nbrhd_ids: [String], after: String, before: String): [CrimeIncident]
-    permits(permit_numbers: [String]!): [Permit]
+    permits(permit_numbers: [String], date_field: String, before: String, after: String): [Permit]
     permits_by_address(civicaddress_id: Int!, radius: Int, after: String, before: String): [Permit]
     permits_by_street(centerline_ids: [Float], radius: Int, after: String, before: String): [Permit]
     permits_by_neighborhood(nbrhd_ids: [String], after: String, before: String): [Permit]
