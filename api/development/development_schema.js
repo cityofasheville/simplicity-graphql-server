@@ -17,6 +17,15 @@ type Permit {
   applied_date: String
   status_current: String
   status_date: String
+  created_by: String
+  building_value: String
+  job_value: String
+  total_project_valuation: String
+  total_sq_feet: String
+  fees: Float
+  paid: Float
+  balance: Float
+  invoiced_fee_total: Float
   civic_address_id: String
   address: String
   x: Float

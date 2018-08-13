@@ -21,6 +21,15 @@ function preparePermits(rows, before = null, after = null) {
         status_date: itm.status_date,
         civic_address_id: itm.civic_address_id,
         address: itm.address,
+        created_by: itm.created_by,
+        building_value: itm.building_value,
+        job_value: itm.job_value,
+        total_project_valuation: itm.total_project_valuation,
+        total_sq_feet: itm.total_sq_feet,
+        fees: itm.fees,
+        paid: itm.paid,
+        balance: itm.balance,
+        invoiced_fee_total: itm.invoiced_fee_total,
         x: itm.x,
         y: itm.y,
         contractor_names: [],
@@ -47,7 +56,7 @@ function preparePermits(rows, before = null, after = null) {
       curComments[itm.comment_seq_number] = true;
     }
   });
-  console.log(`Count before date filter: ${fResults.length}`);
+
   const final = fResults.filter((item) => {
     let keep = true;
     if (after || before) {
@@ -66,8 +75,10 @@ function preparePermits(rows, before = null, after = null) {
 const stdQuery = 'SELECT A.permit_num, A.permit_group, A.permit_type, '
               + 'A.permit_subtype, A.permit_category, A.permit_description, '
               + 'A.applicant_name, A.applied_date, A.status_current, A.status_date, '
-              + 'A.civic_address_id, M.address_full AS address, A.contractor_name, '
-              + 'A.contractor_license_number, A.longitude as x, A.lattitude as y, '
+              + 'A.created_by, A.building_value, A.job_value, A.total_project_valuation, '
+              + 'A.total_sq_feet, A.fees, A.paid, A.balance, A.invoiced_fee_total, '
+              + 'A.civic_address_id, A.address, A.contractor_name, '
+              + 'A.contractor_license_number, A.longitude as x, A.latitude as y, '
               + 'B.comment_seq_number, B.comment_date, B.comments ';
 const resolvers = {
   Query: {
@@ -108,9 +119,8 @@ const resolvers = {
       const logger = context.logger;
       if (args.permit_numbers.length <= 0) return [];
       const query = `${stdQuery}`
-      + 'FROM amd.v_mda_permits_xy AS A '
+      + 'FROM amd.permits_xy_view AS A '
       + 'LEFT JOIN amd.mda_permit_comments AS B on A.permit_num = B.permit_num '
-      + 'LEFT JOIN amd.coa_bc_address_master on A.civic_address_id = M.civicaddress_id'
       + 'WHERE A.permit_num = ANY ($1) '
       + 'ORDER BY A.permit_num DESC, B.comment_seq_number ASC ';
       return context.pool.query(query, [args.permit_numbers])
@@ -125,7 +135,7 @@ const resolvers = {
       const logger = context.logger;
       const radius = args.radius ? Number(args.radius) : 10; // State plane units are feet
       let query = `${stdQuery}`
-      + 'from amd.v_mda_permits_xy as A '
+      + 'from amd.permits_xy_view as A '
       + 'left outer join amd.coa_bc_address_master as M '
       + 'on ST_Point_Inside_Circle(ST_SetSRID(ST_Point(A.address_x, A.address_y),2264), M.address_x, M.address_y, $2) '
       + 'LEFT JOIN amd.mda_permit_comments AS B on A.permit_num = B.permit_num '
@@ -143,7 +153,7 @@ const resolvers = {
         query += `and applied_date > ${nextParam} `;
       }
       query += 'ORDER BY A.permit_num DESC, B.comment_seq_number ASC ';
-      console.log(query);
+
       return context.pool.query(query, qargs)
       .then(result => {
         return preparePermits(result.rows, args.before, args.after);
@@ -157,11 +167,11 @@ const resolvers = {
       const logger = context.logger;
       const radius = (args.radius) ? Number(args.radius) : 100; // State plane units are feet
       if (args.centerline_ids.length <= 0) return [];
-      const query = 'SELECT A.*, M.address_full as address FROM amd.get_permits_along_streets($1, $2) AS A '
+      const query = 'SELECT A.*, M.address_full as address FROM amd.permits_along_streets_fn($1, $2) AS A '
       + 'LEFT JOIN amd.coa_bc_address_master as M ON A.civic_address_id::INT = M.civicaddress_id '
       + "WHERE permit_group <> 'Services'"
       + 'ORDER BY permit_num DESC, comment_seq_number ASC ';
-      console.log(query);
+
       return context.pool.query(query, [args.centerline_ids, radius])
       .then(result => {
         return preparePermits(result.rows, args.before, args.after);
@@ -176,7 +186,7 @@ const resolvers = {
     permits_by_neighborhood(obj, args, context) {
       const logger = context.logger;
       if (args.nbrhd_ids.length <= 0) return [];
-      const query = 'SELECT A.*, M.address_full as address FROM amd.get_permits_by_neighborhood($1) AS A '
+      const query = 'SELECT A.*, M.address_full as address FROM amd.permits_by_neighborhood_fn($1) AS A '
       + 'LEFT JOIN amd.coa_bc_address_master as M ON A.civic_address_id::INT = M.civicaddress_id '
       + "WHERE permit_group <> 'Services' "
       + 'ORDER BY permit_num DESC, comment_seq_number ASC ';
