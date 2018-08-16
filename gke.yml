@@ -16,7 +16,10 @@ spec:
    spec:
      containers:
      - name: simplicity-graphql
-       image: conantp/simplicity-graphql-server:latest
+       image: conantp/simplicity-graphql-server:development
+       env:
+       - name: VIRTUAL_HOST
+         value: graphql.prcapps.com
        ports:
        - containerPort: 8080
        readinessProbe:
