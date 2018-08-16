@@ -1,0 +1,46 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: simplicity-graphql
+  labels:
+    app: simplicity-graphql
+spec:
+ selector:
+   matchLabels:
+     app: simplicity-graphql
+ replicas: 1
+ template:
+   metadata:
+     labels:
+       app: simplicity-graphql
+   spec:
+     containers:
+     - name: simplicity-graphql
+       image: conantp/simplicity-graphql-server:latest
+       ports:
+       - containerPort: 8080
+       readinessProbe:
+          httpGet:
+            path: /graphiql/
+            port: 8080
+       livenessProbe:
+          httpGet:
+            path: /graphiql/
+            port: 8080
+     restartPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: simplicity-graphql
+  labels:
+    app: simplicity-graphql
+spec:
+  type: NodePort
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8080
+    protocol: TCP
+  selector:
+    app: simplicity-graphql
