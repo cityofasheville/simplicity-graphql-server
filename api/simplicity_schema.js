@@ -31,6 +31,7 @@ const baseSchema = `
     budgetParameters: BudgetParameters
     firstReviewSLAItems: [FirstReviewSLAItem]!
     firstReviewSLASummary (tasks: [String]) : [FirstReviewSLASummaryItem]!
+    all_crimes : [CrimeIncident]
     crimes(incident_ids: [Int]!): [CrimeIncident]
     crimes_by_address(civicaddress_id: Int!, radius: Int, after: String, before: String): [CrimeIncident]
     crimes_by_street (centerline_ids: [Float], radius: Int, after: String, before: String): [CrimeIncident]

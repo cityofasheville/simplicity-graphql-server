@@ -109,6 +109,23 @@ const resolvers = {
         throw new Error(`Got an error in crimes: ${err}`);
       });
     },
+    all_crimes(obj, args, context) {
+      const logger = context.logger;
+      const query = 'SELECT incident_id, agency, date_occurred, case_number, '
+      + 'address, geo_beat, geo_report_area, x, y, x_wgs, y_wgs, offense_short_description, '
+      + 'offense_long_description, offense_code, offense_group_code, '
+      + 'offense_group_level, offense_group_short_description, '
+      + 'offense_group_long_description '
+      + 'FROM amd.v_simplicity_crimes ';
+      return context.pool.query(query, [])
+      .then((result) => {
+        return prepareCrimes(result.rows);
+      })
+      .catch((err) => {
+        logger.error(`ERROR: ${err}`);
+        throw new Error(`Got an error in crimes: ${err}`);
+      });
+    },
   },
 };
 
