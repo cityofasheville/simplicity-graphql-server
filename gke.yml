@@ -20,6 +20,14 @@ spec:
        env:
        - name: VIRTUAL_HOST
          value: graphql.prcapps.com
+       - name: dbhost
+         value: 52.21.47.88
+       - name: dbuser
+         value: opendatauser
+       - name: dbpassword
+         value: opendata
+       - name: database
+         value: datastore1
        ports:
        - containerPort: 8080
        readinessProbe:
