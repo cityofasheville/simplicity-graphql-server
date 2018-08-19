@@ -32,6 +32,8 @@ const baseSchema = `
     firstReviewSLAItems: [FirstReviewSLAItem]!
     firstReviewSLASummary (tasks: [String]) : [FirstReviewSLASummaryItem]!
     all_crimes : [CrimeIncident]
+    stats_by_month : [CrimeIncidentStats]
+    generic_month_stats (dataset: String, count: String, dateField: String, byDate: [String], groupBy: [String]) : [GenericMonthStats]
     crimes(incident_ids: [Int]!): [CrimeIncident]
     crimes_by_address(civicaddress_id: Int!, radius: Int, after: String, before: String): [CrimeIncident]
     crimes_by_street (centerline_ids: [Float], radius: Int, after: String, before: String): [CrimeIncident]
