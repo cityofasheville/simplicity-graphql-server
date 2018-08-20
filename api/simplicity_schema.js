@@ -31,9 +31,6 @@ const baseSchema = `
     budgetParameters: BudgetParameters
     firstReviewSLAItems: [FirstReviewSLAItem]!
     firstReviewSLASummary (tasks: [String]) : [FirstReviewSLASummaryItem]!
-    all_crimes : [CrimeIncident]
-    stats_by_month : [CrimeIncidentStats]
-    generic_month_stats (dataset: String, count: String, dateField: String, byDate: [String], groupBy: [String]) : [GenericMonthStats]
     crimes(incident_ids: [Int]!): [CrimeIncident]
     crimes_by_address(civicaddress_id: Int!, radius: Int, after: String, before: String): [CrimeIncident]
     crimes_by_street (centerline_ids: [Float], radius: Int, after: String, before: String): [CrimeIncident]
@@ -60,7 +57,6 @@ const streetSchema = require('./street/street_schema');
 const neighborhoodSchema = require('./neighborhood/neighborhood_schema');
 const cipSchema = require('./cip/cip_schema');
 const financeSchema = require('./finance/finance_schema');
-const statsSchema = require('./stats/stats_schema');
 
 const schema = [
   baseSchema,
@@ -76,7 +72,6 @@ const schema = [
   searchSchema,
   cipSchema,
   financeSchema,
-  statsSchema
 ];
 
 module.exports = schema;
