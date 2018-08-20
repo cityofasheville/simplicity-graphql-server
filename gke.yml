@@ -17,6 +17,7 @@ spec:
      containers:
      - name: simplicity-graphql
        image: conantp/simplicity-graphql-server:development
+       imagePullPolicy: Always
        env:
        - name: VIRTUAL_HOST
          value: graphql.prcapps.com
