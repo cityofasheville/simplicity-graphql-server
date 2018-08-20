@@ -255,7 +255,7 @@ const resolvers = {
       })
       .catch((err) => {
         logger.error(`ERROR: ${err}`);
-        throw new Error(`Got an error in crimes: ${err}`);
+        throw new Error(`Got an error in stats: ${err}`);
       });
     },
   },
