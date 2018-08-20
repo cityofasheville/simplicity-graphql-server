@@ -60,7 +60,7 @@ const streetSchema = require('./street/street_schema');
 const neighborhoodSchema = require('./neighborhood/neighborhood_schema');
 const cipSchema = require('./cip/cip_schema');
 const financeSchema = require('./finance/finance_schema');
-const statsSchema = require('./crime/stats_schema');
+const statsSchema = require('./stats/stats_schema');
 
 const schema = [
   baseSchema,
@@ -76,6 +76,7 @@ const schema = [
   searchSchema,
   cipSchema,
   financeSchema,
+  statsSchema
 ];
 
 module.exports = schema;

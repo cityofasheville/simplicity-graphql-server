@@ -181,7 +181,7 @@ const resolvers = {
 
       if (typeof args.count === typeof undefined) return [];
       if (typeof args.dataset === typeof undefined) return [];
-      if (typeof args.dataset === typeof undefined) return [];
+      // if (typeof args.dataset === typeof undefined) return [];
 
       const count = args.count;
       const dataset = args.dataset;
