@@ -29,5 +29,7 @@ type Address {
   owner_cityname: String
   owner_state: String
   owner_zipcode: String
+  historic_district: String
+  local_landmark: String
 }
 `;
