@@ -33,6 +33,7 @@ function loadTransactions(rows) {
 const resolvers = {
   Query: {
     pcard_transactions(obj, args, context) {
+      // console.log('In pcard_transactions');
       if (false && context.employee.employee_id <= 0) {
         throw new Error('You must be logged in as a City of Asheville employee to view this data');
       }
@@ -62,7 +63,8 @@ const resolvers = {
     },
 
     pcard_statements_status(obj, args, context) {
-      if (context.employee.employee_id <= 0) {
+      // console.log('In pcard_statements_status');
+      if (false && context.employee.employee_id <= 0) {
         throw new Error('You must be logged in as a City of Asheville employee to view this data');
       }
       const logger = context.logger;
