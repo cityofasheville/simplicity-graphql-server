@@ -1,16 +1,15 @@
-function prc_sum_subitems(input_array, sum_key){
-  var output_array = [];
-  var top_level_keys = {};
-  var key_index_lookup = {};
+function prc_sum_subitems(input_array, sum_key) {
+  const output_array = [];
+  const top_level_keys = {};
+  const key_index_lookup = {};
 
   input_array.forEach((row) => {
     console.log(row, sum_key, row[sum_key]);
-    top_level_keys[row[sum_key] ] = true;
+    top_level_keys[row[sum_key]] = true;
   });
-console.log(top_level_keys);
 
-  for(var index in top_level_keys){
-    var temp = {};
+  for (var index in top_level_keys) {
+    let temp = {};
     temp.grouptitle = index;
     temp.groupcategory = sum_key;
     temp.subitems = [];
@@ -21,7 +20,7 @@ console.log(top_level_keys);
   }
 
   input_array.forEach((row, index) => {
-    var target_index = key_index_lookup[row[sum_key]];
+    const target_index = key_index_lookup[row[sum_key]];
     output_array[target_index].count += parseInt(row.count);
 
     output_array[target_index].subitems.push(row);
@@ -32,19 +31,15 @@ console.log(top_level_keys);
 
 function prepareCrimesStats(rows, aggregateFields, dateAggregateFields, before = null, after = null) {
   if (rows.length === 0) return [];
-  
 
-  // PRC TESTINg
-  var new_array = [];
-
-  if(false){
-    var test = {};
+  if (false) {
+    let test = {};
     test.grouptitle = "All";
     // test.subitems = rows;
 
     test.subitems = prc_sum_subitems(rows, dateAggregateFields[0]);
 
-    var active_set = test.subitems;
+    let active_set = test.subitems;
     aggregateFields.forEach((field) => {
       console.log('doing', field);
 
@@ -55,10 +50,10 @@ function prepareCrimesStats(rows, aggregateFields, dateAggregateFields, before =
 
       console.log(active_set);
 
-      if(active_set.subitems){
+      if (active_set.subitems) {
         active_set = active_set.subitems;
       }
-      else{
+      else {
         // return;
       }
       // console.log(active_set);
@@ -69,7 +64,7 @@ function prepareCrimesStats(rows, aggregateFields, dateAggregateFields, before =
 
   // return active_set;
 
-  var new_array = [];
+  let new_array = [];
 
   new_array = prc_sum_subitems(rows, dateAggregateFields[0]);
   new_array.forEach((row, index) => {
@@ -95,8 +90,8 @@ function prepareCrimesStats(rows, aggregateFields, dateAggregateFields, before =
   // console.log(new_array);
   return new_array;
 
-  var top_level_key = false;
-  var top_level_keys = {};
+  let top_level_key = false;
+  const top_level_keys = {};
   top_level_key = aggregateFields.pop();
 
   rows.forEach((row) => {
@@ -132,7 +127,7 @@ function prepareCrimesStats(rows, aggregateFields, dateAggregateFields, before =
   return rows.map((itm, index) => {
     console.log(itm);
     // item.subitem_title[index] = itm.count;
-    return itm
+    return itm;
     // return {
     //   count: itm.count,
     //   agency: itm.agency,
@@ -158,24 +153,6 @@ function prepareCrimesStats(rows, aggregateFields, dateAggregateFields, before =
 
 const resolvers = {
   Query: {
-    stats_by_month(obj, args, context) {
-      const logger = context.logger;
-      const query = 'SELECT COUNT(incident_id) as count, agency, EXTRACT(month from date_occurred) as month, EXTRACT(year from date_occurred) as year '
-      // + 'offense_long_description, offense_code, offense_group_code, '
-      // + 'offense_group_level, offense_group_short_description, '
-      // + 'offense_group_long_description '
-      + 'FROM amd.v_simplicity_crimes '
-      + 'GROUP BY year, month, agency '
-      + 'ORDER BY year DESC, month DESC';
-      return context.pool.query(query, [])
-      .then((result) => {
-        return prepareCrimesStats(result.rows);
-      })
-      .catch((err) => {
-        logger.error(`ERROR: ${err}`);
-        throw new Error(`Got an error in crimes: ${err}`);
-      });
-    },
     generic_month_stats(obj, args, context) {
       const logger = context.logger;
 
@@ -186,28 +163,47 @@ const resolvers = {
       const count = args.count;
       const dataset = args.dataset;
       const date_field = args.dateField;
+      const filterGroups = args.filters;
+      const aggregateFields = args.groupBy;
+      const dateAggregateFields = args.byDate;
 
-      var aggregateFields = args.groupBy;  // 
-      var dateAggregateFields = args.byDate; //
-
-      var query = 'SELECT COUNT($1::varchar) as count ';
+      let query = 'SELECT COUNT($1::varchar) as count ';
 
       dateAggregateFields.forEach((field) => {
-        query += ', EXTRACT(' + field + ' from ' + date_field + ') as ' + field + ' ';
+        query += `, EXTRACT(${field} from ${date_field}) as ${field} `;
       });
 
       aggregateFields.forEach((field) => {
-        query += ', ' + field + ' ';
+        query += `, ${field} `;
       });
-      
-      query += 'FROM amd.' + dataset + ' ';
 
-      if(aggregateFields.length || dateAggregateFields.length){
+      query += `FROM amd.${dataset} `;
+
+      if (dataset === 'coa_apd_traffic_stop_name_data_table') {
+        // query += ' JOIN amd.coa_apd_traffic_stops_post2017 ON (coa_apd_traffic_stops_post2017.traffic_stop_id = coa_apd_traffic_stop_name_data_table.traffic_stop_id) '
+        query += ' JOIN amd.coa_apd_traffic_stops_pre2017 ON ';
+        query += ' (coa_apd_traffic_stops_pre2017.traffic_stop_id = coa_apd_traffic_stop_name_data_table.traffic_stop_id) ';
+      }
+
+      if (filterGroups.length) {
+        query += ' WHERE ';
+
+        console.log(filterGroups);
+        filterGroups.forEach((filterGroup) => {
+          filterGroup.filters.forEach((field, index) => {
+            if (index > 0) {
+              query += ` ${filterGroup.op} `;
+            }
+            query += ` ${field.key} ${field.op} '${field.value}' `;
+          });
+        });
+      }
+
+      if (aggregateFields.length || dateAggregateFields.length) {
         query += 'GROUP BY ';
-        
 
         dateAggregateFields.forEach((field, index) => {
-          if(index > 0){
+          if (index > 0) {
             query += ', ';
           }
           query += field;
@@ -216,40 +212,33 @@ const resolvers = {
         query += ', ';
 
         aggregateFields.forEach((field, index) => {
-          if(index > 0){
+          if (index > 0) {
             query += ', ';
           }
           query += field;
         });
 
-
-        
-
         query += ' ORDER BY ';
 
-        
-
         dateAggregateFields.forEach((field, index) => {
-          if(index > 0){
+          if (index > 0) {
             query += ', ';
           }
-          query += field + ' DESC';
+          query += `${field} DESC`;
         });
 
-          query += ', ';
-
+        query += ', ';
 
         aggregateFields.forEach((field, index) => {
-          if(index > 0){
+          if (index > 0) {
             query += ', ';
-          } 
-          query += field + ' DESC';
+          }
+          query += `${field} DESC`;
         });
-
       }
-      
-      console.log('test', query, count, dataset);
-      return context.pool.query(query, [count])
+
+      console.log('test', query);
+      return context.pool.query(query, [`amd.${dataset}.${count}`])
       .then((result) => {
         return prepareCrimesStats(result.rows, aggregateFields, dateAggregateFields);
       })

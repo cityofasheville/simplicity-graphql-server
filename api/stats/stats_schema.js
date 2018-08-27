@@ -17,4 +17,15 @@ type GenericMonthStats {
   groupcategory: String,
   subitems: [GenericMonthStats]
 }
+
+input GenericStatsFilterGroup{
+  op: String!
+  filters: [GenericStatsFilter]
+}
+
+input GenericStatsFilter{
+  key: String!
+  op: String!
+  value: String!
+}
 `;
