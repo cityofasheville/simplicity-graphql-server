@@ -185,7 +185,7 @@ const resolvers = {
         query += ' (coa_apd_traffic_stops_pre2017.traffic_stop_id = coa_apd_traffic_stop_name_data_table.traffic_stop_id) ';
       }
 
-      if (filterGroups.length) {
+      if (filterGroups && filterGroups.length) {
         query += ' WHERE ';
 
         console.log(filterGroups);
