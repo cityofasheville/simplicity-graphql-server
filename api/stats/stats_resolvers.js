@@ -117,7 +117,7 @@ const resolvers = {
           aggregator = field.aggregateFunction;
         }
 
-        query += `${aggregator}(amd.${dataset}.${field.column}) as count `;
+        query += `${aggregator}(amd.${dataset}.${field.column}::numeric) as count `;
         // query += `${aggregator}(amd.${dataset}.${field.column}) as ${field.column}`;
       });
 
