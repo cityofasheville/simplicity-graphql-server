@@ -46,6 +46,8 @@ input GenericStatsGroupBy{
   column: String!
   # Optional: datefield to extract from 
   dateField: String
+  # Optional: The direction to sort (ASC / DESC)
+  sortDirection: String
 }
 
 `;

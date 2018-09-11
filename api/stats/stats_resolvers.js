@@ -26,44 +26,55 @@ function generateWhereClausesFromFilterGroup(filterGroup) {
   return query;
 }
 
-function prepareCrimesStatsNew(rows, groupBy) {
+function prepareCrimesStats(rows, groupBy) {
   if (rows.length === 0) return [];
-
-  let new_array = [];
 
   const firstGroupBy = groupBy.shift();
 
+  let new_array = [];
   new_array = sumSubitemCounts(rows, firstGroupBy);
 
-  // TODO: Make Multi-Dimensional Work
   if (groupBy.length) {
-    const newGroupBy = groupBy.shift();
-    new_array.forEach((row) => {
-      row.subitems = sumSubitemCounts(row.subitems, newGroupBy);
-    });
+    let active_set = new_array;
+    let newGroupBy = groupBy.shift();
+    while (newGroupBy) {
+      let new_active_set = [];
+      active_set.forEach((row) => {
+        row.subitems = sumSubitemCounts(row.subitems, newGroupBy);
+        new_active_set = new_active_set.concat(row.subitems);
+      });
+
+      active_set = new_active_set.slice();
+      newGroupBy = groupBy.shift();
+
+      if (!newGroupBy) {
+        // For the last set, we just want to clear out the subitems,
+        // since it results in duplicate content to the parent
+        active_set.forEach((row) => {
+          row.subitems = [];
+        });
+      }
+    }
   } else {
-
-    // new_array.forEach((row, index) => {
-    //       row.subitems.map((itm) => {
-    //             itm.subitems = [];
-    //             return itm;
-    //           });
-    // });
-
+    new_array.forEach((row) => {
+      row.subitems = [];
+    });
   }
   return new_array;
 }
 
 function sumSubitemCounts(input_array, sum_key) {
   const output_array = [];
-  const top_level_keys = {};
+  const top_level_keys = [];
   const key_index_lookup = {};
 
   input_array.forEach((row) => {
-    top_level_keys[row[sum_key.column]] = true;
+    if (top_level_keys.indexOf(row[sum_key.column]) === -1) {
+      top_level_keys.push(row[sum_key.column]);
+    }
   });
 
-  Object.keys(top_level_keys).forEach((index) => {
+  top_level_keys.forEach((index) => {
     const temp = {};
     temp.grouptitle = index;
     temp.groupcategory = sum_key.column;
@@ -154,14 +165,25 @@ const resolvers = {
           if (index > 0) {
             query += ', ';
           }
-          query += `${field.column} DESC`;
+
+          let sortDirection = 'DESC';
+          if (
+              field.sortDirection &&
+              (
+                field.sortDirection === 'ASC' ||
+                field.sortDirection === 'DESC'
+              )
+            ) {
+            sortDirection = field.sortDirection;
+          }
+          query += `${field.column} ${sortDirection}`;
         });
       }
 
-      console.log('test', query);
+      console.log('QUERY', query);
       return context.pool.query(query)
       .then((result) => {
-        return prepareCrimesStatsNew(result.rows, groupBy);
+        return prepareCrimesStats(result.rows, groupBy);
       })
       .catch((err) => {
         logger.error(`ERROR: ${err}`);
