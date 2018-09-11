@@ -2,7 +2,7 @@
 
 ## Permits
 
-`{
+~~~~{
   generic_stats(
     dataset: "permits_xy_view", 
     fields: [{column: "permit_num"}], 
@@ -33,6 +33,6 @@
     }
   }
 }
-`
+~~~~
 
 
