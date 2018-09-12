@@ -31,7 +31,6 @@ const baseSchema = `
     budgetParameters: BudgetParameters
     firstReviewSLAItems: [FirstReviewSLAItem]!
     firstReviewSLASummary (tasks: [String]) : [FirstReviewSLASummaryItem]!
-    all_crimes : [CrimeIncident]
     generic_stats (dataset: String, fields: [GenericStatsAggregateField], groupBy: [GenericStatsGroupBy], filters: GenericStatsFilterGroup) : [GenericStats]
     crimes(incident_ids: [Int]!): [CrimeIncident]
     crimes_by_address(civicaddress_id: Int!, radius: Int, after: String, before: String): [CrimeIncident]
