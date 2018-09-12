@@ -2,10 +2,8 @@
 
 function generateWhereClausesFromFilterGroup(filterGroup) {
   let query = ' ( ';
-  console.log('filters', filterGroup, typeof filterGroup.groups);
 
   if (filterGroup.groups && filterGroup.groups.length) {
-    console.log('groups');
     filterGroup.groups.forEach((subFilterGroup, index) => {
       if (index > 0) {
         query += ` ${filterGroup.op} `;
@@ -18,7 +16,12 @@ function generateWhereClausesFromFilterGroup(filterGroup) {
       if (index > 0) {
         query += ` ${filterGroup.op} `;
       }
-      query += ` ${field.key} ${field.op} '${field.value}' `;
+
+      if (field.dateField) {
+        query += ` EXTRACT(${field.key} from ${field.dateField}) ${field.op} '${field.value}' `;
+      } else {
+        query += ` ${field.key} ${field.op} '${field.value}' `;
+      }
     });
   }
 
@@ -26,13 +29,13 @@ function generateWhereClausesFromFilterGroup(filterGroup) {
   return query;
 }
 
-function prepareCrimesStats(rows, groupBy) {
+function prepareStats(rows, fields, groupBy) {
   if (rows.length === 0) return [];
 
   const firstGroupBy = groupBy.shift();
 
   let new_array = [];
-  new_array = sumSubitemCounts(rows, firstGroupBy);
+  new_array = sumSubitemCounts(rows, fields, firstGroupBy);
 
   if (groupBy.length) {
     let active_set = new_array;
@@ -40,7 +43,7 @@ function prepareCrimesStats(rows, groupBy) {
     while (newGroupBy) {
       let new_active_set = [];
       active_set.forEach((row) => {
-        row.subitems = sumSubitemCounts(row.subitems, newGroupBy);
+        row.subitems = sumSubitemCounts(row.subitems, fields, newGroupBy);
         new_active_set = new_active_set.concat(row.subitems);
       });
 
@@ -63,7 +66,7 @@ function prepareCrimesStats(rows, groupBy) {
   return new_array;
 }
 
-function sumSubitemCounts(input_array, sum_key) {
+function sumSubitemCounts(input_array, fields, sum_key) {
   const output_array = [];
   const top_level_keys = [];
   const key_index_lookup = {};
@@ -75,21 +78,65 @@ function sumSubitemCounts(input_array, sum_key) {
   });
 
   top_level_keys.forEach((index) => {
-    const temp = {};
-    temp.grouptitle = index;
-    temp.groupcategory = sum_key.column;
-    temp.subitems = [];
-    temp.count = 0;
+    const newItem = {};
+    newItem.groupTitle = index;
+    newItem.groupCategory = sum_key.column;
+    newItem.subitems = [];
+    // newItem.count = 0;
+    newItem.fields = [];
+
+    fields.forEach((field) => {
+      const newField = Object.assign({}, field);
+      newField.value = 0;
+      newItem.fields.push(newField);
+    });
+
     key_index_lookup[index] = output_array.length;
 
-    output_array.push(temp);
+    output_array.push(newItem);
   });
+
 
   input_array.forEach((row) => {
     const target_index = key_index_lookup[row[sum_key.column]];
-    output_array[target_index].count += parseInt(row.count, 10);
+    const target_item = output_array[target_index];
 
-    output_array[target_index].subitems.push(row);
+    fields.forEach((field, index) => {
+      let aggregator = 'count';
+      if (field.aggregateFunction) {
+        aggregator = field.aggregateFunction.toLowerCase();
+      }
+      const row_value = row[`${field.column}_${aggregator}`];
+
+      if (aggregator === 'sum' || aggregator === 'count'){
+        target_item.fields[index].value += parseFloat(row_value);
+      } else if (aggregator === 'avg') {
+        // The AVG function requi[res some additional discussion
+        // This currently returns the "avg of subitems",
+        // when users may expect it to be the sum / count result
+        // for the parent item.
+        // For example - if you request an average group by year and month
+        // It will give you the result of (sum of month values) / (count of month values)
+        // rather than (sum of year values) / (count of year values)
+        throw `Aggregate function (${aggregator}) is not available yet. Please use SUM or COUNT`;
+        
+        // For average, we count the number of items and multiply
+        // by the current value, giving us the current sum
+        const current_items = target_item.subitems.length;
+        const current_sum = current_items * target_item.fields[index].value;
+
+        // We then add the new value as well as the new item count
+        // and calculate the new average
+        const new_sum = current_sum + parseFloat(row_value);
+        const new_items = current_items + 1; // For the item we're adding now
+
+        target_item.fields[index].value = parseFloat(new_sum / new_items);
+      } else {
+        throw `Aggregate function (${aggregator}) is not available yet. Please use SUM or COUNT`;
+      }
+    });
+
+    target_item.subitems.push(row);
   });
 
   return output_array;
@@ -106,19 +153,25 @@ const resolvers = {
 
       const dataset = args.dataset;
       const fields = args.fields;
-      const filterGroup = args.filters;
       const groupBy = args.groupBy;
+      const filterGroup = args.filters;
 
       let query = 'SELECT ';
 
-      fields.forEach((field) => {
+      fields.forEach((field, index) => {
+        if (index > 0) {
+          query += ', ';
+        }
+
         let aggregator = 'COUNT';
         if (field.aggregateFunction) {
           aggregator = field.aggregateFunction;
         }
 
-        query += `${aggregator}(amd.${dataset}.${field.column}::numeric) as count `;
-        // query += `${aggregator}(amd.${dataset}.${field.column}) as ${field.column}`;
+        query += `
+          ${aggregator}(amd.${dataset}.${field.column}::numeric) as 
+          ${field.column}_${aggregator}
+        `;
       });
 
 
@@ -142,7 +195,6 @@ const resolvers = {
         query += `FROM amd.${dataset} `;
       }
 
-      console.log('filter group', filterGroup, typeof filterGroup, args);
       if (filterGroup) {
         query += ' WHERE ';
 
@@ -183,7 +235,7 @@ const resolvers = {
       console.log('QUERY', query);
       return context.pool.query(query)
       .then((result) => {
-        return prepareCrimesStats(result.rows, groupBy);
+        return prepareStats(result.rows, fields, groupBy);
       })
       .catch((err) => {
         logger.error(`ERROR: ${err}`);

@@ -1,15 +1,25 @@
 module.exports = `
 
+# A field in a generaic stats result
+type GenericStatsField {
+  # SQL Column name
+  column: String!
+  # Optional: The aggregate function to use - defaults to COUNT
+  aggregateFunction: String
+  # Value from SQL Query
+  value: String
+}
+
 # A generic stats types
-type GenericMonthStats {
+type GenericStats {
   # The result of the aggregation
-  count: Int
+  fields: [GenericStatsField]
   # The value of this category from the aggregation
-  grouptitle: String,
+  groupTitle: String,
   # The category of this aggregation 
-  groupcategory: String,
+  groupCategory: String,
   # An array of subitems
-  subitems: [GenericMonthStats]
+  subitems: [GenericStats]
 }
 
 # Filter "groups" are used to group together WHERE clauses in the query 
@@ -26,6 +36,8 @@ input GenericStatsFilterGroup{
 input GenericStatsFilter{
   # The column 'key' for comparison
   key: String!
+  # Optional: datefield to extract from 
+  dateField: String
   # The comparison operator (=, !=, >=, <=) - others might work but aren't tested. 
   op: String!
   # The value for comparison
