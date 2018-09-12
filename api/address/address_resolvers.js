@@ -39,6 +39,8 @@ function prepareAddresses(rows) {
         owner_cityname: itm.owner_cityname,
         owner_state: itm.owner_state,
         owner_zipcode: itm.owner_zipcode,
+        local_landmark: itm.local_landmark,
+        historic_district: itm.historic_district,
       };
     } else { // Multiple - pick best for street maintenance
       const cur = aMap[itm.civicaddress_id];

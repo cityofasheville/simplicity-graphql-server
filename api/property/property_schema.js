@@ -29,6 +29,8 @@ type Property {
   market_value: Float
   owner: String
   owner_address: String
+  historic_district: String
+  local_landmark: String
   polygons: [Polygon]
 }
 `;

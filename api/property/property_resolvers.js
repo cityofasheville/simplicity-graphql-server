@@ -36,6 +36,8 @@ function prepareProperties(rows) {
         market_value: itm.totalmarketvalue,
         owner: itm.owner,
         owner_address: itm.owner_address,
+        local_landmark: itm.local_landmark,
+        historic_district: itm.historic_district,
         polygon: itm.polygon,
       };
     }
