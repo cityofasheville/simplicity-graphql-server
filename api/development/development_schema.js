@@ -35,5 +35,32 @@ type Permit {
   comments: [PermitComment]
 }
 
+type PermitTask {
+  permit_number: String
+  permit_group: String
+  permit_type: String
+  permit_subtype: String
+  permit_category: String
+  process_code: String
+  task: String
+  task_status: String
+  current_status_date: String
+  step_number: String
+  relation_sequence_id: String
+  parent_task_name: String
+  user_name: String
+  user_id: String
+  user_department: String
+  due_date: String	
+  record_date: String	
+  comments: String
+  is_completed: Boolean
+  is_active: Boolean
+  assigned_date: String
+  assigned_user: String
+  assigned_department: String
+  process_history_sequence_number: Int
+  record_id: String
+}
 ${dsdSlaSchema}
 `;

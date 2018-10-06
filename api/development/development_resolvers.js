@@ -56,22 +56,42 @@ function preparePermits(rows, before = null, after = null) {
       curComments[itm.comment_seq_number] = true;
     }
   });
-
-  const final = fResults.filter((item) => {
-    let keep = true;
-    if (after || before) {
-      const date1 = new Date(item.applied_date);
-      if (after && date1 < new Date(`${after} 00:00:00 GMT-0500`)) {
-        keep = false;
-      }
-      if (keep && before && date1 > new Date(`${before} 00:00:00 GMT-0500`)) {
-        keep = false;
-      }
-    }
-    return keep;
-  });
-  return final;
 }
+
+function preparePermitTasks(rows) {
+  if (rows.length === 0) return [];
+  return rows.map(itm => {
+    return {
+      permit_number: itm.permit_num,
+      permit_group: itm.permit_group,
+      permit_type: itm.permit_type,
+      permit_subtype: itm.permit_subtype,
+      permit_category: itm.permit_category,
+      permit_description: itm.permit_description,
+      process_code: itm.process_code,
+      task: itm.task,
+      task_status: itm.task_status,
+      current_status_date: itm.current_status_date,
+      step_number: itm.step_number,
+      relation_sequence_id: itm.relation_sequence_id,
+      parent_task_name: itm.parent_task_name,
+      user_name: itm.user_name,
+      user_id: itm.user_id,
+      user_department: itm.user_department,
+      due_date: itm.due_date,	
+      record_date: itm.record_date,	
+      comments: itm.comments,
+      is_completed: itm.is_completed === 'Y',
+      is_active: itm.is_active === 'Y',
+      assigned_date: itm.assigned_date,
+      assigned_user: itm.assigned_user,
+      assigned_department: itm.assigned_department,
+      process_history_sequence_number: itm.process_history_sequence_number,
+      record_id: itm.record_id,
+    };
+  });
+}
+
 const stdQuery = 'SELECT A.permit_num, A.permit_group, A.permit_type, '
               + 'A.permit_subtype, A.permit_category, A.permit_description, '
               + 'A.applicant_name, A.applied_date, A.status_current, A.status_date, '
@@ -232,6 +252,36 @@ const resolvers = {
         if (err) {
           console.log(`Got an error in firstReviewSLAItems: ${JSON.stringify(err)}`);
         }
+      });
+    },
+    permit_tasks(obj, args, context) {
+      const qargs = [];
+      let query = 'SELECT * FROM amd.permit_tasks AS A ';
+      if (args.permit_numbers && args.permit_numbers.length > 0) {
+        qargs.push(args.permit_numbers);
+        query += 'WHERE A.permit_num = ANY ($1) ';
+      } else if (args.before || args.after) {
+        const dateField = args.date_field || 'current_status_date';
+        let nextParam = '$1';
+        query += 'where ';
+        if (args.before) {
+          query += `${dateField} < $1 `;
+          nextParam = '$2';
+          if (args.after) query += 'and ';
+          qargs.push(args.before);
+        }
+        if (args.after) {
+          query += `${dateField} > ${nextParam} `;
+          qargs.push(args.after);
+        }
+      }
+      query += 'ORDER BY A.permit_num DESC ';
+      return context.pool.query(query, qargs)
+      .then((result) => {
+        return preparePermitTasks(result.rows);
+      })
+      .catch((err) => {
+        throw new Error(`Got an error in permit_tasks: ${JSON.stringify(err)}`);
       });
     },
   },
