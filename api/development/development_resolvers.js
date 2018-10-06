@@ -56,6 +56,21 @@ function preparePermits(rows, before = null, after = null) {
       curComments[itm.comment_seq_number] = true;
     }
   });
+
+  const final = fResults.filter((item) => {
+    let keep = true;
+    if (after || before) {
+      const date1 = new Date(item.applied_date);
+      if (after && date1 < new Date(`${after} 00:00:00 GMT-0500`)) {
+        keep = false;
+      }
+      if (keep && before && date1 > new Date(`${before} 00:00:00 GMT-0500`)) {
+        keep = false;
+      }
+    }
+    return keep;
+  });
+  return final;
 }
 
 function preparePermitTasks(rows) {
@@ -78,8 +93,8 @@ function preparePermitTasks(rows) {
       user_name: itm.user_name,
       user_id: itm.user_id,
       user_department: itm.user_department,
-      due_date: itm.due_date,	
-      record_date: itm.record_date,	
+      due_date: itm.due_date,
+      record_date: itm.record_date,
       comments: itm.comments,
       is_completed: itm.is_completed === 'Y',
       is_active: itm.is_active === 'Y',
@@ -140,7 +155,6 @@ const resolvers = {
       let query = `${stdQuery}`
       + 'FROM amd.permits_xy_view AS A '
       + 'LEFT JOIN amd.mda_permit_comments AS B on A.permit_num = B.permit_num ';
-      const logger = context.logger;
       if (args.permit_numbers && args.permit_numbers.length > 0) {
         qargs.push(args.permit_numbers);
         query += 'WHERE A.permit_num = ANY ($1) ';
@@ -174,7 +188,7 @@ const resolvers = {
       let query = `${stdQuery}`
       + 'from amd.permits_xy_view as A '
       + 'left outer join amd.coa_bc_address_master as M '
-      + 'on ST_Point_Inside_Circle(ST_SetSRID(ST_Point(A.address_x, A.address_y),2264), M.address_x, M.address_y, $2) '
+      + 'on ST_Point_Inside_Circle(ST_SetSRID(ST_Point(A.address_x, A.address_y),2264), M.address_x, M.address_y, $2) ' // eslint-disable-line max-len
       + 'LEFT JOIN amd.mda_permit_comments AS B on A.permit_num = B.permit_num '
       + 'where M.civicaddress_id = $1 '
       + "AND A.permit_group <> 'Services'"; // Future function name change - ST_PointInsideCircle
@@ -204,7 +218,7 @@ const resolvers = {
       const logger = context.logger;
       const radius = (args.radius) ? Number(args.radius) : 100; // State plane units are feet
       if (args.centerline_ids.length <= 0) return [];
-      const query = 'SELECT A.*, M.address_full as address FROM amd.permits_along_streets_fn($1, $2) AS A '
+      const query = 'SELECT A.*, M.address_full as address FROM amd.permits_along_streets_fn($1, $2) AS A ' // eslint-disable-line max-len
       + 'LEFT JOIN amd.coa_bc_address_master as M ON A.civic_address_id::INT = M.civicaddress_id '
       + "WHERE permit_group <> 'Services'"
       + 'ORDER BY permit_num DESC, comment_seq_number ASC ';
@@ -223,7 +237,8 @@ const resolvers = {
     permits_by_neighborhood(obj, args, context) {
       const logger = context.logger;
       if (args.nbrhd_ids.length <= 0) return [];
-      const query = 'SELECT A.*, M.address_full as address FROM amd.permits_by_neighborhood_fn($1) AS A '
+      const query = 'SELECT A.*, M.address_full as address '
+      + 'FROM amd.permits_by_neighborhood_fn($1) AS A '
       + 'LEFT JOIN amd.coa_bc_address_master as M ON A.civic_address_id::INT = M.civicaddress_id '
       + "WHERE permit_group <> 'Services' "
       + 'ORDER BY permit_num DESC, comment_seq_number ASC ';
@@ -287,7 +302,7 @@ const resolvers = {
   },
 
   Permit: {
-    comments(obj, args, context) {
+    comments(obj, args, context) { // eslint-disable-line no-unused-vars
       return obj.comments;
     },
   },
