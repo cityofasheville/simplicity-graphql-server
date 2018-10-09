@@ -154,7 +154,7 @@ const resolvers = {
       const qargs = [];
       let query = `${stdQuery}`
       + 'FROM amd.permits_xy_view AS A '
-      + 'LEFT JOIN amd.mda_permit_comments AS B on A.permit_num = B.permit_num ';
+      + 'LEFT JOIN amd.permit_comments AS B on A.permit_num = B.permit_num ';
       if (args.permit_numbers && args.permit_numbers.length > 0) {
         qargs.push(args.permit_numbers);
         query += 'WHERE A.permit_num = ANY ($1) ';
@@ -189,7 +189,7 @@ const resolvers = {
       + 'from amd.permits_xy_view as A '
       + 'left outer join amd.coa_bc_address_master as M '
       + 'on ST_Point_Inside_Circle(ST_SetSRID(ST_Point(A.address_x, A.address_y),2264), M.address_x, M.address_y, $2) ' // eslint-disable-line max-len
-      + 'LEFT JOIN amd.mda_permit_comments AS B on A.permit_num = B.permit_num '
+      + 'LEFT JOIN amd.permit_comments AS B on A.permit_num = B.permit_num '
       + 'where M.civicaddress_id = $1 '
       + "AND A.permit_group <> 'Services'"; // Future function name change - ST_PointInsideCircle
       const qargs = [String(args.civicaddress_id), radius];
