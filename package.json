@@ -1,6 +1,6 @@
 {
   "name": "simplicity-graphql-server",
-  "version": "3.3.0",
+  "version": "3.4.0",
   "description": "GraphQL server for SimpliCity II",
   "scripts": {
     "start": "nodemon ./server.js --exec babel-node",
