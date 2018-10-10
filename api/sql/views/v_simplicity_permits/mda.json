@@ -1,0 +1,10 @@
+{
+  "name": "v_simplicity_permits",
+  "type": "view",
+  "description": "Standard permits query",
+  "notes": [],
+  "schema": {
+    "type": "sql",
+    "file": "v_simplicity_permits.sql"
+  }
+}

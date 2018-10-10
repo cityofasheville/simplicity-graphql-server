@@ -1,0 +1,10 @@
+{
+  "name": "get_permits_by_neighborhood",
+  "type": "function",
+  "description": "PLPGSQL Function to get permits along a set of streets",
+  "notes": [],
+  "schema": {
+    "type": "sql",
+    "file": "get_permits_by_neighborhood.sql"
+  }
+}

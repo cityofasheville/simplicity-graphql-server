@@ -1,0 +1,10 @@
+{
+  "name": "v_simplicity_properties",
+  "type": "view",
+  "description": "Simple join of bc_property with coa_bc_address_master for SimpliCity properties query",
+  "notes": [],
+  "schema": {
+    "type": "sql",
+    "file": "v_simplicity_properties.sql"
+  }
+}

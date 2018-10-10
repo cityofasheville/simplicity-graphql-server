@@ -1,0 +1,10 @@
+{
+  "name": "get_properties_along_streets",
+  "type": "function",
+  "description": "PLPGSQL Function to get properties along a set of streets",
+  "notes": [],
+  "schema": {
+    "type": "sql",
+    "file": "get_properties_along_streets.sql"
+  }
+}

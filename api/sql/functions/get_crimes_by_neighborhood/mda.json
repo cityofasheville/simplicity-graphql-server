@@ -1,0 +1,13 @@
+{
+  "name": "get_crimes_by_neighborhood",
+  "type": "function",
+  "depends": [
+    "v_simplicity_crimes"
+  ],
+  "description": "PLPGSQL Function to get crimes along a set of streets",
+  "notes": [],
+  "schema": {
+    "type": "sql",
+    "file": "get_crimes_by_neighborhood.sql"
+  }
+}
