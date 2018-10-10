@@ -158,7 +158,7 @@ const resolvers = {
       if (args.permit_numbers && args.permit_numbers.length > 0) {
         qargs.push(args.permit_numbers);
         query += 'WHERE A.permit_num = ANY ($1) ';
-      } else if (args.before || args.after) {
+      } else if (args.before || args.after || args.permit_groups) {
         const dateField = (args.date_field === 'status_date') ? 'status_date' : 'applied_date';
         let nextParam = '$1';
         query += 'where ';
@@ -170,7 +170,13 @@ const resolvers = {
         }
         if (args.after) {
           query += `${dateField} > ${nextParam} `;
+          nextParam = (nextParam === '$1') ? '$2' : '$3';
           qargs.push(args.after);
+        }
+        if (args.permit_groups) {
+          if (args.before || args.after) query += 'and ';
+          query += `A.permit_group = ANY(${nextParam}) `;
+          qargs.push(args.permit_groups);
         }
       }
       query += 'ORDER BY A.permit_num DESC, B.comment_seq_number ASC ';
@@ -179,6 +185,7 @@ const resolvers = {
         return preparePermits(result.rows);
       })
       .catch((err) => {
+        console.log(err);
         throw new Error(`Got an error in permits: ${JSON.stringify(err)}`);
       });
     },
@@ -287,7 +294,13 @@ const resolvers = {
         }
         if (args.after) {
           query += `${dateField} > ${nextParam} `;
+          nextParam = (nextParam === '$1') ? '$2' : '$3';
           qargs.push(args.after);
+        }
+        if (args.permit_groups) {
+          if (args.before || args.after) query += 'and ';
+          query += `A.permit_group = ANY(${nextParam}) `;
+          qargs.push(args.permit_groups);
         }
       }
       query += 'ORDER BY A.permit_num DESC ';
@@ -296,6 +309,7 @@ const resolvers = {
         return preparePermitTasks(result.rows);
       })
       .catch((err) => {
+        console.log(err);
         throw new Error(`Got an error in permit_tasks: ${JSON.stringify(err)}`);
       });
     },
