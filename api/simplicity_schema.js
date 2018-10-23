@@ -46,6 +46,7 @@ const baseSchema = `
     projects (status: [String], priority: [String], reqtype: String, after: String, before: String): [ITProject]
     pcard_transactions (before: String, after: String): [PCardTransaction]
     pcard_statements_status (before: String, after: String): [PCardStatementStatus]
+    employees(ids: [Int], status: String, departments: [String], divisions: [String], supervisors: [Int] ): [Employee]
   }
 `;
 const searchSchema = require('./search').schema;
@@ -75,7 +76,7 @@ const schema = [
   searchSchema,
   cipSchema,
   financeSchema,
-  statsSchema
+  statsSchema,
 ];
 
 module.exports = schema;

@@ -1,3 +1,4 @@
+const { merge } = require('lodash');
 
 const resolvers = {
   Query: {
@@ -111,4 +112,6 @@ const resolvers = {
   },
 };
 
-module.exports = resolvers;
+module.exports = merge(resolvers,
+  require('./employees/employees_resolvers'),
+);
