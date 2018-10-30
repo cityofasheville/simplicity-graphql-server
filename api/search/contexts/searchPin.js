@@ -1,6 +1,6 @@
 function searchPin(searchString, context) {
   const logger = context.logger;
-  const myQuery = 'SELECT pin, pinnum, pinext, address, cityname, zipcode FROM amd.bc_property '
+  const myQuery = 'SELECT pin, pinnum, pinext, address, cityname, zipcode FROM internal.bc_property '
   + `where cast(pin as TEXT) = '${searchString}' OR `
   + `cast(pinnum as TEXT) = '${searchString}' limit 5`;
 

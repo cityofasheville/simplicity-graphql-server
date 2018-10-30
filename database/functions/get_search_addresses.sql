@@ -1,8 +1,8 @@
--- FUNCTION: amd.get_search_addresses(integer[], character varying[], character varying[], character varying[], character varying[], integer[], character varying[])
+-- FUNCTION: simplicity.get_search_addresses(integer[], character varying[], character varying[], character varying[], character varying[], integer[], character varying[])
 
--- DROP FUNCTION amd.get_search_addresses(integer[], character varying[], character varying[], character varying[], character varying[], integer[], character varying[]);
+-- DROP FUNCTION simplicity.get_search_addresses(integer[], character varying[], character varying[], character varying[], character varying[], integer[], character varying[]);
 
-CREATE OR REPLACE FUNCTION amd.get_search_addresses(
+CREATE OR REPLACE FUNCTION simplicity.get_search_addresses(
 	lnumber integer[],
 	lstreetname character varying[],
 	ltype character varying[],
@@ -10,20 +10,21 @@ CREATE OR REPLACE FUNCTION amd.get_search_addresses(
 	lunit character varying[],
 	lzipcode integer[],
 	lcity character varying[])
-RETURNS SETOF amd.coa_bc_address_master 
+    RETURNS SETOF internal.coa_bc_address_master 
     LANGUAGE 'plpgsql'
+
     COST 100
     VOLATILE 
     ROWS 1000
 AS $BODY$
 
 DECLARE
-    r amd.coa_bc_address_master%rowtype;
+    r internal.coa_bc_address_master%rowtype;
 BEGIN
 	for i in 1..array_length(lnumber,1) loop
     	FOR r IN (
                 select *
-                from amd.coa_bc_address_master 
+                from internal.coa_bc_address_master 
                 where (location_type = 1 OR location_type = 4)
             	and   address_number = lnumber[i]
                 and   address_street_name = lstreetname[i]
@@ -40,4 +41,5 @@ BEGIN
 END
 
 $BODY$;
+
 

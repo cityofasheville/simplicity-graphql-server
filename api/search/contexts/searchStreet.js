@@ -27,7 +27,7 @@ function searchStreet(searchContext, searchString, geoCodeResponse, context) {
     }
   });
   const fquery = 'SELECT centerline_id, full_street_name, left_zipcode, right_zipcode '
-  + 'from amd.get_search_streets($1, $2) ';
+  + 'from simplicity.get_search_streets($1, $2) ';
   const args = [
     nmap.name,
     nmap.zip,

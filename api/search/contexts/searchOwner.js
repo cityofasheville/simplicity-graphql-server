@@ -1,7 +1,7 @@
 function searchOwner(searchString, context) {
   const logger = context.logger;
   let query = 'SELECT formatted_owner_name, pinnum '
-  + 'FROM amd.bc_property_pinnum_formatted_owner_names WHERE ';
+  + 'FROM internal.bc_property_pinnum_formatted_owner_names WHERE ';
 
   const substrings = searchString.split(' ');
   substrings.forEach((itm, index) => {

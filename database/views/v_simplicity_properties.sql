@@ -1,8 +1,8 @@
--- View: amd.v_simplicity_properties
+-- View: simplicity.v_simplicity_properties
 
--- DROP VIEW amd.v_simplicity_properties;
+-- DROP VIEW simplicity.v_simplicity_properties;
 
-CREATE OR REPLACE VIEW amd.v_simplicity_properties AS
+CREATE OR REPLACE VIEW simplicity.v_simplicity_properties AS
  SELECT a.pin,
     a.pinext,
     a.pinnum,
@@ -33,8 +33,8 @@ CREATE OR REPLACE VIEW amd.v_simplicity_properties AS
     st_astext(st_transform(a.shape, 4326)) AS polygon,
     b.historic_district,
     b.local_landmark
-   FROM amd.bc_property a
-     LEFT JOIN amd.coa_bc_address_master b ON a.pin::text = b.property_pin::text AND a.pinext::text = b.property_pinext::text
+   FROM internal.bc_property a
+     LEFT JOIN internal.coa_bc_address_master b ON a.pin::text = b.property_pin::text AND a.pinext::text = b.property_pinext::text
   WHERE b.location_type = 1 OR b.location_type = 0 OR b.location_type = 4;
 
 

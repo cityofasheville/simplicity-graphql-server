@@ -10,6 +10,7 @@ const searchPlace = require('./contexts/searchPlace');
 
 // Context options: address, pin, neighborhood, property, civicAddressId, street, owner, google
 function performSearch(searchString, searchContext, geoCodeResponse, context) {
+  console.log('Perform search in context ' + searchContext);
   if (searchContext === 'civicAddressId') {
     return searchCivicAddressId(searchString, context);
   } else if (searchContext === 'pin') {

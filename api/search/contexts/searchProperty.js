@@ -11,7 +11,7 @@ function searchProperty(searchString, geoCodeResponse, context) {
   }
 
   const fquery = 'SELECT DISTINCT property_pinnum '
-  + 'from amd.get_search_addresses($1, $2, $3, $4, $5, $6, $7)';
+  + 'from simplicity.get_search_addresses($1, $2, $3, $4, $5, $6, $7)';
 
   const args = [
     geoCodeResponse.locNumber,
@@ -34,7 +34,7 @@ function searchProperty(searchString, geoCodeResponse, context) {
 
     const pQuery = 'SELECT pin, pinext, pinnum, address, cityname, '
     + 'zipcode, civicaddress_id '
-    + 'FROM amd.v_simplicity_properties '
+    + 'FROM simplicity.v_simplicity_properties '
         + `WHERE pinnum IN (${pinList})`;
     return context.pool.query(pQuery)
     .then(props => {

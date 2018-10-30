@@ -2,7 +2,7 @@ function searchCivicAddressId(searchString, context) {
   const pool = context.pool;
   const logger = context.logger;
   const myQuery = 'SELECT civicaddress_id, property_pinnum, address_full '
-  + 'FROM amd.coa_bc_address_master '
+  + 'FROM internal.coa_bc_address_master '
   + `WHERE cast(civicaddress_id as TEXT) = '${searchString}'  limit 5`;
   return pool.query(myQuery)
   .then((result) => {
