@@ -120,7 +120,7 @@ const resolvers = {
     firstReviewSLASummary(obj, args, context) {
       const pool = context.pool;
       let tasks = null;
-      let q = 'select * from amd.dsd_first_review_sla_summary';
+      let q = 'select * from simplicity.dsd_first_review_sla_summary';
       if (args.tasks) {
         args.tasks.forEach(t => {
           tasks = (tasks === null) ? `'${t}'` : `${tasks}, '${t}'`;
@@ -153,8 +153,8 @@ const resolvers = {
     permits(obj, args, context) {
       const qargs = [];
       let query = `${stdQuery}`
-      + 'FROM amd.permits_xy_view AS A '
-      + 'LEFT JOIN amd.permit_comments AS B on A.permit_num = B.permit_num ';
+      + 'FROM simplicity.permits_xy_view AS A '
+      + 'LEFT JOIN internal.permit_comments AS B on A.permit_num = B.permit_num ';
       if (args.permit_numbers && args.permit_numbers.length > 0) {
         qargs.push(args.permit_numbers);
         query += 'WHERE A.permit_num = ANY ($1) ';
@@ -193,10 +193,10 @@ const resolvers = {
       const logger = context.logger;
       const radius = args.radius ? Number(args.radius) : 10; // State plane units are feet
       let query = `${stdQuery}`
-      + 'from amd.permits_xy_view as A '
-      + 'left outer join amd.coa_bc_address_master as M '
+      + 'from simplicity.permits_xy_view as A '
+      + 'left outer join internal.coa_bc_address_master as M '
       + 'on ST_Point_Inside_Circle(ST_SetSRID(ST_Point(A.address_x, A.address_y),2264), M.address_x, M.address_y, $2) ' // eslint-disable-line max-len
-      + 'LEFT JOIN amd.permit_comments AS B on A.permit_num = B.permit_num '
+      + 'LEFT JOIN internal.permit_comments AS B on A.permit_num = B.permit_num '
       + 'where M.civicaddress_id = $1 '
       + "AND A.permit_group <> 'Services'"; // Future function name change - ST_PointInsideCircle
       const qargs = [String(args.civicaddress_id), radius];
@@ -225,8 +225,8 @@ const resolvers = {
       const logger = context.logger;
       const radius = (args.radius) ? Number(args.radius) : 100; // State plane units are feet
       if (args.centerline_ids.length <= 0) return [];
-      const query = 'SELECT A.*, M.address_full as address FROM amd.permits_along_streets_fn($1, $2) AS A ' // eslint-disable-line max-len
-      + 'LEFT JOIN amd.coa_bc_address_master as M ON A.civic_address_id::INT = M.civicaddress_id '
+      const query = 'SELECT A.*, M.address_full as address FROM simplicity.permits_along_streets_fn($1, $2) AS A ' // eslint-disable-line max-len
+      + 'LEFT JOIN internal.coa_bc_address_master as M ON A.civic_address_id::INT = M.civicaddress_id '
       + "WHERE permit_group <> 'Services'"
       + 'ORDER BY permit_num DESC, comment_seq_number ASC ';
 
@@ -245,8 +245,8 @@ const resolvers = {
       const logger = context.logger;
       if (args.nbrhd_ids.length <= 0) return [];
       const query = 'SELECT A.*, M.address_full as address '
-      + 'FROM amd.permits_by_neighborhood_fn($1) AS A '
-      + 'LEFT JOIN amd.coa_bc_address_master as M ON A.civic_address_id::INT = M.civicaddress_id '
+      + 'FROM simplicity.permits_by_neighborhood_fn($1) AS A '
+      + 'LEFT JOIN internal.coa_bc_address_master as M ON A.civic_address_id::INT = M.civicaddress_id '
       + "WHERE permit_group <> 'Services' "
       + 'ORDER BY permit_num DESC, comment_seq_number ASC ';
       return context.pool.query(query, [args.nbrhd_ids])
@@ -263,7 +263,7 @@ const resolvers = {
     firstReviewSLAItems(obj, args, context) {
       const pool = context.pool;
       return pool.query(
-        'SELECT * from amd.dsd_first_review_sla'
+        'SELECT * from internal.dsd_first_review_sla'
       )
       .then((result) => {
         if (result.rows.length === 0) return null;
@@ -278,7 +278,7 @@ const resolvers = {
     },
     permit_tasks(obj, args, context) {
       const qargs = [];
-      let query = 'SELECT * FROM amd.permit_tasks AS A ';
+      let query = 'SELECT * FROM internal.permit_tasks AS A ';
       if (args.permit_numbers && args.permit_numbers.length > 0) {
         qargs.push(args.permit_numbers);
         query += 'WHERE A.permit_num = ANY ($1) ';

@@ -1,19 +1,20 @@
--- FUNCTION: amd.permits_along_streets_fn(numeric[], numeric)
+-- FUNCTION: simplicity.permits_along_streets_fn(numeric[], numeric)
 
--- DROP FUNCTION amd.permits_along_streets_fn(numeric[], numeric);
+-- DROP FUNCTION simplicity.permits_along_streets_fn(numeric[], numeric);
 
-CREATE OR REPLACE FUNCTION amd.permits_along_streets_fn(
+CREATE OR REPLACE FUNCTION simplicity.permits_along_streets_fn(
 	cid numeric[],
 	ldist numeric)
-RETURNS SETOF amd.simplicity_permits_view 
+    RETURNS SETOF simplicity.simplicity_permits_view 
     LANGUAGE 'plpgsql'
+
     COST 100
     VOLATILE 
     ROWS 1000
 AS $BODY$
 
 DECLARE
-    r amd.simplicity_permits_view%rowtype;
+    r simplicity.simplicity_permits_view%rowtype;
 BEGIN
 	for i in 1..array_length(cid,1) loop
     	FOR r IN
@@ -32,8 +33,8 @@ BEGIN
                     A.civic_address_id, A.address, A.contractor_name,
                     A.contractor_license_number, A.x, A.y,
                     A.comment_seq_number, A.comment_date, A.comments
-            FROM amd.simplicity_permits_view AS A
-            LEFT JOIN amd.bc_street AS B
+            FROM simplicity.simplicity_permits_view AS A
+            LEFT JOIN internal.bc_street AS B
             ON ST_DWithin(B.shape, ST_Transform(ST_SetSRID(ST_Point(A.x, A.y),4326),2264), ldist)
             WHERE B.centerline_id = cid[i]
 		LOOP

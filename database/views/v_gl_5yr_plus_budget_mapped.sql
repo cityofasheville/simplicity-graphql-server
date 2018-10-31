@@ -1,8 +1,8 @@
--- View: amd.v_gl_5yr_plus_budget_mapped
+-- View: simplicity.v_gl_5yr_plus_budget_mapped
 
--- DROP VIEW amd.v_gl_5yr_plus_budget_mapped;
+-- DROP VIEW simplicity.v_gl_5yr_plus_budget_mapped;
 
-CREATE OR REPLACE VIEW amd.v_gl_5yr_plus_budget_mapped AS
+CREATE OR REPLACE VIEW simplicity.v_gl_5yr_plus_budget_mapped AS
  SELECT a.account_type,
     a.fund_name,
     a.function_name,
@@ -57,12 +57,12 @@ CREATE OR REPLACE VIEW amd.v_gl_5yr_plus_budget_mapped AS
             glp1.defaultyear,
             glp1.currentyear,
             ( SELECT coa_app_parameters.value
-                   FROM amd.coa_app_parameters
+                   FROM simplicity.coa_app_parameters
                   WHERE coa_app_parameters.name::text = 'in_budget_season'::text) AS in_budget_season,
             m.category_name,
             m.budget_section_name
-           FROM amd.v_gl_master_mapped m
-             LEFT JOIN amd.general_ledger_parameters glp1 ON 1 = 1
+           FROM simplicity.v_gl_master_mapped m
+             LEFT JOIN internal.general_ledger_parameters glp1 ON 1 = 1
           WHERE (m.account_type = 'R'::bpchar OR m.account_type = 'E'::bpchar) AND m.year > (glp1.currentyear - 5)
         UNION ALL
          SELECT b.account_type,
@@ -91,10 +91,12 @@ CREATE OR REPLACE VIEW amd.v_gl_5yr_plus_budget_mapped AS
             glp2.defaultyear,
             glp2.currentyear,
             ( SELECT coa_app_parameters.value
-                   FROM amd.coa_app_parameters
+                   FROM simplicity.coa_app_parameters
                   WHERE coa_app_parameters.name::text = 'in_budget_season'::text) AS in_budget_season,
             b.category_name,
             b.budget_section_name
-           FROM amd.v_gl_budget_mapped b
-             LEFT JOIN amd.general_ledger_parameters glp2 ON 1 = 1
+           FROM simplicity.v_gl_budget_mapped b
+             LEFT JOIN internal.general_ledger_parameters glp2 ON 1 = 1
           WHERE (b.account_type = 'R'::bpchar OR b.account_type = 'E'::bpchar) AND b.year > glp2.currentyear) a;
+
+

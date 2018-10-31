@@ -44,8 +44,8 @@ const resolvers = {
       + 'A.address, A.geo_beat, A.x, A.y, A.x_wgs, A.y_wgs, A.offense_short_description, '
       + 'A.offense_long_description, A.offense_code, A.offense_group_code, '
       + 'A.offense_group_level, A.offense_group_short_description '
-      + 'from amd.v_simplicity_crimes as A '
-      + 'left outer join amd.coa_bc_address_master as B '
+      + 'from simplicity.v_simplicity_crimes as A '
+      + 'left outer join internal.coa_bc_address_master as B '
       + 'on ST_Point_Inside_Circle(ST_Point(A.x, A.y), B.address_x, B.address_y, $2) '
       + 'where b.civicaddress_id = $1 '; // Future function name change - ST_PointInsideCircle
 
@@ -63,7 +63,7 @@ const resolvers = {
       const radius = (args.radius) ? Number(args.radius) : 100; // State plane units are feet
       const ids = args.centerline_ids;
       if (ids.length <= 0) return [];
-      const query = 'SELECT * FROM amd.get_crimes_along_streets($1, $2)';
+      const query = 'SELECT * FROM simplicity.get_crimes_along_streets($1, $2)';
       return context.pool.query(query, [ids, radius])
       .then(result => {
         return prepareCrimes(result.rows, args.before, args.after);
@@ -78,7 +78,7 @@ const resolvers = {
     crimes_by_neighborhood(obj, args, context) {
       const logger = context.logger;
       if (args.nbrhd_ids.length <= 0) return [];
-      const query = 'SELECT * FROM amd.get_crimes_by_neighborhood($1)';
+      const query = 'SELECT * FROM simplicity.get_crimes_by_neighborhood($1)';
 
       return context.pool.query(query, [args.nbrhd_ids])
       .then(result => {
@@ -99,7 +99,7 @@ const resolvers = {
       + 'offense_long_description, offense_code, offense_group_code, '
       + 'offense_group_level, offense_group_short_description, '
       + 'offense_group_long_description '
-      + 'FROM amd.v_simplicity_crimes WHERE incident_id = ANY ($1) ';
+      + 'FROM simplicity.v_simplicity_crimes WHERE incident_id = ANY ($1) ';
       return context.pool.query(query, [args.incident_ids])
       .then((result) => {
         return prepareCrimes(result.rows);

@@ -38,7 +38,7 @@ const resolvers = {
         throw new Error('You must be logged in as a City of Asheville employee to view this data');
       }
       const logger = context.logger;
-      let query = 'SELECT * FROM amd.pcard_transaction ';
+      let query = 'SELECT * FROM internal.pcard_transaction ';
       const qargs = [];
       if (args.before !== undefined || args.after !== undefined) query += 'WHERE ';
       let nextParam = '$1';
@@ -68,7 +68,7 @@ const resolvers = {
         throw new Error('You must be logged in as a City of Asheville employee to view this data');
       }
       const logger = context.logger;
-      let query = 'SELECT * FROM amd.pcard_statement_status_history ';
+      let query = 'SELECT * FROM internal.pcard_statement_status_history ';
       const qargs = [];
       if (args.before !== undefined || args.after !== undefined) query += 'WHERE ';
       let nextParam = '$1';

@@ -1,8 +1,8 @@
--- View: amd.v_coa_simple_street_maintenance
+-- View: simplicity.v_coa_simple_street_maintenance
 
--- DROP VIEW amd.v_coa_simple_street_maintenance;
+-- DROP VIEW simplicity.v_coa_simple_street_maintenance;
 
-CREATE OR REPLACE VIEW amd.v_coa_simple_street_maintenance AS
+CREATE OR REPLACE VIEW simplicity.v_coa_simple_street_maintenance AS
  SELECT b.centerline_id,
     b.maintenance_entity,
     b.shape
@@ -14,4 +14,6 @@ CREATE OR REPLACE VIEW amd.v_coa_simple_street_maintenance AS
            FROM ( SELECT to_number(coa_street_maintenance.centerline_id::text, '9999999999.000000'::text) AS centerline_id,
                     coa_street_maintenance.maintenance_entity,
                     st_dump(coa_street_maintenance.shape) AS dump
-                   FROM amd.coa_street_maintenance) a) b;
+                   FROM internal.coa_street_maintenance) a) b;
+
+

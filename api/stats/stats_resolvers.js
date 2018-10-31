@@ -118,8 +118,8 @@ function sumSubitemCounts(input_array, fields, sum_key) {
         // For example - if you request an average group by year and month
         // It will give you the result of (sum of month values) / (count of month values)
         // rather than (sum of year values) / (count of year values)
-        throw `Aggregate function (${aggregator}) is not available yet. Please use SUM or COUNT`;
-        
+        throw new Error(`Aggregate function (${aggregator}) is not available yet. Please use SUM or COUNT`);
+
         // For average, we count the number of items and multiply
         // by the current value, giving us the current sum
         const current_items = target_item.subitems.length;
@@ -132,7 +132,7 @@ function sumSubitemCounts(input_array, fields, sum_key) {
 
         target_item.fields[index].value = parseFloat(new_sum / new_items);
       } else {
-        throw `Aggregate function (${aggregator}) is not available yet. Please use SUM or COUNT`;
+        throw new Error(`Aggregate function (${aggregator}) is not available yet. Please use SUM or COUNT`);
       }
     });
 
@@ -151,6 +151,7 @@ const resolvers = {
       if (typeof args.fields === typeof undefined) return [];
       if (typeof args.dataset === typeof undefined) return [];
 
+      const schema = args.schema;
       const dataset = args.dataset;
       const fields = args.fields;
       const groupBy = args.groupBy;
@@ -169,7 +170,7 @@ const resolvers = {
         }
 
         query += `
-          ${aggregator}(amd.${dataset}.${field.column}::numeric) as 
+          ${aggregator}(${schema}.${dataset}.${field.column}::numeric) as 
           ${field.column}_${aggregator}
         `;
       });
@@ -184,15 +185,15 @@ const resolvers = {
       });
 
       if (dataset === 'coa_apd_traffic_stop_name_data_table') {
-        query += `FROM amd.coa_apd_traffic_stops_post2017 
-                  LEFT JOIN amd.coa_apd_traffic_stop_name_data_table ON 
+        query += `FROM ${schema}.coa_apd_traffic_stops_post2017 
+                  LEFT JOIN ${schema}.coa_apd_traffic_stop_name_data_table ON 
                   ( 
                     coa_apd_traffic_stops_post2017.traffic_stop_id = 
                     coa_apd_traffic_stop_name_data_table.traffic_stop_id
                   ) 
                 `;
       } else {
-        query += `FROM amd.${dataset} `;
+        query += `FROM ${schema}.${dataset} `;
       }
 
       if (filterGroup) {

@@ -9,13 +9,13 @@ const resolvers = {
       if (args.accountType) accountType = args.accountType;
       let maxCategories = 10;
       if ('maxCategories' in args) maxCategories = parseInt(args.maxCategories, 10);
-      let view = 'amd.budget_summary_by_dept_view';
+      let view = 'simplicity.budget_summary_by_dept_view';
       if (which === 'use') {
         categoryColumn = 'category_name';
-        view = 'amd.budget_summary_by_use_view';
+        view = 'simplicity.budget_summary_by_use_view';
       }
 
-      return pool.query('SELECT * from amd.budget_parameters_view')
+      return pool.query('SELECT * from simplicity.budget_parameters_view')
       .then(bp => {
         if (bp.rows.length === 0) return null;
         const inBudgetSeason = bp.rows[0].in_budget_season === 'true';
@@ -108,7 +108,7 @@ const resolvers = {
 
     budgetParameters(obj, args, context) {
       const pool = context.pool;
-      return pool.query('SELECT * from amd.budget_parameters_view')
+      return pool.query('SELECT * from simplicity.budget_parameters_view')
       .then(bp => {
         if (bp.rows.length === 0) return null;
         const inBudgetSeason = bp.rows[0].in_budget_season === 'true';
@@ -129,7 +129,7 @@ const resolvers = {
     budgetHistory(obj, args, context) {
       const logger = context.logger;
       const pool = context.pool;
-      return pool.query('SELECT * from amd.budget_parameters_view')
+      return pool.query('SELECT * from simplicity.budget_parameters_view')
       .then(bp => {
         if (bp.rows.length === 0) return null;
         const inBudgetSeason = bp.rows[0].in_budget_season === 'true';
@@ -141,7 +141,7 @@ const resolvers = {
         if ((inBudgetSeason && currentYear === defaultYear) ||
             (defaultYear > currentYear)) endYear = currentYear + 1;
         const startYear = inBudgetSeason ? currentYear - 2 : defaultYear - 3;
-        const bhQuery = 'SELECT * from amd.v_gl_5yr_plus_budget_mapped '
+        const bhQuery = 'SELECT * from simplicity.v_gl_5yr_plus_budget_mapped '
         + `where year >= ${startYear} AND year <= ${endYear}`;
         return pool.query(bhQuery)
         .then((result) => {
@@ -209,7 +209,7 @@ const resolvers = {
     budgetCashFlow(obj, args, context) {
       const logger = context.logger;
       const pool = context.pool;
-      return pool.query('SELECT * from amd.budget_parameters_view')
+      return pool.query('SELECT * from simplicity.budget_parameters_view')
       .then(bp => {
         if (bp.rows.length === 0) return null;
         const inBudgetSeason = bp.rows[0].in_budget_season === 'true';
@@ -224,7 +224,7 @@ const resolvers = {
           SELECT account_type, department_name, department_name as dept_id, fund_id, fund_name,
             SUM(adopted_budget) as adopted_budget, SUM(proposed_budget) as proposed_budget,
             NULL as category_name, NULL as category_id, year
-          FROM amd.v_gl_5yr_plus_budget_mapped
+          FROM simplicity.v_gl_5yr_plus_budget_mapped
           WHERE account_type = 'E' and year = ${endYear}
           GROUP BY account_type, year, fund_id, fund_name, dept_id,
           department_name, category_id, category_name
@@ -234,7 +234,7 @@ const resolvers = {
           SELECT account_type, category_name, category_name as category_id, year,
             SUM(adopted_budget) as adopted_budget, SUM(proposed_budget) as proposed_budget,
             fund_name, fund_id, NULL as dept_id, NULL as department_name
-          FROM amd.v_gl_5yr_plus_budget_mapped
+          FROM simplicity.v_gl_5yr_plus_budget_mapped
           WHERE account_Type = 'R' and year = ${endYear}
           GROUP BY category_id, category_name, account_type, year, fund_id,
           fund_name, dept_id, department_name

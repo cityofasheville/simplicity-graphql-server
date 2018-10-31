@@ -29,7 +29,7 @@ const resolvers = {
       let sendArgs = null;
       const logger = context.logger;
       let query = 'SELECT DISTINCT cityname, jurisdiction_type, '
-      + 'st_astext(st_transform(shape, 4326)) AS polygon FROM amd.coa_active_jurisdictions '
+      + 'st_astext(st_transform(shape, 4326)) AS polygon FROM internal.coa_active_jurisdictions '
       + "WHERE jurisdiction_type != 'Defunct ETJ' ";
       if (args.jurisdictions && args.jurisdictions.length > 0) {
         query += 'AND jurisdiction_type = ANY ($1)';

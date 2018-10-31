@@ -12,7 +12,6 @@ function prepareProjects(rows) {
       latitude = xyCache[itm.project].latitude;
       longitude = xyCache[itm.project].longitude;
     }
-    console.log(itm);
     return {
       gis_id: itm.gis_id,
       munis_project_number: itm.munis_project_number,
@@ -30,7 +29,7 @@ function prepareProjects(rows) {
       administering_department: itm.administering_department,
       project_description: itm.project_description,
       status: itm.status,
-      total_project_funding_budget_document: itm.total_project_funding_budget_d,
+      total_project_funding_budget_document: itm.total_project_funding__budget_document_,
       total_spent: itm.ltd_actuals ? itm.ltd_actuals : 0,
       encumbered: itm.encumbrances ? itm.encumbrances : 0,
       target_construction_start: itm.target_construction_start,
@@ -56,8 +55,8 @@ const resolvers = {
       const query = 'select C.category_name, C.display_order, '
       + 'COUNT(M.objectid) AS total_count, '
       + "SUM(CASE WHEN M.type = 'Bond' THEN 1 ELSE 0 END) AS bond_count "
-      + 'from amd.capital_projects_master_categories C left outer join '
-      + 'amd.capital_projects_master M on M.category = C.category_name '
+      + 'from internal.capital_projects_master_categories C left outer join '
+      + 'internal.capital_projects_master M on M.category = C.category_name '
       + 'group by C.category_name, C.display_order';
       return pool.query(query)
       .then(result => {
@@ -76,10 +75,10 @@ const resolvers = {
     cip_projects(obj, args, context) {
       const logger = context.logger;
       const pool = context.pool;
-      let query = 'select A.*, B.*, C.display_order from amd.capital_projects_master as A '
-      + 'left join amd.capital_projects_master_categories as C '
+      let query = 'select A.*, B.*, C.display_order from internal.capital_projects_master as A '
+      + 'left join internal.capital_projects_master_categories as C '
       + 'on A.category = C.category_name '
-      + 'left join amd.cip_ltd_view as B '
+      + 'left join simplicity.cip_ltd_view as B '
       + 'on A.munis_project_number = B.project_id ';
       // let query = 'SELECT * FROM amd.coa_cip_project_information ';
       const names = args.names;
@@ -113,6 +112,7 @@ const resolvers = {
         }
       }
       query += ' ORDER BY A.display_name';
+      console.log(query);
 
       return pool.query(query)
       .then(result => {

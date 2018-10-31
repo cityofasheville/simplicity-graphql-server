@@ -80,9 +80,9 @@ const resolvers = {
     addresses(obj, args, context) {
       const logger = context.logger;
       if (args.civicaddress_ids.length <= 0) return [];
-      const query = 'SELECT a.*, b.maintenance_entity,  b.location FROM amd.v_simplicity_addresses AS a '
+      const query = 'SELECT a.*, b.maintenance_entity,  b.location FROM simplicity.v_simplicity_addresses AS a '
       + 'LEFT JOIN ('
-      + 'select * from amd.v_address_maintenance as c where c.civicaddress_id = ANY ($1) '
+      + 'select * from simplicity.v_address_maintenance as c where c.civicaddress_id = ANY ($1) '
       + ') as b '
       + 'ON a.civicaddress_id = b.civicaddress_id WHERE a.civicaddress_id = ANY ($1)';
       return doQuery(query, [args.civicaddress_ids], 'addresses', context);
@@ -91,16 +91,16 @@ const resolvers = {
     addresses_by_neighborhood(obj, args, context) {
       const logger = context.logger;
       if (args.nbrhd_ids.length <= 0) return [];
-      const query = 'SELECT * FROM amd.get_addresses_by_neighborhood($1)';
+      const query = 'SELECT * FROM simplicity.get_addresses_by_neighborhood($1)';
       return doQuery(query, [args.nbrhd_ids], 'addresses_by_neighborhood', context);
     },
 
     addresses_by_street(obj, args, context) {
       const logger = context.logger;
       if (args.centerline_ids.length <= 0) return [];
-      const query = 'SELECT a.*, b.maintenance_entity, b.location FROM amd.v_simplicity_addresses AS a '
+      const query = 'SELECT a.*, b.maintenance_entity, b.location FROM simplicity.v_simplicity_addresses AS a '
       + 'LEFT JOIN ('
-      + 'select * from amd.v_address_maintenance as c where c.centerline_id = ANY ($1) '
+      + 'select * from simplicity.v_address_maintenance as c where c.centerline_id = ANY ($1) '
       + ') as b '
       + 'ON a.civicaddress_id = b.civicaddress_id WHERE a.centerline_id = ANY ($1)';
       return doQuery(query, [args.centerline_ids], 'addresses_by_street', context);

@@ -1,8 +1,8 @@
--- View: amd.v_simplicity_addresses
+-- View: simplicity.v_simplicity_addresses
 
--- DROP VIEW amd.v_simplicity_addresses;
+-- DROP VIEW simplicity.v_simplicity_addresses;
 
-CREATE OR REPLACE VIEW amd.v_simplicity_addresses AS
+CREATE OR REPLACE VIEW simplicity.v_simplicity_addresses AS
  SELECT coa_bc_address_master.civicaddress_id,
     coa_bc_address_master.address_full,
     coa_bc_address_master.address_city,
@@ -33,7 +33,8 @@ CREATE OR REPLACE VIEW amd.v_simplicity_addresses AS
     coa_bc_address_master.nbrhd_name,
     coa_bc_address_master.historic_district,
     coa_bc_address_master.local_landmark
-   FROM amd.coa_bc_address_master
+   FROM internal.coa_bc_address_master
   WHERE coa_bc_address_master.location_type = 1 OR coa_bc_address_master.location_type = 4;
+
 
 

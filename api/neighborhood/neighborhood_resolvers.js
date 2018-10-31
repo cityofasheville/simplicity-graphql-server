@@ -8,7 +8,7 @@ const resolvers = {
       var query_args = [];
       var query = 'SELECT name, nbhd_id, abbreviation, narrative, '
       + 'st_astext(st_transform(shape, 4326)) AS polygon '
-      + 'FROM amd.coa_asheville_neighborhoods ';
+      + 'FROM internal.coa_asheville_neighborhoods ';
 
       if (typeof args.nbrhd_ids !== typeof undefined && args.nbrhd_ids.length > 0) {
         query += ' WHERE nbhd_id = ANY ($1)';

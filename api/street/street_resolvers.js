@@ -8,8 +8,8 @@ const resolvers = {
       const query = 'SELECT DISTINCT a.centerline_id, a.full_street_name, a.left_zipcode, '
       + 'a.left_from_address, a.left_to_address, a.right_from_address, a.right_to_address, '
       + 'a.right_zipcode, b.maintenance_entity, a.line '
-      + 'FROM amd.v_simplicity_streets as a LEFT JOIN '
-      + 'amd.coa_street_maintenance as b '
+      + 'FROM simplicity.v_simplicity_streets as a LEFT JOIN '
+      + 'internal.coa_street_maintenance as b '
       + "ON a.centerline_id = to_number(b.centerline_id,'9999999999.000000') "
       + 'WHERE a.centerline_id = ANY ($1)';
       return context.pool.query(query, [args.centerline_ids])

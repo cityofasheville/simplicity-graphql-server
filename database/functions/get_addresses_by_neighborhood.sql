@@ -1,18 +1,19 @@
--- FUNCTION: amd.get_addresses_by_neighborhood(character varying[])
+-- FUNCTION: simplicity.get_addresses_by_neighborhood(character varying[])
 
--- DROP FUNCTION amd.get_addresses_by_neighborhood(character varying[]);
+-- DROP FUNCTION simplicity.get_addresses_by_neighborhood(character varying[]);
 
-CREATE OR REPLACE FUNCTION amd.get_addresses_by_neighborhood(
+CREATE OR REPLACE FUNCTION simplicity.get_addresses_by_neighborhood(
 	cid character varying[])
-RETURNS SETOF amd.v_simplicity_addresses 
+    RETURNS SETOF simplicity.v_simplicity_addresses 
     LANGUAGE 'plpgsql'
+
     COST 100
     VOLATILE 
     ROWS 1000
 AS $BODY$
 
 DECLARE
-    r amd.v_simplicity_addresses%rowtype;
+    r simplicity.v_simplicity_addresses%rowtype;
 BEGIN
 	for i in 1..array_length(cid,1) loop
     	FOR r IN
@@ -28,7 +29,7 @@ BEGIN
 				A.nbrhd_name,
 				A.historic_district,
 				A.local_landmark
-            FROM amd.v_simplicity_addresses AS A
+            FROM simplicity.v_simplicity_addresses AS A
             WHERE A.nbrhd_id = cid[i]
 		LOOP
 			RETURN NEXT r; -- return current row of SELECT
@@ -38,4 +39,3 @@ BEGIN
 END
 
 $BODY$;
-

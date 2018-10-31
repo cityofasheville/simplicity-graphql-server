@@ -67,7 +67,7 @@ const resolvers = {
     properties(obj, args, context) {
       const logger = context.logger;
       if (args.pins.length <= 0) return [];
-      const query = 'SELECT DISTINCT * FROM amd.v_simplicity_properties '
+      const query = 'SELECT DISTINCT * FROM simplicity.v_simplicity_properties '
       + 'WHERE pinnum = ANY ($1)';
       return context.pool.query(query, [args.pins])
       .then(result => {
@@ -82,7 +82,7 @@ const resolvers = {
       const logger = context.logger;
       const radius = (args.radius) ? Number(args.radius) : 100; // State plane units are feet
       if (args.centerline_ids.length <= 0) return [];
-      const query = 'SELECT DISTINCT * FROM amd.get_properties_along_streets($1, $2) '
+      const query = 'SELECT DISTINCT * FROM simplicity.get_properties_along_streets($1, $2) '
       + 'ORDER BY pinnum';
       return context.pool.query(query, [args.centerline_ids, radius])
       .then(result => {
@@ -98,7 +98,7 @@ const resolvers = {
     properties_by_neighborhood(obj, args, context) {
       const logger = context.logger;
       if (args.nbrhd_ids.length <= 0) return [];
-      const query = 'SELECT DISTINCT * FROM amd.get_properties_by_neighborhood($1)';
+      const query = 'SELECT DISTINCT * FROM simplicity.get_properties_by_neighborhood($1)';
       return context.pool.query(query, [args.nbrhd_ids])
       .then(result => {
         return prepareProperties(result.rows);

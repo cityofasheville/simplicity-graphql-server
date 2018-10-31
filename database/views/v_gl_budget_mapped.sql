@@ -1,13 +1,13 @@
--- View: amd.v_gl_budget_mapped
+-- View: simplicity.v_gl_budget_mapped
 
--- DROP VIEW amd.v_gl_budget_mapped;
+-- DROP VIEW simplicity.v_gl_budget_mapped;
 
-CREATE OR REPLACE VIEW amd.v_gl_budget_mapped AS
+CREATE OR REPLACE VIEW simplicity.v_gl_budget_mapped AS
  WITH bsm AS (
          SELECT DISTINCT bsmtmp.budget_section,
             bsmtmp.org_code,
             bsmtmp.object_code
-           FROM amd.budget_section_mapping bsmtmp
+           FROM internal.budget_section_mapping bsmtmp
         ), glb1 AS (
          SELECT glb.account_type,
             glb.account_status,
@@ -37,7 +37,7 @@ CREATE OR REPLACE VIEW amd.v_gl_budget_mapped AS
             bsm.budget_section,
             bsm.org_code,
             bsm.object_code
-           FROM amd.gl_budget glb
+           FROM internal.gl_budget glb
              JOIN bsm ON glb.organization_id::text = bsm.org_code AND glb.object_id::text = bsm.object_code
         )
  SELECT a.account_type,
@@ -137,7 +137,7 @@ CREATE OR REPLACE VIEW amd.v_gl_budget_mapped AS
             bb.budget_section,
             bb.org_code,
             bb.object_code
-           FROM amd.gl_budget glb2
+           FROM internal.gl_budget glb2
              LEFT JOIN ( SELECT bsm.budget_section,
                     bsm.org_code,
                     bsm.object_code
@@ -149,16 +149,17 @@ CREATE OR REPLACE VIEW amd.v_gl_budget_mapped AS
      LEFT JOIN ( SELECT bcm.object_code,
             bcm.category,
             bc.category AS category_name
-           FROM amd.budget_category_mapping bcm
-             JOIN amd.budget_categories bc ON bcm.category = bc.id) b ON a.object_id::text = b.object_code
+           FROM internal.budget_category_mapping bcm
+             JOIN internal.budget_categories bc ON bcm.category = bc.id) b ON a.object_id::text = b.object_code
      LEFT JOIN ( SELECT budget_sections.id,
             budget_sections.budget_section AS budget_section_name
-           FROM amd.budget_sections) c ON a.budget_section = c.id
-     LEFT JOIN amd.budget_deptdiv_mappings dm ON a.department_id::text = dm.dept_id1 AND a.division_id::text = dm.div_id1
+           FROM internal.budget_sections) c ON a.budget_section = c.id
+     LEFT JOIN internal.budget_deptdiv_mappings dm ON a.department_id::text = dm.dept_id1 AND a.division_id::text = dm.div_id1
   WHERE NOT (a.organization_id::text IN ( SELECT budget_exclusions.org_code
-           FROM amd.budget_exclusions
+           FROM internal.budget_exclusions
           WHERE budget_exclusions.object_code IS NULL)) AND NOT ((a.organization_id::text, a.object_id::text) IN ( SELECT budget_exclusions.org_code,
             budget_exclusions.object_code
-           FROM amd.budget_exclusions
+           FROM internal.budget_exclusions
           WHERE budget_exclusions.object_code IS NOT NULL));
+
 

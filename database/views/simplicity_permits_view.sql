@@ -1,8 +1,8 @@
--- View: amd.simplicity_permits_view
+-- View: simplicity.simplicity_permits_view
 
--- DROP VIEW amd.simplicity_permits_view;
+-- DROP VIEW simplicity.simplicity_permits_view;
 
-CREATE OR REPLACE VIEW amd.simplicity_permits_view AS
+CREATE OR REPLACE VIEW simplicity.simplicity_permits_view AS
  SELECT a.permit_num,
     a.permit_group,
     a.permit_type,
@@ -31,5 +31,7 @@ CREATE OR REPLACE VIEW amd.simplicity_permits_view AS
     b.comment_seq_number,
     b.comment_date,
     b.comments
-   FROM amd.permits_xy_view a
-     LEFT JOIN amd.permit_comments b ON a.permit_num::text = b.permit_num::text;
+   FROM simplicity.permits_xy_view a
+     LEFT JOIN internal.permit_comments b ON a.permit_num::text = b.permit_num::text;
+
+

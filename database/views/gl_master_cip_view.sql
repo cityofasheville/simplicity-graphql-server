@@ -1,8 +1,8 @@
--- View: amd.gl_master_cip_view
+-- View: simplicity.gl_master_cip_view
 
--- DROP VIEW amd.gl_master_cip_view;
+-- DROP VIEW simplicity.gl_master_cip_view;
 
-CREATE OR REPLACE VIEW amd.gl_master_cip_view AS
+CREATE OR REPLACE VIEW simplicity.gl_master_cip_view AS
  SELECT gl_master.account_type,
     gl_master.fund_id,
     gl_master.object_id,
@@ -26,7 +26,7 @@ CREATE OR REPLACE VIEW amd.gl_master_cip_view AS
     sum(gl_master.life_transfers_in) AS life_transfers_in,
     sum(gl_master.life_transfers_out) AS life_transfers_out,
     sum(gl_master.memo) AS memo
-   FROM amd.gl_master
+   FROM internal.gl_master
   WHERE btrim(gl_master.project_id::text) <> ''::text AND gl_master.project_id::text !~~ 'A%'::text AND gl_master.project_id::text !~~ 'D%'::text
   GROUP BY gl_master.account_type, gl_master.fund_id, gl_master.object_id, gl_master.object_name, gl_master.project_id, gl_master.organization_id, gl_master.organization_name, gl_master.account_status, gl_master.department_id, gl_master.division_id, gl_master.costcenter_id
   ORDER BY gl_master.project_id, gl_master.organization_id, gl_master.object_id;

@@ -1,13 +1,12 @@
--- View: amd.v_simplicity_crimes
+-- View: simplicity.v_simplicity_crimes
 
--- DROP VIEW amd.v_simplicity_crimes;
+-- DROP VIEW simplicity.v_simplicity_crimes;
 
-CREATE OR REPLACE VIEW amd.v_simplicity_crimes AS
+CREATE OR REPLACE VIEW simplicity.v_simplicity_crimes AS
  SELECT a.x,
     a.y,
     st_x(st_transform(a.shape, 4326)) AS x_wgs,
     st_y(st_transform(a.shape, 4326)) AS y_wgs,
-    a.objectid,
     a.incident_id,
     a.agency,
     a.date_occurred,
@@ -22,5 +21,6 @@ CREATE OR REPLACE VIEW amd.v_simplicity_crimes AS
     a.offense_group_level,
     a.offense_group_short_description,
     a.offense_group_long_description
-   FROM amd.coa_apd_public_incidents_view a;
+   FROM open.coa_apd_public_incidents_view a;
+
 

@@ -22,8 +22,6 @@ function searchAddress(searchContext, searchString, geoCodeResponse, context) {
     geoCodeResponse.locZipcode,
     geoCodeResponse.locCity.map(c => { return ''; }), // eslint-disable-line no-unused-vars
   ];
-  console.log(fquery);
-  console.log(args);
 
   const idMap = {};
   return context.pool.query(fquery, args)

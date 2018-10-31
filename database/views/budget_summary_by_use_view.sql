@@ -1,8 +1,8 @@
--- View: amd.budget_summary_by_use_view
+-- View: simplicity.budget_summary_by_use_view
 
--- DROP VIEW amd.budget_summary_by_use_view;
+-- DROP VIEW simplicity.budget_summary_by_use_view;
 
-CREATE OR REPLACE VIEW amd.budget_summary_by_use_view AS
+CREATE OR REPLACE VIEW simplicity.budget_summary_by_use_view AS
  SELECT s.category_name,
     s.year,
     s.total_proposed_budget,
@@ -15,8 +15,10 @@ CREATE OR REPLACE VIEW amd.budget_summary_by_use_view AS
             sum(bh.proposed_budget) AS total_proposed_budget,
             sum(bh.adopted_budget) AS total_adopted_budget,
             sum(bh.actual) AS total_actual
-           FROM amd.v_gl_5yr_plus_budget_mapped bh
+           FROM simplicity.v_gl_5yr_plus_budget_mapped bh
           WHERE NOT ((bh.organization_id::text, bh.object_id::text) IN ( SELECT interfund_transfers.org_code,
                     interfund_transfers.object_code
-                   FROM amd.budget_interfund_transfers interfund_transfers))
+                   FROM internal.budget_interfund_transfers interfund_transfers))
           GROUP BY bh.category_name, bh.year, bh.account_type) s;
+
+

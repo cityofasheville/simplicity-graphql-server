@@ -2,7 +2,7 @@
 const resolvers = {
   Query: {
     employees(obj, args, context) {
-      let query = 'SELECT * FROM amd.employee_main ';
+      let query = 'select * from internal.employees_main_view ';
       const qargs = [];
       if (args.ids && args.ids.length > 0) {
         query += 'WHERE emp_id = ANY($1)';
@@ -34,7 +34,7 @@ const resolvers = {
           qargs.push(args.supervisors);
         }
       }
-
+      console.log(query);
       return context.pool.query(query, qargs)
       .then(result => {
         if (result.rows.length === 0) return [];

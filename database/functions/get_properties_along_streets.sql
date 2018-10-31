@@ -1,19 +1,20 @@
--- FUNCTION: amd.get_properties_along_streets(numeric[], numeric)
+-- FUNCTION: simplicity.get_properties_along_streets(numeric[], numeric)
 
--- DROP FUNCTION amd.get_properties_along_streets(numeric[], numeric);
+-- DROP FUNCTION simplicity.get_properties_along_streets(numeric[], numeric);
 
-CREATE OR REPLACE FUNCTION amd.get_properties_along_streets(
+CREATE OR REPLACE FUNCTION simplicity.get_properties_along_streets(
 	cid numeric[],
 	ldist numeric)
-RETURNS SETOF amd.v_simplicity_properties 
+    RETURNS SETOF simplicity.v_simplicity_properties 
     LANGUAGE 'plpgsql'
+
     COST 100
     VOLATILE 
     ROWS 1000
 AS $BODY$
 
 DECLARE
-    r amd.v_simplicity_properties%rowtype;
+    r simplicity.v_simplicity_properties%rowtype;
 BEGIN
 	for i in 1..array_length(cid,1) loop
     	FOR r IN
@@ -47,8 +48,8 @@ BEGIN
                     A.polygon,
 					A.historic_district,
 					A.local_landmark
-            FROM amd.v_simplicity_properties AS A
-            LEFT JOIN amd.bc_street AS B
+            FROM simplicity.v_simplicity_properties AS A
+            LEFT JOIN internal.bc_street AS B
             ON ST_DWithin(B.shape, A.shape, ldist)
             WHERE B.centerline_id = cid[i]
 		LOOP
@@ -59,3 +60,4 @@ BEGIN
 END
 
 $BODY$;
+

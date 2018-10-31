@@ -1,8 +1,8 @@
--- View: amd.permits_xy_view
+-- View: simplicity.permits_xy_view
 
--- DROP VIEW amd.permits_xy_view;
+-- DROP VIEW simplicity.permits_xy_view;
 
-CREATE OR REPLACE VIEW amd.permits_xy_view AS
+CREATE OR REPLACE VIEW simplicity.permits_xy_view AS
  SELECT a.permit_num,
     a.permit_group,
     a.permit_type,
@@ -53,8 +53,8 @@ CREATE OR REPLACE VIEW amd.permits_xy_view AS
             p.record_id,
             c.contractor_name,
             c.contractor_license_number
-           FROM amd.permits p
-             LEFT JOIN amd.permit_contractors c ON p.permit_num::text = c.permit_num::text) a
-     LEFT JOIN amd.coa_bc_address_master b ON a.civic_address_id::text = b.civicaddress_id::character varying(50)::text;
+           FROM internal.permits p
+             LEFT JOIN internal.permit_contractors c ON p.permit_num::text = c.permit_num::text) a
+     LEFT JOIN internal.coa_bc_address_master b ON a.civic_address_id::text = b.civicaddress_id::character varying(50)::text;
 
 

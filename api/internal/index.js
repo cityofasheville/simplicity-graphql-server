@@ -1,7 +1,6 @@
-const itProjectSchema = require('./bpt_project_schema.js');
 
 const schema = [
-  itProjectSchema,
+  require('./workorders/workorders_schema.js'),
   require('./employees/employees_schema'),
 ];
 
