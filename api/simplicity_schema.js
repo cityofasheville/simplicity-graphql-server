@@ -41,6 +41,7 @@ const baseSchema = `
     permits_by_street(centerline_ids: [Float], radius: Int, after: String, before: String): [Permit]
     permits_by_neighborhood(nbrhd_ids: [String], after: String, before: String): [Permit]
     permit_tasks(permit_numbers: [String], date_field: String, before: String, after: String, permit_groups: [String]): [PermitTask]
+    inspections(permit_numbers: [String], date_field: String, before: String, after: String, permit_groups: [String]): [Inspection]
     cip_projects(names: [String], categories: [String], zipcodes: [String]): [CIPProject]
     cip_project_categories: [CIPProjectCategory]
     projects (status: [String], priority: [String], reqtype: String, after: String, before: String): [ITProject]

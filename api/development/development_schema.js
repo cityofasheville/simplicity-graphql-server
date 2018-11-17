@@ -32,6 +32,7 @@ type Permit {
   y: Float
   contractor_names: [String]
   contractor_license_numbers: [String]
+  internal_record_id: String
   comments: [PermitComment]
 }
 
@@ -60,7 +61,29 @@ type PermitTask {
   assigned_user: String
   assigned_department: String
   process_history_sequence_number: Int
-  record_id: String
+  internal_record_id: String
 }
+
+type Inspection {
+  inspection_id: Int
+  permit_number: String
+  permit_group: String
+  permit_type: String
+  permit_subtype: String
+  permit_category: String
+  inspection_type: String
+  requestor_name: String
+  status: String
+  inspector: String
+  request_date: String
+  scheduled_date: String
+  completed_date: String
+  submit_date: String
+  result_comment: String
+  unit_number: String
+  record_date: String
+  internal_record_id: String
+}
+
 ${dsdSlaSchema}
 `;

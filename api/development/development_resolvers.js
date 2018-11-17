@@ -34,6 +34,7 @@ function preparePermits(rows, before = null, after = null) {
         y: itm.y,
         contractor_names: [],
         contractor_license_numbers: [],
+        internal_record_id: itm.internal_record_id,
         comments: [],
       };
       curContractors = {};
@@ -102,7 +103,33 @@ function preparePermitTasks(rows) {
       assigned_user: itm.assigned_user,
       assigned_department: itm.assigned_department,
       process_history_sequence_number: itm.process_history_sequence_number,
-      record_id: itm.record_id,
+      internal_record_id: itm.internal_record_id,
+    };
+  });
+}
+
+function prepareInspections(rows) {
+  if (rows.length === 0) return [];
+  return rows.map(itm => {
+    return {
+      inspection_id: itm.inspection_id,
+      permit_number: itm.permit_num,
+      permit_group: itm.permit_group,
+      permit_type: itm.permit_type,
+      permit_subtype: itm.permit_subtype,
+      permit_category: itm.permit_category,
+      inspection_type: itm.inspection_type,
+      requestor_name: itm.requestor_name,
+      status: itm.status,
+      inspector: itm.inspector,
+      request_date: itm.request_date,
+      scheduled_date: itm.scheduled_date,
+      completed_date: itm.completed_date,
+      submit_date: itm.submit_date,
+      result_comment: itm.result_comment,
+      unit_number: itm.unit_number,
+      record_date: itm.record_date,
+      internal_record_id: itm.internal_record_id,
     };
   });
 }
@@ -114,6 +141,7 @@ const stdQuery = 'SELECT A.permit_num, A.permit_group, A.permit_type, '
               + 'A.total_sq_feet, A.fees, A.paid, A.balance, A.invoiced_fee_total, '
               + 'A.civic_address_id, A.address, A.contractor_name, '
               + 'A.contractor_license_number, A.longitude as x, A.latitude as y, '
+              + 'A.internal_record_id, '
               + 'B.comment_seq_number, B.comment_date, B.comments ';
 const resolvers = {
   Query: {
@@ -311,6 +339,43 @@ const resolvers = {
       .catch((err) => {
         console.log(err);
         throw new Error(`Got an error in permit_tasks: ${JSON.stringify(err)}`);
+      });
+    },
+    inspections(obj, args, context) {
+      const qargs = [];
+      let query = 'SELECT * FROM internal.inspections AS A ';
+      if (args.permit_numbers && args.permit_numbers.length > 0) {
+        qargs.push(args.permit_numbers);
+        query += 'WHERE A.permit_num = ANY ($1) ';
+      } else if (args.before || args.after) {
+        const dateField = args.date_field || 'record_date';
+        let nextParam = '$1';
+        query += 'where ';
+        if (args.before) {
+          query += `${dateField} < $1 `;
+          nextParam = '$2';
+          if (args.after) query += 'and ';
+          qargs.push(args.before);
+        }
+        if (args.after) {
+          query += `${dateField} > ${nextParam} `;
+          nextParam = (nextParam === '$1') ? '$2' : '$3';
+          qargs.push(args.after);
+        }
+        if (args.permit_groups) {
+          if (args.before || args.after) query += 'and ';
+          query += `A.permit_group = ANY(${nextParam}) `;
+          qargs.push(args.permit_groups);
+        }
+      }
+      query += 'ORDER BY A.permit_num DESC ';
+      return context.pool.query(query, qargs)
+      .then((result) => {
+        return prepareInspections(result.rows);
+      })
+      .catch((err) => {
+        console.log(err);
+        throw new Error(`Got an error in inspections: ${JSON.stringify(err)}`);
       });
     },
   },
