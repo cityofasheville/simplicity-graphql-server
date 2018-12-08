@@ -45,7 +45,7 @@ function coaWebLogin(pool, logger, req) {
     userInfo.user.name = decodedToken.name;
     userInfo.user.email = decodedEmail;
     if (!decodedEmail.endsWith('@ashevillenc.gov')) return userInfo;
-    const query = `SELECT emp_id, ad_memberships, active, department, division from amd.employee_main where email_city = '${decodedEmail}'`;
+    const query = `SELECT emp_id, ad_memberships, active, department, division from internal.employees_main_view where emp_email = '${decodedEmail}'`;
     return pool.query(query)
     .then(eres => {
       if (eres.rows.length > 0) {
