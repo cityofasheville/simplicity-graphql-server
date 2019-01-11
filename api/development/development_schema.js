@@ -6,6 +6,12 @@ type PermitComment {
   comments: String
 }
 
+type PermitCustomField {
+  type: String
+  name: String
+  value: String
+}
+
 type Permit {
   permit_number: String
   permit_group: String
@@ -34,6 +40,7 @@ type Permit {
   contractor_license_numbers: [String]
   internal_record_id: String
   comments: [PermitComment]
+  custom_fields: [PermitCustomField]
 }
 
 type PermitTask {

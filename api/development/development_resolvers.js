@@ -36,6 +36,7 @@ function preparePermits(rows, before = null, after = null) {
         contractor_license_numbers: [],
         internal_record_id: itm.internal_record_id,
         comments: [],
+        custom_fields: [],
       };
       curContractors = {};
       curComments = {};
@@ -383,6 +384,18 @@ const resolvers = {
   Permit: {
     comments(obj, args, context) { // eslint-disable-line no-unused-vars
       return obj.comments;
+    },
+    custom_fields(obj, args, context) {
+      const query = 'select type, name, value from internal.permit_custom_fields '
+      + `where permit_num = '${obj.permit_number}'`;
+      return context.pool.query(query)
+      .then((result) => {
+        return result.rows;
+      })
+      .catch((err) => {
+        console.log(err);
+        throw new Error(`Got an error in Permit.custom_fields: ${err}`);
+      });
     },
   },
 };
