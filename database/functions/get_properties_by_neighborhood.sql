@@ -44,9 +44,9 @@ BEGIN
 				A.jurisdiction_type,
                 A.owner_address,
                 A.location_type,
+                A.polygon,
 				A.historic_district,
-				A.local_landmark,
-                A.polygon
+				A.local_landmark
             FROM simplicity.v_simplicity_properties AS A
             LEFT JOIN internal.coa_asheville_neighborhoods AS B
             ON ST_Intersects(B.shape, A.shape)
@@ -60,3 +60,4 @@ BEGIN
 END
 
 $BODY$;
+
