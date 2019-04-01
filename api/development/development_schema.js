@@ -20,6 +20,7 @@ type Permit {
   permit_category: String
   permit_description: String
   applicant_name: String
+  application_name: String
   applied_date: String
   status_current: String
   status_date: String

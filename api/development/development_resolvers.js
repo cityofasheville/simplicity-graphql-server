@@ -16,6 +16,7 @@ function preparePermits(rows, before = null, after = null) {
         permit_category: itm.permit_category,
         permit_description: itm.permit_description,
         applicant_name: itm.applicant_name,
+        application_name: itm.applicant_name,
         applied_date: itm.applied_date,
         status_current: itm.status_current,
         status_date: itm.status_date,
