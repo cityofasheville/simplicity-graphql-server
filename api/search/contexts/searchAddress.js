@@ -1,5 +1,8 @@
-function searchAddress(searchContext, searchString, geoCodeResponse, context) {
+const { convertGeocoderResults } = require('../geocoder');
+
+function searchAddress(searchContext, searchString, geoCodeResponseIn, context) {
   const logger = context.logger;
+  const geoCodeResponse = convertGeocoderResults(geoCodeResponseIn[0], null);
   if (geoCodeResponse.locName.length === 0) {
     return Promise.resolve(
       {

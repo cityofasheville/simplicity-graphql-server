@@ -1,4 +1,4 @@
-const { callGeocoder, mergeGeocoderResults } = require('./geocoder');
+const { callGeocoder } = require('./geocoder');
 const searchCivicAddressId = require('./contexts/searchCivicAddressId');
 const searchPin = require('./contexts/searchPin');
 const searchNeighborhood = require('./contexts/searchNeighborhood');
@@ -10,7 +10,6 @@ const searchPlace = require('./contexts/searchPlace');
 
 // Context options: address, pin, neighborhood, property, civicAddressId, street, owner, google
 function performSearch(searchString, searchContext, geoCodeResponse, context) {
-  console.log('Perform search in context ' + searchContext);
   if (searchContext === 'civicAddressId') {
     return searchCivicAddressId(searchString, context);
   } else if (searchContext === 'pin') {
@@ -35,22 +34,20 @@ const resolvers = {
   Query: {
     search(obj, args, context) {
       const logger = context.logger;
-      const geoCodeResponse = [];
+      const geoCodeResponse = [Promise.resolve(null), Promise.resolve(null)];
       const startTime = new Date().getTime();
       const searchString = args.searchString.trim();
       logger.info(`Search for '${searchString} in contexts ${args.searchContexts}`);
       if (args.searchContexts.indexOf('address') >= 0 ||
           args.searchContexts.indexOf('property') >= 0 ||
           args.searchContexts.indexOf('street') >= 0) {
-        geoCodeResponse.push(callGeocoder(searchString, 'address', logger));
+        geoCodeResponse[0] = callGeocoder(searchString, 'address', logger);
       }
       if (args.searchContexts.indexOf('street') >= 0) {
-        geoCodeResponse.push(callGeocoder(searchString, 'street', logger));
+        geoCodeResponse[1] = callGeocoder(searchString, 'street', logger);
       }
-      if (geoCodeResponse.length === 0) geoCodeResponse.push(Promise.resolve(null));
-
       return Promise.all(geoCodeResponse).then(results => {
-        const result = mergeGeocoderResults(results);
+        const result = results;
         return Promise.all(args.searchContexts.map((searchContext) => {
           const ret = performSearch(searchString, searchContext, result, context);
           const totalTime = (new Date().getTime() - startTime) / 1000.0;

@@ -1,5 +1,8 @@
-function searchStreet(searchContext, searchString, geoCodeResponse, context) {
+const { mergeGeocoderResults } = require('../geocoder');
+
+function searchStreet(searchContext, searchString, geoCodeResponseIn, context) {
   const logger = context.logger;
+  const geoCodeResponse = mergeGeocoderResults(geoCodeResponseIn);
   if (geoCodeResponse.locName.length === 0) {
     return Promise.resolve(
       {
@@ -17,9 +20,9 @@ function searchStreet(searchContext, searchString, geoCodeResponse, context) {
   };
   geoCodeResponse.locName.forEach((name, index) => {
     const zip = geoCodeResponse.locZipcode[index];
-    const city = geoCodeResponse.locCity[index]
+    const city = geoCodeResponse.locCity[index];
     const test = `${name}-${zip}-${city}`;
-    if (!nmap.test.hasOwnProperty(test)) {
+    if (!nmap.test.hasOwnProperty(test) && zip !== null && zip !== '') {
       nmap.test[test] = true;
       nmap.name.push(name);
       nmap.city.push(city);
