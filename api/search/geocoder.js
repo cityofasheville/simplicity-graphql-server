@@ -11,7 +11,6 @@ function callGeocoder(searchString, searchContext = 'address', logger) {
   + '&outFields=House%2C+PreType%2C+PreDir%2C+StreetName%2C+SufType%2C+SubAddrUnit%2C+City%2C+ZIP'
   + '&maxLocations=&outSR=&searchExtent='
   + '&location=&distance=&magicKey=&f=pjson';
-
   return axios.get(geolocatorUrl, { timeout: 5000 })
   .then(response => {
     const totalTime = (new Date().getTime() - startTime) / 1000.0;
@@ -31,6 +30,24 @@ function callGeocoder(searchString, searchContext = 'address', logger) {
   });
 }
 
+function processCandidate(c, result) {
+  result.locNumber.push(c.attributes.House);
+  if (c.attributes.PreType === null || c.attributes.PreType === '') {
+    result.locName.push(c.attributes.StreetName);
+  } else {
+    result.locName.push(`${c.attributes.PreType} ${c.attributes.StreetName}`);
+  }
+  result.locType.push(c.attributes.SufType);
+  result.locPrefix.push(c.attributes.PreDir);
+  result.locUnit.push(c.attributes.SubAddrUnit);
+  result.locZipcode.push(c.attributes.ZIP);
+  if (c.attributes.City === null || c.attributes.City === '') {
+    result.locCity.push(c.attributes.City);
+  } else {
+    result.locCity.push(c.attributes.City);
+  }
+}
+
 function mergeGeocoderResults(candidateSet) {
   const maxCandidates = 500;
   const result = {
@@ -45,29 +62,45 @@ function mergeGeocoderResults(candidateSet) {
   if (candidateSet.length > 0 && candidateSet[0] !== null) {
     let total = 0;
     candidateSet.forEach((candidates) => {
-      candidates.forEach((c) => {
-        ++total;
-        if (total < maxCandidates) {
-          result.locNumber.push(c.attributes.House);
-          if (c.attributes.PreType === null || c.attributes.PreType === '') {
-            result.locName.push(c.attributes.StreetName);
-          } else {
-            result.locName.push(`${c.attributes.PreType} ${c.attributes.StreetName}`);
+      if (candidates) {
+        candidates.forEach((c) => {
+          ++total;
+          if (total < maxCandidates) {
+            processCandidate(c, result);
           }
-          result.locType.push(c.attributes.SufType);
-          result.locPrefix.push(c.attributes.PreDir);
-          result.locUnit.push(c.attributes.SubAddrUnit);
-          result.locZipcode.push(c.attributes.ZIP);
-          if (c.attributes.City === null || c.attributes.City === '') {
-            result.locCity.push(c.attributes.City);
-          } else {
-            result.locCity.push(c.attributes.City);
-          }
-        }
-      });
+        });
+      }
     });
   }
   return result;
 }
 
-module.exports = { callGeocoder, mergeGeocoderResults };
+function convertGeocoderResults(candidates1, candidates2) {
+  const maxCandidates = 500;
+  const result = {
+    locNumber: [],
+    locName: [],
+    locType: [],
+    locPrefix: [],
+    locUnit: [],
+    locZipcode: [],
+    locCity: [],
+  };
+  const candidateSet = [candidates1, candidates2];
+  if (candidateSet.length > 0 && candidateSet[0] !== null) {
+    let total = 0;
+    candidateSet.forEach((candidates) => {
+      if (candidates) {
+        candidates.forEach((c) => {
+          ++total;
+          if (total < maxCandidates) {
+            processCandidate(c, result);
+          }
+        });
+      }
+    });
+  }
+  return result;
+}
+
+module.exports = { callGeocoder, mergeGeocoderResults, convertGeocoderResults };
