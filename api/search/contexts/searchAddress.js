@@ -93,6 +93,9 @@ function searchAddress(searchContext, searchString, geoCodeResponseIn, context) 
       idMap[row.civic_address_id] = true;
       return true;
     })
+    .sort((a1, a2) => {
+      return a1.street_number - a2.street_number;
+    })
     ;
   })
   .then(clist => {
