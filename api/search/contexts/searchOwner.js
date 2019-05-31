@@ -33,7 +33,13 @@ function searchOwner(searchString, context) {
 
     const finalResult = {
       type: 'owner',
-      results: owners,
+      /*
+       * This is a temporary filter until a general policy
+       * is formulated. Review by August 1, 2019
+       */
+      results: owners.filter(o => {
+        return !o.name.includes('HELPMATE');
+      }),
     };
     return finalResult;
   })
