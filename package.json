@@ -5,7 +5,9 @@
   "scripts": {
     "start": "nodemon ./server.js --exec babel-node",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "repository": {
     "type": "git",
@@ -34,7 +36,8 @@
     "graphql-typings": "^0.0.1-beta-2",
     "lodash": "^4.17.11",
     "mssql": "4.0.4",
-    "pg": "6.1.6"
+    "pg": "6.1.6",
+    "snyk": "^1.189.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
@@ -67,5 +70,6 @@
     "env": {
       "mocha": true
     }
-  }
+  },
+  "snyk": true
 }
