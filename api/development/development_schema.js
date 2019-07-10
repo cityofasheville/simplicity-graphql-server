@@ -24,6 +24,8 @@ type Permit {
   applied_date: String
   status_current: String
   status_date: String
+  technical_contact_name: String
+  technical_contact_email: String
   created_by: String
   building_value: String
   job_value: String

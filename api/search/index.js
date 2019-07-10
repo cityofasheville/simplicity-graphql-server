@@ -14,6 +14,8 @@ const schema = `
     street_name: String
     street_prefix: String
     street_number: String
+    x: Float
+    y: Float
     unit: String
     city: String
     is_in_city: Boolean

@@ -20,6 +20,8 @@ function preparePermits(rows, before = null, after = null) {
         applied_date: itm.applied_date,
         status_current: itm.status_current,
         status_date: itm.status_date,
+        technical_contact_name: itm.technical_contact_name,
+        technical_contact_email: itm.technical_contact_email,
         civic_address_id: itm.civic_address_id,
         address: itm.address,
         created_by: itm.created_by,
