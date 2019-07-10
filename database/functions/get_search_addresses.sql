@@ -1,6 +1,6 @@
 -- FUNCTION: simplicity.get_search_addresses(integer[], character varying[], character varying[], character varying[], character varying[], integer[], character varying[])
 
--- DROP FUNCTION simplicity.get_search_addresses(integer[], character varying[], character varying[], character varying[], character varying[], integer[], character varying[]);
+-- DROP FUNCTION simplicity.get_search_addresses(integer[], character varying[], character varying[], character varying[], character varying[], integer[], character varying[], float[], float []);
 
 CREATE OR REPLACE FUNCTION simplicity.get_search_addresses(
 	lnumber integer[],
@@ -10,8 +10,8 @@ CREATE OR REPLACE FUNCTION simplicity.get_search_addresses(
 	lunit character varying[],
 	lzipcode integer[],
 	lcity character varying[],
-	laddress_x float[],
-	laddress_y float[])
+	llongituge_wgs float[],
+	llatitude_wgs float[])
     RETURNS SETOF internal.coa_bc_address_master 
     LANGUAGE 'plpgsql'
 
@@ -34,8 +34,8 @@ BEGIN
                 and   (lcity[i] = '' OR address_commcode = lcity[i]) -- Sometime input lacks city
                 and   (address_unit = lunit[i] OR (trim(BOTH FROM address_unit) = lunit[i] OR address_unit IS NULL))
                 and   (address_street_prefix = lprefix[i] OR (trim(BOTH FROM address_street_prefix) = lprefix[i] OR address_street_prefix IS NULL))
-                and   address_x = laddress_x[i]
-                and   address_y = laddress_y[i]
+                and   longitude_wgs = llongitude_wgs[i]
+                and   lattitude_wgs = llattitude_wgs[i]
             )
 		LOOP
 			RETURN NEXT r; -- return current row of SELECT
