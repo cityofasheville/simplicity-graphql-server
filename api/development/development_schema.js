@@ -71,7 +71,6 @@ type PermitTask {
   assigned_user: String
   assigned_department: String
   process_history_sequence_number: Int
-  internal_record_id: String
 }
 
 type Inspection {
@@ -92,7 +91,6 @@ type Inspection {
   result_comment: String
   unit_number: String
   record_date: String
-  internal_record_id: String
 }
 
 ${dsdSlaSchema}
