@@ -107,7 +107,6 @@ function preparePermitTasks(rows) {
       assigned_user: itm.assigned_user,
       assigned_department: itm.assigned_department,
       process_history_sequence_number: itm.process_history_sequence_number,
-      internal_record_id: itm.internal_record_id,
     };
   });
 }
@@ -133,7 +132,6 @@ function prepareInspections(rows) {
       result_comment: itm.result_comment,
       unit_number: itm.unit_number,
       record_date: itm.record_date,
-      internal_record_id: itm.internal_record_id,
     };
   });
 }
