@@ -24,7 +24,8 @@ jobs:
              --build-arg cache_method=${DATABASE}/
              --build-arg region=${DEBUGGING}/
              --build-arg userpoolId=${FIREBASE_SERVICE_ACCOUNT}/
-             --build-arg appClientId=${FIREBASE_DB_URL}'
+             --build-arg appClientId=${FIREBASE_DB_URL}
+             --build-arg port=8080'
       - aws-ecs/update-service:
           family: 'simplicityapi'
           cluster-name: 'simplicityapi_ecs_cluster'
@@ -52,7 +53,8 @@ jobs:
                    --build-arg cache_method=${DATABASE}/
                    --build-arg region=${DEBUGGING}/
                    --build-arg userpoolId=${FIREBASE_SERVICE_ACCOUNT}/
-                   --build-arg appClientId=${FIREBASE_DB_URL}'
+                   --build-arg appClientId=${FIREBASE_DB_URL}/
+                   --build-arg port=4000'
       - aws-ecs/update-service:
           family: 'simplicityapi'
           cluster-name: 'simplicityapi_ecs_cluster'
