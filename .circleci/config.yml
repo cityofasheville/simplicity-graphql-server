@@ -19,12 +19,12 @@ jobs:
           repo: 'coa-simplicityapi'
           tag: "${CIRCLE_SHA1}"
           extra-build-args: '--build-arg dbhost=${DBHOST}/
-             --build-arg sessionSecret=${DBUSER}/
-             --build-arg maxSessionDays=${DBPASSWORD}/
-             --build-arg cache_method=${DATABASE}/
-             --build-arg region=${DEBUGGING}/
-             --build-arg userpoolId=${FIREBASE_SERVICE_ACCOUNT}/
-             --build-arg appClientId=${FIREBASE_DB_URL}
+             --build-arg dbuser=${DBUSER}/
+             --build-arg dbpassword=${DBPASSWORD}/
+             --build-arg database=${DATABASE}/
+             --build-arg debuggin=${DEBUGGING}/
+             --build-arg firebase_service_account=${FIREBASE_SERVICE_ACCOUNT}/
+             --build-arg firebase_db_url=${FIREBASE_DB_URL}
              --build-arg port=8080'
       - aws-ecs/update-service:
           family: 'simplicityapi'
@@ -48,12 +48,12 @@ jobs:
           repo: 'coa-simplicityapi'
           tag: "${CIRCLE_SHA1}"
           extra-build-args: '--build-arg dbhost=${DBHOST}/
-                   --build-arg sessionSecret=${DBUSER}/
-                   --build-arg maxSessionDays=${DBPASSWORD}/
-                   --build-arg cache_method=${DATABASE}/
-                   --build-arg region=${DEBUGGING}/
-                   --build-arg userpoolId=${FIREBASE_SERVICE_ACCOUNT}/
-                   --build-arg appClientId=${FIREBASE_DB_URL}/
+                   --build-arg dbuser=${DBUSER}/
+                   --build-arg dbpassword=${DBPASSWORD}/
+                   --build-arg database=${DATABASE}/
+                   --build-arg debugging=${DEBUGGING}/
+                   --build-arg firebase_service_account=${FIREBASE_SERVICE_ACCOUNT}/
+                   --build-arg firebase_db_url=${FIREBASE_DB_URL}/
                    --build-arg port=4000'
       - aws-ecs/update-service:
           family: 'simplicityapi'
