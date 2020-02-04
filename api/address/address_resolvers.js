@@ -80,7 +80,14 @@ const resolvers = {
     addresses(obj, args, context) {
       const logger = context.logger;
       if (args.civicaddress_ids.length <= 0) return [];
-      const query = 'SELECT a.*, b.maintenance_entity,  b.location FROM simplicity.v_simplicity_addresses AS a '
+      const query = 'SELECT '
+      + 'a.civicaddress_id, a.address_full, a.address_city, a.address_zipcode, a.address_number, '
+      + 'a.address_unit, a.address_street_prefix, a.address_street_name, a.address_street_type, '
+      + 'a.latitude_wgs, a.longitude_wgs, a.trash_pickup_day, a.recycling_pickup_district, '
+      + 'a.recycling_pickup_day, a.zoning, a.owner_name, a.owner_address, a.owner_cityname, '
+      + 'a.owner_state, a.owner_zipcode, a.property_pin, a.property_pinext, a.centerline_id, '
+      + 'a.jurisdiction_type, a.shape, a.brushweek, a.nbrhd_id, a.nbrhd_name, a.historic_district, a.local_landmark, '
+      + 'b.maintenance_entity,  b.location FROM simplicity.v_simplicity_addresses AS a '
       + 'LEFT JOIN ('
       + 'select * from simplicity.v_address_maintenance as c where c.civicaddress_id = ANY ($1) '
       + ') as b '

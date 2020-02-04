@@ -7,8 +7,8 @@ GraphQL Server for the new SimpliCity II system
 Clone the repository and run `npm install`
 
 ```
-git clone https://github.com/apollostack/frontpage-server
-cd frontpage-server
+git clone git@github.com:cityofasheville/simplicity-graphql-server.git
+cd simplicity-graphql-server
 npm install
 ```
 
@@ -19,6 +19,8 @@ npm start
 ```
 
 The server will run on port 8080. You can change this by editing `server.js`.
+
+View the graphql data at http://localhost:8080/graphiql
 
 ## Uploading data
 
