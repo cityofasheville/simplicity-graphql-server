@@ -23,8 +23,6 @@ jobs:
              --build-arg dbpassword=${DBPASSWORD}/
              --build-arg database=${DATABASE}/
              --build-arg debuggin=${DEBUGGING}/
-             --build-arg firebase_service_account=${FIREBASE_SERVICE_ACCOUNT}/
-             --build-arg firebase_db_url=${FIREBASE_DB_URL}
              --build-arg port=8080'
       - aws-ecs/update-service:
           family: 'simplicityapi'
@@ -52,8 +50,6 @@ jobs:
                    --build-arg dbpassword=${DBPASSWORD}/
                    --build-arg database=${DATABASE}/
                    --build-arg debugging=${DEBUGGING}/
-                   --build-arg firebase_service_account=${FIREBASE_SERVICE_ACCOUNT}/
-                   --build-arg firebase_db_url=${FIREBASE_DB_URL}/
                    --build-arg port=4000'
       - aws-ecs/update-service:
           family: 'simplicityapi'

@@ -4,7 +4,6 @@ const { makeExecutableSchema } = require('graphql-tools');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 const Logger = require('coa-node-logging');
-const coaWebLogin = require('coa-web-login');
 require('dotenv').config();
 const pg = require('pg');
 const Pool = pg.Pool;
@@ -55,17 +54,7 @@ graphQLServer.use('/graphql', graphqlExpress((req, res) => {
       employee: null,
     },
   };
-  return coaWebLogin(pool, logger, req)
-  .then(userInfo => {
-    config.context.user = userInfo.user;
-    config.context.employee = userInfo.employee;
-    return config;
-  })
-  .catch(error => {
-    console.log('Error in server.js');
-    logger.error(error);
-    return config;
-  });
+  return config;
 }));
 
 graphQLServer.use('/graphiql', graphiqlExpress({
