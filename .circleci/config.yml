@@ -1,0 +1,78 @@
+version: 2.1
+orbs:
+  aws-ecr: circleci/aws-ecr@6.6.0
+  aws-ecs: circleci/aws-ecs@1.0.4
+
+defaults: &defaults
+  docker:
+    - image: circleci/python:3.7.1
+jobs:
+  deploy-production:
+    <<: *defaults
+    steps:
+      - setup_remote_docker
+      - aws-ecr/build-and-push-image:
+          account-url: ECR_ACCOUNT_URL
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          region: AWS_DEFAULT_REGION
+          repo: 'coa-simplicityapi'
+          tag: "${CIRCLE_SHA1}"
+          extra-build-args: '--build-arg dbhost=${DBHOST}/
+             --build-arg dbuser=${DBUSER}/
+             --build-arg dbpassword=${DBPASSWORD}/
+             --build-arg database=${DATABASE}/
+             --build-arg debuggin=${DEBUGGING}/
+             --build-arg port=8080'
+      - aws-ecs/update-service:
+          family: 'simplicityapi'
+          cluster-name: 'simplicityapi_ecs_cluster'
+          service-name: 'simplicityapi'
+          container-image-name-updates: 'container=simplicityapi,tag=${CIRCLE_SHA1}'
+          force-new-deployment: true
+          verify-revision-is-deployed: true
+          max-poll-attempts: 30
+          poll-interval: 60
+          fail-on-verification-timeout: false
+  deploy-development:
+    <<: *defaults
+    steps:
+      - setup_remote_docker
+      - aws-ecr/build-and-push-image:
+          account-url: ECR_ACCOUNT_URL
+          aws-access-key-id: AWS_ACCESS_KEY_ID
+          aws-secret-access-key: AWS_SECRET_ACCESS_KEY
+          region: AWS_DEFAULT_REGION
+          repo: 'coa-simplicityapi'
+          tag: "${CIRCLE_SHA1}"
+          extra-build-args: '--build-arg dbhost=${DBHOST}/
+                   --build-arg dbuser=${DBUSER}/
+                   --build-arg dbpassword=${DBPASSWORD}/
+                   --build-arg database=${DATABASE}/
+                   --build-arg debugging=${DEBUGGING}/
+                   --build-arg port=4000'
+      - aws-ecs/update-service:
+          family: 'simplicityapi'
+          cluster-name: 'simplicityapi_ecs_cluster'
+          service-name: 'simplicityapi'
+          container-image-name-updates: 'container=simplicityapi,tag=${CIRCLE_SHA1}'
+          force-new-deployment: true
+          verify-revision-is-deployed: true
+          max-poll-attempts: 30
+          poll-interval: 60
+          fail-on-verification-timeout: false
+workflows:
+  build-deploy:
+    jobs:
+      - deploy-development:
+          filters:
+            branches:
+              only: development
+          context: simplicity-development
+
+      - deploy-production:
+          filters:
+            branches:
+              only:  master
+          context: simplicity-production
+          type: approval

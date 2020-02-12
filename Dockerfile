@@ -1,8 +1,25 @@
-FROM node:8
+FROM node:10
 
 
 # Create app directory
-WORKDIR /usr/src/app
+WORKDIR /opt
+
+ARG dbhost
+ARG dbuser
+ARG dbpassword
+ARG database
+ARG debugging
+ARG firebase_service_account
+ARG firebase_db_url
+ARG port
+
+ENV dbhost=$dbport
+ENV dbuser=$dbuser
+ENV dbpassword=$dbpassword
+ENV database=$database
+ENV debugging=$debugging
+ENV firebase_service_account=$firebase_service_account
+ENV firebase_db_url=$irebase_db_url
 
 # Install app dependencies
 # A wildcard is used to ensure both package.json AND package-lock.json are copied
@@ -16,7 +33,7 @@ RUN npm install
 # Bundle app source
 COPY . .
 
-EXPOSE 8080
+EXPOSE $port
 
-CMD [ "npm", "start" ]
+ENTRYPOINT [ "npm", "start" ]
 

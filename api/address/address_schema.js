@@ -15,6 +15,7 @@ type Address {
   neighborhood_id: String
   is_in_city: Boolean
   zoning: String
+  zoning_links: String
   trash_day: String
   recycling_pickup_district: String,
   recycling_pickup_day: String,
