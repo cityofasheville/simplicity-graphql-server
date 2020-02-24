@@ -40,7 +40,7 @@ const resolvers = {
       const logger = context.logger;
       const civicaddressId = String(args.civicaddress_id);
       const radius = Number(args.radius); // State plane units are feet
-      const query = 'SELECT A.incident_id, A.date_occurred, A.case_number, '
+      const query = 'SELECT A.incident_id, TO_CHAR(A.date_occurred, \'YYYY-MM-DD\') date_occurred, A.case_number, '
       + 'A.address, A.geo_beat, A.x, A.y, A.x_wgs, A.y_wgs, A.offense_short_description, '
       + 'A.offense_long_description, A.offense_code, A.offense_group_code, '
       + 'A.offense_group_level, A.offense_group_short_description '
@@ -94,7 +94,7 @@ const resolvers = {
     crimes(obj, args, context) {
       const logger = context.logger;
       if (args.incident_ids.length <= 0) return [];
-      const query = 'SELECT incident_id, agency, date_occurred, case_number, '
+      const query = 'SELECT incident_id, agency, TO_CHAR(A.date_occurred, \'YYYY-MM-DD\') date_occurred, case_number, '
       + 'address, geo_beat, geo_report_area, x, y, x_wgs, y_wgs, offense_short_description, '
       + 'offense_long_description, offense_code, offense_group_code, '
       + 'offense_group_level, offense_group_short_description, '
