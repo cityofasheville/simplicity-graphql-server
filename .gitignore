@@ -2,6 +2,7 @@ SimpliCityII-*.json
 .env*
 .DS_Store
 .vscode
+.idea*
 
 # Logs
 logs

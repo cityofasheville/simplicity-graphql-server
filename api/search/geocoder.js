@@ -5,10 +5,10 @@ function callGeocoder(searchString, searchContext = 'address', logger) {
   const minCandidateScore = 0;
   let geoLocator = 'BC_address_unit'; // BC_address_unit or BC_street_address
   if (searchContext === 'street') geoLocator = 'bc_street_intersection';
-  const baseLocator = `http://arcgis.ashevillenc.gov/arcgis/rest/services/Geolocators/${geoLocator}/GeocodeServer/findAddressCandidates`;
+  const baseLocator = `https://arcgis.ashevillenc.gov/arcgis/rest/services/Geolocators/${geoLocator}/GeocodeServer/findAddressCandidates`;
   const geolocatorUrl = `${baseLocator}?Street=&City=&ZIP=`
   + `&Single+Line+Input=${encodeURIComponent(searchString)}&category=`
-  + '&outFields=House%2C+PreType%2C+PreDir%2C+StreetName%2C+SufType%2C+SubAddrUnit%2C+City%2C+ZIP'
+  + '&outFields=AddNum%2C+StPreType%2C+StPreDir%2C+StName%2C+StType%2C+SubAddUnit%2C+City%2C+ZIP'
   + '&maxLocations=&outSR=&searchExtent='
   + '&location=&distance=&magicKey=&f=pjson';
   return axios.get(geolocatorUrl, { timeout: 5000 })
@@ -31,15 +31,15 @@ function callGeocoder(searchString, searchContext = 'address', logger) {
 }
 
 function processCandidate(c, result) {
-  result.locNumber.push(c.attributes.House);
-  if (c.attributes.PreType === null || c.attributes.PreType === '') {
-    result.locName.push(c.attributes.StreetName);
+  result.locNumber.push(c.attributes.AddNum);
+  if (c.attributes.StPreType === null || c.attributes.StPreType === '') {
+    result.locName.push(c.attributes.StName);
   } else {
-    result.locName.push(`${c.attributes.PreType} ${c.attributes.StreetName}`);
+    result.locName.push(`${c.attributes.StPreType} ${c.attributes.StName}`);
   }
-  result.locType.push(c.attributes.SufType);
-  result.locPrefix.push(c.attributes.PreDir);
-  result.locUnit.push(c.attributes.SubAddrUnit);
+  result.locType.push(c.attributes.StType);
+  result.locPrefix.push(c.attributes.StPreDir);
+  result.locUnit.push(c.attributes.SubAddUnit);
   result.locZipcode.push(c.attributes.ZIP);
   if (c.attributes.City === null || c.attributes.City === '') {
     result.locCity.push(c.attributes.City);
