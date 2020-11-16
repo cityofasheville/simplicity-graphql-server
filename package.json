@@ -30,7 +30,7 @@
     "graphql-typings": "^0.0.1-beta-2",
     "lodash": "^4.17.20",
     "mssql": "4.0.4",
-    "pg": "6.1.6"
+    "pg": "8.5.1"
   },
   "devDependencies": {
     "nodemon": "^1.9.1"
