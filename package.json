@@ -29,7 +29,7 @@
     "graphql-tools": "^2.21.0",
     "graphql-typings": "^0.0.1-beta-2",
     "lodash": "^4.17.20",
-    "mssql": "4.0.4",
+    "mssql": "6.3.1",
     "pg": "6.1.6"
   },
   "devDependencies": {
