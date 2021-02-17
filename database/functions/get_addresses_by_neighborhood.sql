@@ -21,7 +21,7 @@ BEGIN
                 A.address_number, A.address_unit, A.address_street_prefix, A.address_street_name, A.address_street_type,
                 A.latitude_wgs, A.longitude_wgs,
                 A.trash_pickup_day, A.recycling_pickup_district, A.recycling_pickup_day, 
-                A.zoning, A.owner_name, A.owner_address, A.owner_cityname, A.owner_state, 
+                A.zoning, A.zoning_links, A.owner_name, A.owner_address, A.owner_cityname, A.owner_state, 
                 A.owner_zipcode, A.property_pin, A.property_pinext, A.centerline_id,
                 A.jurisdiction_type, A.shape,
 				A.brushweek,

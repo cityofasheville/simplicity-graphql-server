@@ -29,11 +29,11 @@ BEGIN
                 from internal.coa_bc_address_master 
                 where (location_type = 1 OR location_type = 4)
             	and   address_number = lnumber[i]
-                and   address_street_name = lstreetname[i]
-                and   address_street_type = ltype[i]
+                and   trim(address_street_name) = lstreetname[i]
+                and   trim(address_street_type) = ltype[i]
                 and   (lcity[i] = '' OR address_commcode = lcity[i]) -- Sometime input lacks city
-                and   (address_unit = lunit[i] OR (trim(BOTH FROM address_unit) = lunit[i] OR address_unit IS NULL))
-                and   (address_street_prefix = lprefix[i] OR (trim(BOTH FROM address_street_prefix) = lprefix[i] OR address_street_prefix IS NULL))
+                and   (address_unit = lunit[i] OR (trim(address_unit) = lunit[i] OR address_unit IS NULL))
+                and   (address_street_prefix = lprefix[i] OR (trim(address_street_prefix) = lprefix[i] OR address_street_prefix IS NULL))
                 and   longitude_wgs = llongitude_wgs[i]
                 and   lattitude_wgs = llattitude_wgs[i]
             )

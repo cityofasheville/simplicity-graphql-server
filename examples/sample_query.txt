@@ -199,10 +199,6 @@ query {
     centerline_id
     left_zipcode
     right_zipcode
-    lines {
-      x
-      y
-    }
   }
 }
 
@@ -411,3 +407,4 @@ query {
   }
 }
 }
+
