@@ -358,7 +358,7 @@ query {
 }
 
 {
-  permits_by_address(civicaddress_id: 230126, radius: 1000,  after: "2017-03-01", before: "2017-04-01") {
+  permits_by_address(civicaddress_id: 230126, radius: 1000,  after: "2021-03-01", before: "2021-04-01") {
     applied_date
     applicant_name
     permit_type
@@ -370,7 +370,7 @@ query {
 }
 
 query {
-  permits_by_street (centerline_ids: [9649413286], after: "2017-03-01", before: "2018-04-01") {
+  permits_by_street (centerline_ids: [9649413286], after: "2021-03-01", before: "2021-04-01") {
     address
     applicant_name
     applied_date
@@ -381,7 +381,7 @@ query {
 }
 
 query {
-  permits_by_neighborhood (nbrhd_ids: ["NBHD34"], after: "2017-01-01") {
+  permits_by_neighborhood (nbrhd_ids: ["NBHD34"], after: "2021-01-01") {
     address
     applied_date
   }
@@ -395,7 +395,6 @@ query {
     permit_number
     permit_type
     permit_subtype
-    contractor_name
     permit_category
     status_date
     status_current
@@ -408,3 +407,33 @@ query {
 }
 }
 
+//?????
+query { permits(permit_numbers: "21-01337") {
+  permit_number
+  permit_group
+  permit_type
+  permit_subtype
+  permit_category
+  permit_description
+  applicant_name
+  application_name
+  applied_date
+  status_current
+  status_date
+  technical_contact_name
+  technical_contact_email
+  created_by
+  building_value
+  job_value
+  total_project_valuation
+  total_sq_feet
+  fees
+  paid
+  balance
+  invoiced_fee_total
+  civic_address_id
+  address
+  x
+  y
+  internal_record_id
+}}
