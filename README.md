@@ -20,7 +20,7 @@ npm start
 
 The server will run on port 8080. You can change this by editing `server.js`.
 
-View the graphql data at http://localhost:8080/graphiql
+View the graphql data at http://localhost:8080/graphql
 
 ## Uploading data
 

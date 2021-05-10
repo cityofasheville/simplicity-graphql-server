@@ -254,9 +254,9 @@ query {
 
 {
 	properties(pins: ["060513308900000", "060539064400000"]) {
-    civic_address_id
+    civic_address_ids
     pinnum
-    pinnumext
+    pinext
     address
     city
     zipcode
@@ -281,7 +281,7 @@ query {
 
 WITH HOLES
 {
-	properties(pins: ["964902050600000"]) {
+	properties(pins: ["964950354000000"]) {
     property_civic_address_id
     property_address
     property_city
@@ -314,6 +314,7 @@ WITH HOLES
       }
     }
   }
+}
 
 query {
 	search(searchString: "Jackson philip", searchContexts: ["owner"]) {
@@ -329,9 +330,6 @@ query {
 }
 
 
-  mda_address (id: 11111) {
-    street_name
-  }
 
   budgetSummary(maxCategories: 6, breakdown: "use") {
     account_type
@@ -405,9 +403,8 @@ query {
     }
   }
 }
-}
 
-//?????
+
 query { permits(permit_numbers: "21-01337") {
   permit_number
   permit_group
