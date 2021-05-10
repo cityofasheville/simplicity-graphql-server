@@ -36,7 +36,7 @@ async function startApolloServer() {
   const GRAPHQL_PORT = process.env.PORT || 8080;
   ////////////////
   const server = new ApolloServer({ 
-    typeDefs, 
+    typeDefs: gql`${typeDefs}`, 
     resolvers,
     context: {
         pool,
@@ -58,7 +58,7 @@ async function startApolloServer() {
   logger.info(`Start listening on port ${GRAPHQL_PORT}`);
   
   await new Promise(resolve => app.listen({ port: GRAPHQL_PORT }, resolve));
-  console.log(`SimpliCity: GraphQL Server is now running on localhost/${GRAPHQL_PORT}/graphql`);
+  console.log(`SimpliCity: GraphQL Server is now running on http://localhost:${GRAPHQL_PORT}/graphql`);
   return { server, app };
   ////////////////
 
