@@ -26,7 +26,7 @@
     "express": "^4.17.1",
     "graphql": "^15.5.0",
     "graphql-subscriptions": "^1.2.1",
-    "graphql-tools": "^7.0.4",
+    "graphql-tools": "^7.0.5",
     "graphql-typings": "*",
     "lodash": "^4.17.21",
     "mssql": "^7.0.0",
