@@ -11,6 +11,7 @@ function callGeocoder(searchString, searchContext = 'address', logger) {
   + '&outFields=AddNum%2C+StPreType%2C+StPreDir%2C+StName%2C+StType%2C+SubAddUnit%2C+City%2C+ZIP'
   + '&maxLocations=&outSR=&searchExtent='
   + '&location=&distance=&magicKey=&f=pjson';
+
   return axios.get(geolocatorUrl, { timeout: 5000 })
   .then(response => {
     const totalTime = (new Date().getTime() - startTime) / 1000.0;
