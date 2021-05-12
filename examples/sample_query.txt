@@ -1,19 +1,6 @@
-Example of calling a function with parameters in pgAdmin:
-  SELECT  * FROM amd.get_properties_along_streets('{9639859244,9639952037}', 100) ORDER BY pinnum
-OR
-
-SELECT amd.get_search_addresses(
-	'{12}', 
-	'{"MAULTSBY"}', 
-	'{"LN"}', 
-	'{""}', 
-	'{""}', 
-	'{28805}',
-	'{"ASHE"}'
-)
 
 {
-  projects(after: "2017-11-20", status: ["In Progress", "Open"]) {
+  projects(after: "2020-05-20", status: ["In Progress", "Open"]) {
     ID
     Summary
     RequestedDate
@@ -22,7 +9,7 @@ SELECT amd.get_search_addresses(
 }
 
 {
-  properties(pins: ["964902050600000"]) {
+  properties(pins: ["975011134100000"]) {
     pinnum
     civic_address_ids
     address
@@ -233,7 +220,8 @@ query {
   }
 }
 
-{
+// returns: Got an error in crimes: error: missing FROM-clause entry for table a
+query {
   crimes(incident_ids: [586612, 638093]) {
       case_number
     incident_id
@@ -329,8 +317,7 @@ query {
   }
 }
 
-
-
+query {
   budgetSummary(maxCategories: 6, breakdown: "use") {
     account_type
     category_name
@@ -338,13 +325,18 @@ query {
     total_actual
     year
   }
+}
   
+query {
   budgetCashFlow(accountType: "R") {
     dept_id
     year
     budget
   }
-  query {
+}
+
+// takes a while
+query {
   permits_by_neighborhood (nbrhd_ids: ["NBHD56"], after: "2017-03-01", before: "2017-04-01") {
     address
     applicant_name

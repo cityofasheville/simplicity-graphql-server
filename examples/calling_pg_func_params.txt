@@ -1,0 +1,24 @@
+Examples of calling a function with parameters in Postgres:
+
+	SELECT  * FROM simplicity.get_properties_along_streets('{9639859244,9639952037}', 100) ORDER BY pinnum
+
+
+	SELECT simplicity.get_search_addresses(
+	'{12}', 
+	'{"MAULTSBY"}', 
+	'{"LN"}', 
+	'{""}', 
+	'{""}', 
+	'{28805}',
+	'{"ASHE"}'
+	)
+
+	SELECT simplicity.get_search_addresses(
+	'{12,100}', 
+	'{"MAULTSBY","PEARSON"}', 
+	'{"LN","DR"}', 
+	'{"",""}', 
+	'{"",""}', 
+	'{28805,28801}',
+	'{"ASHE","ASHE"}'
+	)
