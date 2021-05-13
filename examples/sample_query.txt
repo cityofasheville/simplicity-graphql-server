@@ -426,3 +426,22 @@ query { permits(permit_numbers: "21-01337") {
   y
   internal_record_id
 }}
+
+query getMaintenanceQuery($centerline_ids: [Float]) {
+  streets(centerline_ids: $centerline_ids) {
+    centerline_id
+    left_zipcode
+    right_zipcode
+    maintenance_entities
+    line {
+      x
+      y
+      __typename
+    }
+    __typename
+  }
+}
+{
+  "centerline_ids": ["9649502507"]
+}
+
