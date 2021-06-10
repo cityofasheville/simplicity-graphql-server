@@ -38,8 +38,8 @@ async function startApolloServer() {
     context: {
         pool,
         logger,
-        // introspection: true,
-        // playground: true,
+        introspection: true,
+        playground: true,
         user: null,
         employee: null,
     }
