@@ -48,6 +48,7 @@ const baseSchema = `
     pcard_transactions (before: String, after: String): [PCardTransaction]
     pcard_statements_status (before: String, after: String): [PCardStatementStatus]
     employees(ids: [Int], status: String, departments: [String], divisions: [String], supervisors: [Int] ): [Employee]
+    permit_realtime(permit_number: String): Permit
   }
 `;
 const searchSchema = require('./search').schema;
@@ -62,6 +63,7 @@ const neighborhoodSchema = require('./neighborhood/neighborhood_schema');
 const cipSchema = require('./cip/cip_schema');
 const financeSchema = require('./finance/finance_schema');
 const statsSchema = require('./stats/stats_schema');
+const realtime = require('./realtime/realtime_schema')
 
 const schema = [
   baseSchema,
@@ -78,6 +80,7 @@ const schema = [
   cipSchema,
   financeSchema,
   statsSchema,
+  realtime,
 ];
 
 module.exports = schema;

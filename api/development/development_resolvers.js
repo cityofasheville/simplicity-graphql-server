@@ -136,15 +136,13 @@ function prepareInspections(rows) {
   });
 }
 
-const stdQuery = 'SELECT A.permit_num, A.permit_group, A.permit_type, '
-              + 'A.permit_subtype, A.permit_category, A.permit_description, '
-              + 'A.applicant_name, A.applied_date, A.status_current, A.status_date, '
-              + 'A.created_by, A.building_value, A.job_value, A.total_project_valuation, '
-              + 'A.total_sq_feet, A.fees, A.paid, A.balance, A.invoiced_fee_total, '
-              + 'A.civic_address_id, A.address, A.contractor_name, '
-              + 'A.contractor_license_number, A.longitude as x, A.latitude as y, '
-              + 'A.internal_record_id, '
-              + 'B.comment_seq_number, B.comment_date, B.comments ';
+const stdQuery = `
+SELECT A.permit_num, A.permit_group, A.permit_type, A.permit_subtype, A.permit_category, 
+A.permit_description, A.applicant_name, A.applied_date, A.status_current, A.status_date, 
+A.created_by, A.building_value, A.job_value, A.total_project_valuation, A.total_sq_feet, 
+A.fees, A.paid, A.balance, A.invoiced_fee_total, A.civic_address_id, A.address, A.contractor_name,
+ A.contractor_license_number, A.longitude as x, A.latitude as y, A.internal_record_id, 
+ B.comment_seq_number, B.comment_date, B.comments`;
 const resolvers = {
   Query: {
     firstReviewSLASummary(obj, args, context) {
@@ -183,8 +181,9 @@ const resolvers = {
     permits(obj, args, context) {
       const qargs = [];
       let query = `${stdQuery}`
-      + 'FROM simplicity.permits_xy_view AS A '
-      + 'LEFT JOIN internal.permit_comments AS B on A.permit_num = B.permit_num ';
+      + `
+      FROM simplicity.permits_xy_view AS A
+      LEFT JOIN internal.permit_comments AS B on A.permit_num = B.permit_num `;
       if (args.permit_numbers && args.permit_numbers.length > 0) {
         qargs.push(args.permit_numbers);
         query += 'WHERE A.permit_num = ANY ($1) ';

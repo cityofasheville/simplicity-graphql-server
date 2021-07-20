@@ -26,8 +26,4 @@ select * from simplicity.get_search_addresses(
     locZipcode,
     locCity
 )    
-
-?? this still isn't quite right??
-select * from simplicity.get_search_addresses(
-    '{161}', '{"CHARLOTTE"}', '{"ST"}', '{null}', '{null}', '{null}', '{null}'
-)    
+  

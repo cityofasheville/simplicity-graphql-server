@@ -1,3 +1,47 @@
+query APermit($permitsPermitNumbers: [String]) {
+  permits(permit_numbers: $permitsPermitNumbers) {
+    permit_number
+    permit_group
+    permit_type
+    permit_subtype
+    permit_category
+    permit_description
+    applicant_name
+    application_name
+    applied_date
+    status_current
+    status_date
+    technical_contact_name
+    technical_contact_email
+    created_by
+    building_value
+    job_value
+    total_project_valuation
+    total_sq_feet
+    fees
+    paid
+    balance
+    invoiced_fee_total
+    civic_address_id
+    address
+    x
+    y
+    contractor_names
+    contractor_license_numbers
+    internal_record_id
+    comments {
+      comment_date
+      comment_seq_number
+      comments
+    }
+    custom_fields {
+      type
+      name
+      value
+    }
+  }
+}
+
 
 {
   projects(after: "2020-05-20", status: ["In Progress", "Open"]) {
