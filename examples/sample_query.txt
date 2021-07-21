@@ -1,3 +1,14 @@
+
+query q1 {
+  permit_realtime(permit_number: "21-01337") {
+    permit_number
+  }
+  streets(centerline_ids:[9648296918]) {
+    address
+  }
+}
+
+
 query APermit($permitsPermitNumbers: [String]) {
   permits(permit_numbers: $permitsPermitNumbers) {
     permit_number
@@ -41,7 +52,9 @@ query APermit($permitsPermitNumbers: [String]) {
     }
   }
 }
-
+      {
+        "permitsPermitNumber":"21-05505"
+      }
 
 {
   projects(after: "2020-05-20", status: ["In Progress", "Open"]) {

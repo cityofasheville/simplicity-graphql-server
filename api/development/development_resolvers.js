@@ -142,7 +142,7 @@ A.permit_description, A.applicant_name, A.applied_date, A.status_current, A.stat
 A.created_by, A.building_value, A.job_value, A.total_project_valuation, A.total_sq_feet, 
 A.fees, A.paid, A.balance, A.invoiced_fee_total, A.civic_address_id, A.address, A.contractor_name,
  A.contractor_license_number, A.longitude as x, A.latitude as y, A.internal_record_id, 
- B.comment_seq_number, B.comment_date, B.comments`;
+ B.comment_seq_number, B.comment_date, B.comments `;
 const resolvers = {
   Query: {
     firstReviewSLASummary(obj, args, context) {

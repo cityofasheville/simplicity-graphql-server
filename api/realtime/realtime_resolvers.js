@@ -38,11 +38,14 @@ const resolvers = {
 
       return context.pool_accela.query(query)
       .then(result => {
-        const ret = result.recordset
-        // const [lat,lon] = convert_coords(ret[0].x,ret[0].y)
-        // ret[0].x = lon
-        // ret[0].y = lat
+        const ret = result.recordset[0]
+        const [lat,lon] = convert_coords(ret.x,ret.y)
+        ret.x = lon
+        ret.y = lat
         //console.log(query,result,ret)
+
+        console.log(ret)
+
         return ret;
       })
       .catch(error => {

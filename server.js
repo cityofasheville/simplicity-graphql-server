@@ -53,12 +53,13 @@ async function startApolloServer() {
         pool,
         pool_accela,
         logger,
-        // introspection: true,
-        // playground: true,
+        introspection: true,
+        playground: true,
         user: null,
         employee: null,
     }
   });
+  
   await server.start();
 
   const app = express();
