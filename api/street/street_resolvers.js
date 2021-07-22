@@ -45,7 +45,6 @@ const resolvers = {
             items.push(streetMap[k]);
           }
         }
-                                                                                     console.log(items)
         return items;
       })
       .catch(error => {

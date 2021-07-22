@@ -427,6 +427,18 @@ query {
   }
 }
 
+query q2{
+  permits_by_neighborhood (nbrhd_ids: ["NBHD56"], after: "2017-03-01", before: "2017-04-01") {
+address
+  }
+  permits_by_address(civicaddress_id: 230126, radius: 1000,  after: "2021-03-01", before: "2021-04-01") {
+    address
+	}
+  permits_by_street (centerline_ids: [9649413286], after: "2021-03-01", before: "2021-04-01") {
+    address
+  }
+}
+
 query {
   permits_by_neighborhood (nbrhd_ids: ["NBHD34"], after: "2021-01-01") {
     address
