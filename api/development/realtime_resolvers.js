@@ -15,8 +15,8 @@ const resolvers = {
       const query = `
       SELECT
       A.permit_num permit_number, A.permit_group, A.permit_type, A.permit_subtype, A.permit_category, 
-      A.permit_description, A.applicant_name, CAST(A.applied_date AS VARCHAR(24)) AS applied_date, A.status_current, 
-      CAST(A.status_date AS VARCHAR(24)) AS status_date, A.technical_contact_name, A.technical_contact_email,
+      A.permit_description, A.applicant_name, CONVERT(VARCHAR(19),A.applied_date,126) + 'Z' AS applied_date, A.status_current, 
+      CONVERT(VARCHAR(19),A.status_date,126) + 'Z' AS status_date, A.technical_contact_name, A.technical_contact_email,
       A.created_by, A.building_value, CAST(A.job_value AS VARCHAR) AS job_value, A.total_project_valuation, A.total_sq_feet, 
       A.fees, A.paid, A.balance, A.invoiced_fee_total, A.civic_address_id, A.site_address AS address,
       coords.B1_X_COORD as x, coords.B1_Y_COORD as y, A.internal_record_id
@@ -31,8 +31,8 @@ const resolvers = {
       return context.pool_accela.query(query)
       .then(result => {
         const ret = result.recordset[0]
-        ret.application_name = result.applicant_name
-        const [lat,lon] = convert_coords(ret.x,ret.y)
+        ret.application_name = ret.applicant_name
+        const [lon,lat] = convert_coords(ret.x,ret.y)
         ret.x = lon
         ret.y = lat
         // console.log(query,result,ret)
