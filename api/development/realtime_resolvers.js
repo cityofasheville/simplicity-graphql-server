@@ -35,9 +35,8 @@ const resolvers = {
         const [lat,lon] = convert_coords(ret.x,ret.y)
         ret.x = lon
         ret.y = lat
-        console.log(query,result,ret)
-
-        console.log(ret)
+        // console.log(query,result,ret)
+        // console.log(ret)
 
         return ret;
       })
