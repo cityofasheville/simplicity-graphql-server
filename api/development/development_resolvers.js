@@ -136,15 +136,14 @@ function prepareInspections(rows) {
   });
 }
 
-const stdQuery = 'SELECT A.permit_num, A.permit_group, A.permit_type, '
-              + 'A.permit_subtype, A.permit_category, A.permit_description, '
-              + 'A.applicant_name, A.applied_date, A.status_current, A.status_date, '
-              + 'A.created_by, A.building_value, A.job_value, A.total_project_valuation, '
-              + 'A.total_sq_feet, A.fees, A.paid, A.balance, A.invoiced_fee_total, '
-              + 'A.civic_address_id, A.address, A.contractor_name, '
-              + 'A.contractor_license_number, A.longitude as x, A.latitude as y, '
-              + 'A.internal_record_id, '
-              + 'B.comment_seq_number, B.comment_date, B.comments ';
+const stdQuery = `
+SELECT A.permit_num, A.permit_group, A.permit_type, A.permit_subtype, A.permit_category, 
+A.permit_description, A.applicant_name, A.applied_date, A.status_current, A.status_date, 
+A.technical_contact_name, A.technical_contact_email,
+A.created_by, A.building_value, A.job_value, A.total_project_valuation, A.total_sq_feet, 
+A.fees, A.paid, A.balance, A.invoiced_fee_total, A.civic_address_id, A.address, A.contractor_name,
+ A.contractor_license_number, A.longitude as x, A.latitude as y, A.internal_record_id, 
+ B.comment_seq_number, B.comment_date, B.comments `;
 const resolvers = {
   Query: {
     firstReviewSLASummary(obj, args, context) {
@@ -183,8 +182,9 @@ const resolvers = {
     permits(obj, args, context) {
       const qargs = [];
       let query = `${stdQuery}`
-      + 'FROM simplicity.permits_xy_view AS A '
-      + 'LEFT JOIN internal.permit_comments AS B on A.permit_num = B.permit_num ';
+      + `
+      FROM simplicity.permits_xy_view AS A
+      LEFT JOIN internal.permit_comments AS B on A.permit_num = B.permit_num `;
       if (args.permit_numbers && args.permit_numbers.length > 0) {
         qargs.push(args.permit_numbers);
         query += 'WHERE A.permit_num = ANY ($1) ';
@@ -222,13 +222,14 @@ const resolvers = {
     permits_by_address(obj, args, context) {
       const logger = context.logger;
       const radius = args.radius ? Number(args.radius) : 10; // State plane units are feet
-      let query = `${stdQuery}`
-      + 'from simplicity.permits_xy_view as A '
-      + 'left outer join internal.coa_bc_address_master as M '
-      + 'on ST_Point_Inside_Circle(ST_SetSRID(ST_Point(A.address_x, A.address_y),2264), M.address_x, M.address_y, $2) ' // eslint-disable-line max-len
-      + 'LEFT JOIN internal.permit_comments AS B on A.permit_num = B.permit_num '
-      + 'where M.civicaddress_id = $1 '
-      + "AND A.permit_group <> 'Services'"; // Future function name change - ST_PointInsideCircle
+      let query = `${stdQuery}
+      from simplicity.permits_xy_view as A
+      left outer join internal.coa_bc_address_master as M
+      on ST_Point_Inside_Circle(ST_SetSRID(ST_Point(A.address_x, A.address_y),2264), M.address_x, M.address_y, $2)
+      LEFT JOIN internal.permit_comments AS B on A.permit_num = B.permit_num
+      where M.civicaddress_id = $1
+      AND A.permit_group <> 'Services'
+      `; // Future function name change - ST_PointInsideCircle
       const qargs = [String(args.civicaddress_id), radius];
       let nextParam = '$3';
       if (args.before !== undefined) {
@@ -387,8 +388,8 @@ const resolvers = {
       return obj.comments;
     },
     custom_fields(obj, args, context) {
-      const query = 'select type, name, value from internal.permit_custom_fields '
-      + `where permit_num = '${obj.permit_number}'`;
+      const query = `select type, name, value from internal.permit_custom_fields 
+      where permit_num = '${obj.permit_number}'`;
       return context.pool.query(query)
       .then((result) => {
         return result.rows;

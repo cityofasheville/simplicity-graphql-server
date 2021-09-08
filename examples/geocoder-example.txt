@@ -1,0 +1,29 @@
+https://arcgis.ashevillenc.gov/arcgis/rest/services/Geolocators/bc_street_intersection/GeocodeServer/findAddressCandidates?Street=&City=&ZIP=&Single+Line+Input=161%20s%20charlotte%20st&category=&outFields=AddNum%2C+StPreType%2C+StPreDir%2C+StName%2C+StType%2C+SubAddUnit%2C+City%2C+ZIP&maxLocations=&outSR=&searchExtent=&location=&distance=&magicKey=&f=pjson
+
+
+AddNum => locNumber
+StPreType + StName => locName
+StType => locType
+StPreDir => locPrefix
+SubAddUnit => locUnit
+ZIP => locZipcode
+City => locCity
+
+    "AddNum": "161",
+    "StPreType": "",
+    "StPreDir": "",
+    "StName": "CHARLOTTE",
+    "StType": "ST",
+    "City": "",
+    "ZIP": "28801"
+
+select * from simplicity.get_search_addresses(
+    locNumber,
+    locName,
+    locType,
+    locPrefix,
+    locUnit,
+    locZipcode,
+    locCity
+)    
+  

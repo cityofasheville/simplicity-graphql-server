@@ -1,0 +1,628 @@
+# the schema allows the following query:
+  type Query {
+    version: String
+  }
+
+
+  type Point {
+    x: Float
+    y: Float
+  }
+
+  type SimplePolygon {
+    points: [Point]
+  }
+
+  type Polygon {
+    outer: SimplePolygon
+    holes: [SimplePolygon]
+  }
+  
+  extend type Query {
+    search ( searchString: String!, searchContexts: [String] ): [TypedSearchResult]!
+    addresses (civicaddress_ids: [String]! ): [Address]
+    addresses_by_street (centerline_ids: [Float]): [Address]
+    addresses_by_neighborhood (nbrhd_ids: [String]): [Address]
+    properties_by_street (centerline_ids: [Float], radius: Int): [Property]
+    properties_by_neighborhood (nbrhd_ids: [String]): [Property]
+    properties (pins: [String]!): [Property]
+    municipalities (jurisdictions: [String]): [Municipality]
+    streets (centerline_ids: [Float]): [Street]
+    neighborhoods (nbrhd_ids: [String]): [Neighborhood]
+    budgetHistory: [SimpleBudgetDetail]!
+    budgetSummary ( breakdown: String!, maxCategories: Int, accountType: String ): [SimpleBudgetSummary]!
+    budgetCashFlow ( accountType: String! ): [BudgetCashFlow]!
+    budgetParameters: BudgetParameters
+    firstReviewSLAItems: [FirstReviewSLAItem]!
+    firstReviewSLASummary (tasks: [String]) : [FirstReviewSLASummaryItem]!
+    generic_stats (schema: String, dataset: String, fields: [GenericStatsAggregateField], groupBy: [GenericStatsGroupBy], filters: GenericStatsFilterGroup) : [GenericStats]
+    crimes(incident_ids: [Int]!): [CrimeIncident]
+    crimes_by_address(civicaddress_id: Int!, radius: Int, after: String, before: String): [CrimeIncident]
+    crimes_by_street (centerline_ids: [Float], radius: Int, after: String, before: String): [CrimeIncident]
+    crimes_by_neighborhood (nbrhd_ids: [String], after: String, before: String): [CrimeIncident]
+    permits(permit_numbers: [String], date_field: String, before: String, after: String, permit_groups: [String]): [Permit]
+    permits_by_address(civicaddress_id: Int!, radius: Int, after: String, before: String): [Permit]
+    permits_by_street(centerline_ids: [Float], radius: Int, after: String, before: String): [Permit]
+    permits_by_neighborhood(nbrhd_ids: [String], after: String, before: String): [Permit]
+    permit_tasks(permit_numbers: [String], date_field: String, before: String, after: String, permit_groups: [String]): [PermitTask]
+    inspections(permit_numbers: [String], date_field: String, before: String, after: String, permit_groups: [String]): [Inspection]
+    cip_projects(names: [String], categories: [String], zipcodes: [String]): [CIPProject]
+    cip_project_categories: [CIPProjectCategory]
+    projects (status: [String], priority: [String], reqtype: String, after: String, before: String): [ITProject]
+    pcard_transactions (before: String, after: String): [PCardTransaction]
+    pcard_statements_status (before: String, after: String): [PCardStatementStatus]
+    employees(ids: [Int], status: String, departments: [String], divisions: [String], supervisors: [Int] ): [Employee]
+  }
+,
+type SimpleBudgetDetail {
+  account_type: String,
+  account_name: String,
+  fund_name: String,
+  department_name: String,
+  division_name: String,
+  costcenter_name: String,
+  function_name: String,
+  charcode_name: String,
+  organization_name: String,
+  category_name: String,
+  budget_section_name: String,
+  object_name: String,
+  year: Int,
+  budget: Float,
+  actual: Float,
+  full_account_id: String,
+  org_id: String,
+  obj_id: String,
+  fund_id: String,
+  dept_id: String,
+  div_id: String,
+  cost_id: String,
+  func_id: String,
+  charcode: String,
+  category_id: String,
+  budget_section_id: String,
+  proj_id: String,
+  is_proposed: String
+  use_actual: String
+}
+
+type SimpleBudgetSummary {
+  account_type: String,
+  category_name: String,
+  year: Int,
+  total_budget: Float,
+  total_actual: Float
+  use_actual: String
+}
+
+type BudgetCashFlow {
+  account_type: String,
+  category_name: String,
+  category_id: String,
+  dept_id: String,
+  department_name: String,
+  fund_id: String,
+  fund_name: String,
+  budget: Float,
+  year: Int
+}
+
+type BudgetParameters {
+  start_year: Int
+  end_year: Int
+  in_budget_season: Boolean
+}
+,
+type ITProject {
+  ID: String
+  ParentID: String
+  RespondBy: String
+  Summary: String
+  Type: String
+  Requestor: String
+  RequestedDate: String
+  ResolutionDate: String
+  ElapsedTime: String
+  Priority: String
+  DueDate: String
+  AssignedTechnician: String
+  DateCompleted: String
+  Hours: Float
+  Department: String
+  Notes: String
+  Resolution: String
+  CurrentStatus: String
+  IncidentOrServiceReq: String
+  HotList: String
+  DateResponded: String
+  WorkOrderTypeName: String
+  Subtype: String
+  Text1: String
+  Text4: String
+  ForwardProject:String
+  OrgImpact: String
+  RequestorPriority: String
+  TaskLookup6: String
+  TaskLookup7: String
+  ITInvolvement: String
+}
+,
+type Employee {
+  employee_id: Int
+  ad_username: String
+  email_city: String
+  ad_memberships: String
+  active: Boolean
+  employee_name: String
+  employee_email: String
+  position: String
+  department_id: String
+  department: String
+  division_id: String
+  division: String
+  supervisor_id: Int
+  supervisor: String
+  supervisor_email: String
+  hire_date: String
+}
+,
+type PermitComment {
+  comment_seq_number: Int
+  comment_date: String
+  comments: String
+}
+
+type PermitCustomField {
+  type: String
+  name: String
+  value: String
+}
+
+type Permit {
+  permit_number: String
+  permit_group: String
+  permit_type: String
+  permit_subtype: String
+  permit_category: String
+  permit_description: String
+  applicant_name: String
+  application_name: String
+  applied_date: String
+  status_current: String
+  status_date: String
+  technical_contact_name: String
+  technical_contact_email: String
+  created_by: String
+  building_value: String
+  job_value: String
+  total_project_valuation: String
+  total_sq_feet: String
+  fees: Float
+  paid: Float
+  balance: Float
+  invoiced_fee_total: Float
+  civic_address_id: String
+  address: String
+  x: Float
+  y: Float
+  contractor_names: [String]
+  contractor_license_numbers: [String]
+  internal_record_id: String
+  comments: [PermitComment]
+  custom_fields: [PermitCustomField]
+}
+
+type PermitTask {
+  permit_number: String
+  permit_group: String
+  permit_type: String
+  permit_subtype: String
+  permit_category: String
+  process_code: String
+  task: String
+  task_status: String
+  current_status_date: String
+  step_number: String
+  relation_sequence_id: String
+  parent_task_name: String
+  user_name: String
+  user_id: String
+  user_department: String
+  due_date: String
+  record_date: String
+  comments: String
+  is_completed: Boolean
+  is_active: Boolean
+  assigned_date: String
+  assigned_user: String
+  assigned_department: String
+  process_history_sequence_number: Int
+}
+
+type Inspection {
+  inspection_id: Int
+  permit_number: String
+  permit_group: String
+  permit_type: String
+  permit_subtype: String
+  permit_category: String
+  inspection_type: String
+  requestor_name: String
+  status: String
+  inspector: String
+  request_date: String
+  scheduled_date: String
+  completed_date: String
+  submit_date: String
+  result_comment: String
+  unit_number: String
+  record_date: String
+}
+
+
+type FirstReviewSLAItem {
+  record_id: String,
+  first_date: Int,
+  record_type: String,
+  group: String,
+  type: String,
+  sub_type: String,
+  category: String,
+  task: String,
+  task_status: String,
+  sla_desc: String,
+  sla: Float,
+  due: String,
+  first_plan_reviewed_date: String,
+  month: Int,
+  year: Int,
+  met_sla: String,
+  sla_business: Int,
+  worked_days_business: Int
+}
+
+type FirstReviewSLASummaryItem {
+  task: String,
+  met_sla: Int,
+  past_sla: Int
+  met_sla_percent: Float,
+  month: Int,
+  year: Int
+}
+
+,
+type CrimeIncident {
+  incident_id: Int
+  agency: String
+  date_occurred: String
+  case_number: String
+  address: String
+  geo_beat: String
+  geo_report_area: String
+  x: Float
+  y: Float
+  offense_short_description: String
+  offense_long_description: String
+  offense_code: String
+  offense_group_code: String
+  offense_group_level: String
+  offense_group_short_description: String
+  offense_group_long_description: String
+}
+,
+type Municipality {
+  jurisdiction: String
+  cityname: String
+  polygons: [Polygon]
+}
+,
+type Address {
+  civic_address_id: String
+  address: String
+  x: Float
+  y: Float
+  street_name: String
+  street_prefix: String
+  street_number: String
+  street_type: String
+  unit: String
+  city: String
+  zipcode: String
+  neighborhood: String
+  neighborhood_id: String
+  is_in_city: Boolean
+  zoning: String
+  zoning_links: String
+  trash_day: String
+  recycling_pickup_district: String,
+  recycling_pickup_day: String,
+  brushweek: String,
+  street_maintenance: String,
+  centerline_id: String
+  pinnum: String
+  pin: String
+  pinext: String
+  owner_name: String
+  owner_address: String
+  owner_cityname: String
+  owner_state: String
+  owner_zipcode: String
+  historic_district: String
+  local_landmark: String
+}
+,
+type Street {
+  centerline_id: String
+  address: String
+  left_zipcode: String
+  right_zipcode: String
+  left_from_address: Int
+  left_to_address: Int
+  right_from_address: Int
+  right_to_address: Int
+  from_address: Int
+  to_address: Int
+  maintenance_entities: [String]
+  line: [Point]
+}
+,
+type Property {
+  pinnum: String
+  pin: String
+  pinext: String
+  property_civic_address_id: String
+  property_address: String
+  property_city: String
+  property_zipcode: String
+  civic_address_ids: [String]
+  address: [String]
+  city: [String]
+  zipcode: [String]
+  is_in_city: Boolean
+  tax_exempt: Boolean
+  neighborhood: String
+  appraisal_area: String
+  acreage: Float
+  zoning: String
+  deed_link: String
+  property_card_link: String
+  plat_link: String
+  latitude: Float
+  longitude: Float
+  building_value: Float
+  land_value: Float
+  appraised_value: Float
+  tax_value: Float
+  market_value: Float
+  owner: String
+  owner_address: String
+  historic_district: String
+  local_landmark: String
+  polygons: [Polygon]
+}
+,
+type Neighborhood {
+  name: String
+  nbhd_id: String
+  abbreviation: String
+  narrative: String
+  polygon: Polygon
+}
+,
+  type SillyResult implements SearchResult {
+    score: Int!
+    type: String!
+    id: ID!
+    text: String!
+  }
+
+  type AddressResult implements SearchResult {
+    score: Int!
+    type: String!
+    civic_address_id: String
+    address: String
+    street_name: String
+    street_prefix: String
+    street_number: String
+    x: Float
+    y: Float
+    unit: String
+    city: String
+    is_in_city: Boolean
+    zipcode: String
+  }
+
+  type PropertyResult implements SearchResult {
+    score: Int!
+    type: String!
+    pinnum: String
+    pin: String
+    pinext: String
+    address: String
+    city: String
+    zipcode: String
+    civic_address_id: String
+  }
+
+  type StreetResult implements SearchResult {
+    score: Int!
+    type: String!
+    full_street_name: String!
+    zip_code: String
+    centerline_ids: [Float]!    
+  }
+
+  type OwnerResult implements SearchResult {
+    score: Int!
+    type: String!
+    name: String
+    pinnums: [String]
+  }
+  
+  type NeighborhoodResult implements SearchResult {
+    score: Int!
+    type: String!
+    name: String!
+    nbhd_id: String   
+    abbreviation: String
+    polygon: Polygon
+  }
+
+  type PlaceResult implements SearchResult {
+    score: Int!
+    type: String!
+    name: String
+    address: String
+    id: String
+    place_id: String
+    types: [String]
+  }
+
+  interface SearchResult {
+    type: String!
+    score: Int!
+  }
+
+  type TypedSearchResult {
+    type: String!
+    results: [SearchResult]
+  }
+,
+type CIPProject {
+  gis_id: String
+  munis_project_number: String
+  project: String
+  display_name: String
+  location_details: String
+  zip_code: String
+  type: String
+  category: String
+  category_number: Int
+  coa_contact: String
+  phone_number: String
+  email_address: String
+  owner_department: String
+  administering_department: String
+  project_description: String
+  status: String
+  total_project_funding_budget_document: String
+  total_spent: String
+  encumbered: String
+  target_construction_start: String
+  target_construction_end: String
+  actual_construction_end: String
+  amount_behind_schedule: String
+  estimated_construction_duration: String
+  project_folder: String
+  project_webpage_more_information: String
+  communication_plan: String
+  photo_url: String
+  project_updates: String
+  latitude: [Float]
+  longitude: [Float]
+}
+
+type CIPProjectCategory {
+  category_name: String
+  category_number: Int
+  total_count: Int
+  bond_count: Int
+}
+,
+type PCardStatementStatus {
+  dept_id: String
+  department: String 
+  div_id: String
+  division: String 
+  cardholder: String 
+  statement_code: String
+  statement_id: Int
+  statement_status: String
+  fiscal_year: Int
+  fiscal_period: Int
+  invoiced_date: String
+  reconciled_date: String
+  days_invoiced_to_reconciled: Int
+  approved_date: String
+  days_reconciled_to_approved: Int
+  days_since_invoiced: Int
+  days_since_reconciled: Int
+}
+
+type PCardTransaction {
+  dept_id: String
+  department: String 
+  div_id: String
+  division: String 
+  cardholder: String 
+  statement_id: Int
+  charge_date: String
+  amount: Float
+  vendor_id: String
+  vendor_name: String
+  description: String
+  receipt: String
+}
+,
+
+# A field in a generaic stats result
+type GenericStatsField {
+  # SQL Column name
+  column: String!
+  # Optional: The aggregate function to use - defaults to COUNT
+  aggregateFunction: String
+  # Value from SQL Query
+  value: String
+}
+
+# A generic stats types
+type GenericStats {
+  # The result of the aggregation
+  fields: [GenericStatsField]
+  # The value of this category from the aggregation
+  groupTitle: String,
+  # The category of this aggregation 
+  groupCategory: String,
+  # An array of subitems
+  subitems: [GenericStats]
+}
+
+# Filter "groups" are used to group together WHERE clauses in the query 
+input GenericStatsFilterGroup{
+  # Operation to join together groups or filters (AND / OR)
+  op: String
+  # Filters of type GenericStatsFilter
+  filters: [GenericStatsFilter]
+  # Sub-groups of filters
+  groups: [GenericStatsFilterGroup] 
+}
+
+# An individual "WHERE" clause. Provide key / value and operation for comparison
+input GenericStatsFilter{
+  # The column 'key' for comparison
+  key: String!
+  # Optional: datefield to extract from 
+  dateField: String
+  # The comparison operator (=, !=, >=, <=) - others might work but aren't tested. 
+  op: String!
+  # The value for comparison
+  value: String!
+}
+
+# Aggregate field
+input GenericStatsAggregateField{
+  # SQL Column name
+  column: String!
+  # Optional: The aggregate function to use - defaults to COUNT
+  aggregateFunction: String
+}
+
+# Group By Clause
+input GenericStatsGroupBy{
+  # SQL Column name
+  column: String!
+  # Optional: datefield to extract from 
+  dateField: String
+  # Optional: The direction to sort (ASC / DESC)
+  sortDirection: String
+}

@@ -1,4 +1,5 @@
 const dsdSlaSchema = require('./dsd_sla_schema');
+const realtime_schema = require('./realtime_schema');
 module.exports = `
 type PermitComment {
   comment_seq_number: Int
@@ -94,4 +95,5 @@ type Inspection {
 }
 
 ${dsdSlaSchema}
+${realtime_schema}
 `;

@@ -1,4 +1,61 @@
 
+query q1 {
+  permit_realtime(permit_number: "21-01337") {
+    permit_number
+  }
+  streets(centerline_ids:[9648296918]) {
+    address
+  }
+}
+
+
+query APermit($permitsPermitNumbers: [String]) {
+  permits(permit_numbers: $permitsPermitNumbers) {
+    permit_number
+    permit_group
+    permit_type
+    permit_subtype
+    permit_category
+    permit_description
+    applicant_name
+    application_name
+    applied_date
+    status_current
+    status_date
+    technical_contact_name
+    technical_contact_email
+    created_by
+    building_value
+    job_value
+    total_project_valuation
+    total_sq_feet
+    fees
+    paid
+    balance
+    invoiced_fee_total
+    civic_address_id
+    address
+    x
+    y
+    contractor_names
+    contractor_license_numbers
+    internal_record_id
+    comments {
+      comment_date
+      comment_seq_number
+      comments
+    }
+    custom_fields {
+      type
+      name
+      value
+    }
+  }
+}
+      {
+        "permitsPermitNumber":"21-05505"
+      }
+
 {
   projects(after: "2020-05-20", status: ["In Progress", "Open"]) {
     ID
@@ -370,6 +427,18 @@ query {
   }
 }
 
+query q2{
+  permits_by_neighborhood (nbrhd_ids: ["NBHD56"], after: "2017-03-01", before: "2017-04-01") {
+address
+  }
+  permits_by_address(civicaddress_id: 230126, radius: 1000,  after: "2021-03-01", before: "2021-04-01") {
+    address
+	}
+  permits_by_street (centerline_ids: [9649413286], after: "2021-03-01", before: "2021-04-01") {
+    address
+  }
+}
+
 query {
   permits_by_neighborhood (nbrhd_ids: ["NBHD34"], after: "2021-01-01") {
     address
@@ -426,3 +495,22 @@ query { permits(permit_numbers: "21-01337") {
   y
   internal_record_id
 }}
+
+query getMaintenanceQuery($centerline_ids: [Float]) {
+  streets(centerline_ids: $centerline_ids) {
+    centerline_id
+    left_zipcode
+    right_zipcode
+    maintenance_entities
+    line {
+      x
+      y
+      __typename
+    }
+    __typename
+  }
+}
+{
+  "centerline_ids": ["9649502507"]
+}
+
