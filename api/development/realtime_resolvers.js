@@ -8,24 +8,50 @@ function convert_coords(x,y){
   return proj4(firstProjection,secondProjection,[x,y])
 }
 
+const stdQuery = `
+SELECT
+A.permit_num permit_number, A.permit_group, A.permit_type, A.permit_subtype, A.permit_category, 
+A.permit_description, A.applicant_name, CONVERT(VARCHAR(19),A.applied_date,126) + 'Z' AS applied_date, A.status_current, 
+CONVERT(VARCHAR(19),A.status_date,126) + 'Z' AS status_date, A.technical_contact_name, A.technical_contact_email,
+A.created_by, A.building_value, CAST(A.job_value AS VARCHAR) AS job_value, A.total_project_valuation, A.total_sq_feet, 
+A.fees, A.paid, A.balance, A.invoiced_fee_total, A.civic_address_id, A.site_address AS address,
+coords.B1_X_COORD as x, coords.B1_Y_COORD as y, A.internal_record_id
+FROM amd.permits A
+LEFT JOIN (
+  select B1_PER_ID1 + '-' + B1_PER_ID2 + '-' +  B1_PER_ID3 AS CapID, B1_X_COORD,B1_Y_COORD,B1_FULL_ADDRESS FROM B3ADDRES
+) coords
+on A.internal_record_id = coords.CapID
+`
 const resolvers = {
   Query: {
     permit_realtime(obj, args, context) {
       const logger = context.logger;
-      const query = `
-      SELECT
-      A.permit_num permit_number, A.permit_group, A.permit_type, A.permit_subtype, A.permit_category, 
-      A.permit_description, A.applicant_name, CONVERT(VARCHAR(19),A.applied_date,126) + 'Z' AS applied_date, A.status_current, 
-      CONVERT(VARCHAR(19),A.status_date,126) + 'Z' AS status_date, A.technical_contact_name, A.technical_contact_email,
-      A.created_by, A.building_value, CAST(A.job_value AS VARCHAR) AS job_value, A.total_project_valuation, A.total_sq_feet, 
-      A.fees, A.paid, A.balance, A.invoiced_fee_total, A.civic_address_id, A.site_address AS address,
-      coords.B1_X_COORD as x, coords.B1_Y_COORD as y, A.internal_record_id
-      FROM amd.permits A
-      LEFT JOIN (
-        select B1_PER_ID1 + '-' + B1_PER_ID2 + '-' +  B1_PER_ID3 AS CapID, B1_X_COORD,B1_Y_COORD,B1_FULL_ADDRESS FROM B3ADDRES
-      ) coords
-      on A.internal_record_id = coords.CapID
+      const query = `${stdQuery}
       WHERE A.permit_num = '${args.permit_number}'
+      `;
+
+      return context.pool_accela.query(query)
+      .then(result => {
+        const ret = result.recordset[0]
+        ret.application_name = ret.applicant_name
+        const [lon,lat] = convert_coords(ret.x,ret.y)
+        ret.x = lon
+        ret.y = lat
+        // console.log(query,result,ret)
+        // console.log(ret)
+
+        return ret;
+      })
+      .catch(error => {
+        //logger.error(`Error in permit_realtime endpoint: ${JSON.stringify(error)}`);
+        throw new Error(error);
+      });
+    },
+    permits_by_address_realtime(obj, args, context) {
+      const logger = context.logger;
+      const query = `${stdQuery}
+      WHERE A.civic_address_id = '${args.civicaddress_id}'
+      ORDER BY A.permit_num DESC
       `;
 
       return context.pool_accela.query(query)

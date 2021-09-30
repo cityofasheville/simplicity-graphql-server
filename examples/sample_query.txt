@@ -416,6 +416,15 @@ query {
 	}
 }
 
+query get_permits_by_address ($civicaddress_id: Int!) {
+  permits_by_address(civicaddress_id: $civicaddress_id) {
+    permit_number
+    applied_date
+    permit_description
+  }
+}
+{"civicaddress_id": 17184}
+
 query {
   permits_by_street (centerline_ids: [9649413286], after: "2021-03-01", before: "2021-04-01") {
     address
