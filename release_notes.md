@@ -2,12 +2,6 @@
 
 ## Current
 
-## 3.11.0
-* Added realtime permits, pulling directly from Accela DB.
-
-## 3.10.0
-* Switch from graphql-server-express to apollo-server-express
-
 ## 3.8.0
 * Added application_name as an endpoint replacement for applicant_name, but leaving the latter for now (until all front-end references are gone).
 
