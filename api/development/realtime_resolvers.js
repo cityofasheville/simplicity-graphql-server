@@ -56,11 +56,14 @@ const resolvers = {
 
       return context.pool_accela.query(query)
       .then(result => {
-        const ret = result.recordset[0]
-        ret.application_name = ret.applicant_name
-        const [lon,lat] = convert_coords(ret.x,ret.y)
-        ret.x = lon
-        ret.y = lat
+        const ret = result.recordset
+        ret.forEach(r=>{
+          r.application_name = r.applicant_name
+          const [lon,lat] = convert_coords(r.x,r.y)
+          r.x = lon
+          r.y = lat
+          return r
+        })
         // console.log(query,result,ret)
         // console.log(ret)
 
