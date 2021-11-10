@@ -28,10 +28,12 @@ const resolvers = {
       const logger = context.logger;
       const query = `${stdQuery}
       WHERE A.permit_num = '${args.permit_number}'
+      ORDER BY A.applied_date DESC
       `;
 
       return context.pool_accela.query(query)
       .then(result => {
+        if(!result.recordset[0]){ return undefined}
         const ret = result.recordset[0]
         ret.application_name = ret.applicant_name
         const [lon,lat] = convert_coords(ret.x,ret.y)
@@ -51,11 +53,12 @@ const resolvers = {
       const logger = context.logger;
       const query = `${stdQuery}
       WHERE A.civic_address_id = '${args.civicaddress_id}'
-      ORDER BY A.permit_num DESC
+      ORDER BY A.applied_date DESC
       `;
 
       return context.pool_accela.query(query)
       .then(result => {
+        if(!result.recordset[0]){ return undefined}
         const ret = result.recordset
         ret.forEach(r=>{
           r.application_name = r.applicant_name
