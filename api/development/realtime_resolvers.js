@@ -21,13 +21,14 @@ LEFT JOIN (
   select B1_PER_ID1 + '-' + B1_PER_ID2 + '-' +  B1_PER_ID3 AS CapID, B1_X_COORD,B1_Y_COORD,B1_FULL_ADDRESS FROM B3ADDRES
 ) coords
 on A.internal_record_id = coords.CapID
+WHERE A.permit_num not like '%TMP%' 
 `
 const resolvers = {
   Query: {
     permit_realtime(obj, args, context) {
       const logger = context.logger;
       const query = `${stdQuery}
-      WHERE A.permit_num = '${args.permit_number}'
+      AND A.permit_num = '${args.permit_number}'
       ORDER BY A.applied_date DESC
       `;
 
@@ -52,7 +53,7 @@ const resolvers = {
     permits_by_address_realtime(obj, args, context) {
       const logger = context.logger;
       const query = `${stdQuery}
-      WHERE A.civic_address_id = '${args.civicaddress_id}'
+      AND A.civic_address_id = '${args.civicaddress_id}'
       ORDER BY A.applied_date DESC
       `;
 
