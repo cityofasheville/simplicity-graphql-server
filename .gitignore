@@ -5,7 +5,7 @@ SimpliCityII-*.json
 .idea*
 
 # Logs
-logs
+logs*
 *.log
 npm-debug.log*
 

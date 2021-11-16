@@ -49,6 +49,7 @@ const baseSchema = `
     pcard_statements_status (before: String, after: String): [PCardStatementStatus]
     employees(ids: [Int], status: String, departments: [String], divisions: [String], supervisors: [Int] ): [Employee]
     permit_realtime(permit_number: String): PermitRT
+    permits_by_address_realtime(civicaddress_id: Int!): [PermitRT]
   }
 `;
 const searchSchema = require('./search').schema;

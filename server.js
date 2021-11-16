@@ -1,5 +1,6 @@
 const express = require('express');
 const { ApolloServer, gql } = require('apollo-server-express');
+const { ApolloServerPluginLandingPageGraphQLPlayground } = require('apollo-server-core');
 
 const cors = require('cors');
 const Logger = require('coa-node-logging');
@@ -49,15 +50,17 @@ async function startApolloServer() {
   const server = new ApolloServer({ 
     typeDefs: gqlTypeDefs, 
     resolvers,
+    introspection: process.env.NODE_ENV !== 'production',
+    playground: true,
     context: {
         pool,
         pool_accela,
         logger,
-        introspection: true,
-        playground: true,
         user: null,
         employee: null,
-    }
+    },  plugins: [
+      ApolloServerPluginLandingPageGraphQLPlayground(),
+    ],
   });
   
   await server.start();
