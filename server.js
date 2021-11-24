@@ -50,7 +50,7 @@ async function startApolloServer() {
   const server = new ApolloServer({ 
     typeDefs: gqlTypeDefs, 
     resolvers,
-    introspection: process.env.NODE_ENV !== 'production',
+    introspection: true,
     playground: true,
     context: {
         pool,
