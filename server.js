@@ -50,8 +50,8 @@ async function startApolloServer() {
   const server = new ApolloServer({ 
     typeDefs: gqlTypeDefs, 
     resolvers,
-    introspection: !!process.env.debugging,
-    playground: !!process.env.debugging,
+    introspection: process.env.debugging === 'true',
+    playground: process.env.debugging === 'true',
     context: {
         pool,
         pool_accela,
