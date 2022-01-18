@@ -40,14 +40,16 @@ const resolvers = {
       const logger = context.logger;
       const civicaddressId = String(args.civicaddress_id);
       const radius = Number(args.radius); // State plane units are feet
-      const query = 'SELECT A.incident_id, TO_CHAR(A.date_occurred, \'YYYY-MM-DD\') date_occurred, A.case_number, '
-      + 'A.address, A.geo_beat, A.x, A.y, A.x_wgs, A.y_wgs, A.offense_short_description, '
-      + 'A.offense_long_description, A.offense_code, A.offense_group_code, '
-      + 'A.offense_group_level, A.offense_group_short_description '
-      + 'from simplicity.v_simplicity_crimes as A '
-      + 'left outer join internal.coa_bc_address_master as B '
-      + 'on ST_Point_Inside_Circle(ST_Point(A.x, A.y), B.address_x, B.address_y, $2) '
-      + 'where b.civicaddress_id = $1 '; // Future function name change - ST_PointInsideCircle
+      const query = `
+      SELECT A.incident_id, TO_CHAR(A.date_occurred, 'YYYY-MM-DD') date_occurred, A.case_number,
+      A.address, A.geo_beat, A.x, A.y, A.x_wgs, A.y_wgs, A.offense_short_description,
+      A.offense_long_description, A.offense_code, A.offense_group_code,
+      A.offense_group_level, A.offense_group_short_description
+      from simplicity.v_simplicity_crimes as A
+      left outer join internal.coa_bc_address_master as B
+      on ST_Point_Inside_Circle(ST_Point(A.x, A.y), B.address_x, B.address_y, $2)
+      where b.civicaddress_id = $1 
+      `; // Future function name change - ST_PointInsideCircle
 
       return context.pool.query(query, [civicaddressId, radius])
       .then(result => {
@@ -63,7 +65,11 @@ const resolvers = {
       const radius = (args.radius) ? Number(args.radius) : 100; // State plane units are feet
       const ids = args.centerline_ids;
       if (ids.length <= 0) return [];
-      const query = 'SELECT * FROM simplicity.get_crimes_along_streets($1, $2)';
+      const query = `SELECT incident_id, agency, TO_CHAR(date_occurred, 'YYYY-MM-DD') date_occurred, case_number,
+      address, geo_beat, geo_report_area, x, y, x_wgs, y_wgs, offense_short_description,
+      offense_long_description, offense_code, offense_group_code,
+      offense_group_level, offense_group_short_description,
+      offense_group_long_description FROM simplicity.get_crimes_along_streets($1, $2)`;
       return context.pool.query(query, [ids, radius])
       .then(result => {
         return prepareCrimes(result.rows, args.before, args.after);
@@ -78,7 +84,13 @@ const resolvers = {
     crimes_by_neighborhood(obj, args, context) {
       const logger = context.logger;
       if (args.nbrhd_ids.length <= 0) return [];
-      const query = 'SELECT * FROM simplicity.get_crimes_by_neighborhood($1)';
+      const query = `
+      SELECT incident_id, agency, TO_CHAR(date_occurred, 'YYYY-MM-DD') date_occurred, case_number,
+      address, geo_beat, geo_report_area, x, y, x_wgs, y_wgs, offense_short_description,
+      offense_long_description, offense_code, offense_group_code,
+      offense_group_level, offense_group_short_description,
+      offense_group_long_description FROM simplicity.get_crimes_by_neighborhood($1)
+      `;
 
       return context.pool.query(query, [args.nbrhd_ids])
       .then(result => {
@@ -94,12 +106,14 @@ const resolvers = {
     crimes(obj, args, context) {
       const logger = context.logger;
       if (args.incident_ids.length <= 0) return [];
-      const query = 'SELECT incident_id, agency, TO_CHAR(A.date_occurred, \'YYYY-MM-DD\') date_occurred, case_number, '
-      + 'address, geo_beat, geo_report_area, x, y, x_wgs, y_wgs, offense_short_description, '
-      + 'offense_long_description, offense_code, offense_group_code, '
-      + 'offense_group_level, offense_group_short_description, '
-      + 'offense_group_long_description '
-      + 'FROM simplicity.v_simplicity_crimes WHERE incident_id = ANY ($1) ';
+      const query = `
+      SELECT incident_id, agency, TO_CHAR(A.date_occurred, 'YYYY-MM-DD') date_occurred, case_number,
+      address, geo_beat, geo_report_area, x, y, x_wgs, y_wgs, offense_short_description,
+      offense_long_description, offense_code, offense_group_code,
+      offense_group_level, offense_group_short_description,
+      offense_group_long_description
+      FROM simplicity.v_simplicity_crimes WHERE incident_id = ANY ($1)
+      `;
       return context.pool.query(query, [args.incident_ids])
       .then((result) => {
         return prepareCrimes(result.rows);
