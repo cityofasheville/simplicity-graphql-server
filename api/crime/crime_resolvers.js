@@ -65,7 +65,7 @@ const resolvers = {
       const radius = (args.radius) ? Number(args.radius) : 100; // State plane units are feet
       const ids = args.centerline_ids;
       if (ids.length <= 0) return [];
-      const query = `SELECT incident_id, agency, TO_CHAR(A.date_occurred, 'YYYY-MM-DD') date_occurred, case_number,
+      const query = `SELECT incident_id, agency, TO_CHAR(date_occurred, 'YYYY-MM-DD') date_occurred, case_number,
       address, geo_beat, geo_report_area, x, y, x_wgs, y_wgs, offense_short_description,
       offense_long_description, offense_code, offense_group_code,
       offense_group_level, offense_group_short_description,
@@ -85,7 +85,7 @@ const resolvers = {
       const logger = context.logger;
       if (args.nbrhd_ids.length <= 0) return [];
       const query = `
-      SELECT incident_id, agency, TO_CHAR(A.date_occurred, 'YYYY-MM-DD') date_occurred, case_number,
+      SELECT incident_id, agency, TO_CHAR(date_occurred, 'YYYY-MM-DD') date_occurred, case_number,
       address, geo_beat, geo_report_area, x, y, x_wgs, y_wgs, offense_short_description,
       offense_long_description, offense_code, offense_group_code,
       offense_group_level, offense_group_short_description,
