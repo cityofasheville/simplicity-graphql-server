@@ -8,6 +8,23 @@ function convert_coords(x,y){
   return proj4(firstProjection,secondProjection,[x,y])
 }
 
+function get_xy(obj, args, context) {
+  return new Promise((resolve,reject) => {
+    const query = `select top 1 B1_X_COORD AS x, B1_Y_COORD AS y FROM B3ADDRES
+    where B1_PER_ID1 + '-' + B1_PER_ID2 + '-' +  B1_PER_ID3 = '${obj.internal_record_id}'
+    order by B1_PRIMARY_ADDR_FLG desc, B1_ADDRESS_NBR desc `
+    context.pool_accela.query(query)
+    .then((result) => {
+      let [cx,cy] = convert_coords(result.recordset[0].x, result.recordset[0].y);
+      resolve ([cx,cy]);
+    })
+    .catch((err) => {
+      console.log(err);
+      reject (new Error(`Got an error in PermitRT.xy: ${err}`));
+    });
+  });
+}
+
 const stdQuery = `
 SELECT
 A.permit_num permit_number, A.permit_group, A.permit_type, A.permit_subtype, A.permit_category, 
@@ -75,31 +92,13 @@ const resolvers = {
     },
   },
   PermitRT: {
-    x(obj, args, context) {
-      const query = `select top 1 B1_X_COORD AS x FROM B3ADDRES
-      where B1_PER_ID1 + '-' + B1_PER_ID2 + '-' +  B1_PER_ID3 = '${obj.internal_record_id}'
-      order by B1_PRIMARY_ADDR_FLG desc, B1_ADDRESS_NBR desc `
-      return context.pool_accela.query(query)
-      .then((result) => {
-        return result.recordset[0].x;
-      })
-      .catch((err) => {
-        console.log(err);
-        throw new Error(`Got an error in PermitRT.x: ${err}`);
-      });
+    async x(obj, args, context) {
+      const result = await get_xy(obj, args, context);
+      return result[0];
     },
-    y(obj, args, context) {
-      const query = `select top 1 B1_Y_COORD AS y FROM B3ADDRES
-      where B1_PER_ID1 + '-' + B1_PER_ID2 + '-' +  B1_PER_ID3 = '${obj.internal_record_id}'
-      order by B1_PRIMARY_ADDR_FLG desc, B1_ADDRESS_NBR desc `
-      return context.pool_accela.query(query)
-      .then((result) => {
-        return result.recordset[0].y;
-      })
-      .catch((err) => {
-        console.log(err);
-        throw new Error(`Got an error in PermitRT.y: ${err}`);
-      });
+    async y(obj, args, context) {
+      const result = await get_xy(obj, args, context);
+      return result[1];
     },
     contractor_names(obj, args, context) {
       const query = `SELECT c.contractor_name
