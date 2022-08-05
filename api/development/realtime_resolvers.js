@@ -14,22 +14,8 @@ A.permit_num permit_number, A.permit_group, A.permit_type, A.permit_subtype, A.p
 A.permit_description, A.applicant_name, CONVERT(VARCHAR(19),A.applied_date,126) + 'Z' AS applied_date, A.status_current, 
 CONVERT(VARCHAR(19),A.status_date,126) + 'Z' AS status_date, A.technical_contact_name, A.technical_contact_email,
 A.created_by, A.building_value, CAST(A.job_value AS VARCHAR) AS job_value, A.total_project_valuation, A.total_sq_feet, 
-A.fees, A.paid, A.balance, A.invoiced_fee_total, A.civic_address_id, A.site_address AS address,
-coords.B1_X_COORD as x, coords.B1_Y_COORD as y, A.internal_record_id
+A.fees, A.paid, A.balance, A.invoiced_fee_total, A.civic_address_id, A.site_address AS address, A.internal_record_id
 FROM amd.permits A
-LEFT JOIN (
-	select data.CapID, B1_X_COORD,B1_Y_COORD,B1_FULL_ADDRESS from (
-		select MAX(B1_ADDRESS_NBR) AS maxnum, B1_PER_ID1 + '-' + B1_PER_ID2 + '-' +  B1_PER_ID3 AS CapID FROM B3ADDRES
-		group by B1_PER_ID1 + '-' + B1_PER_ID2 + '-' +  B1_PER_ID3
-	) as mx
-	inner join (
-		select B1_ADDRESS_NBR, B1_PER_ID1 + '-' + B1_PER_ID2 + '-' +  B1_PER_ID3 AS CapID, B1_X_COORD,B1_Y_COORD,B1_FULL_ADDRESS --, B1_PRIMARY_ADDR_FLG
-		FROM B3ADDRES
-	) data
-	on mx.maxnum = data.B1_ADDRESS_NBR
-	and mx.CapID = data.CapID
-) coords
-on A.internal_record_id = coords.CapID
 WHERE A.permit_num not like '%TMP%' 
 `
 const resolvers = {
@@ -89,6 +75,32 @@ const resolvers = {
     },
   },
   PermitRT: {
+    x(obj, args, context) {
+      const query = `select top 1 B1_X_COORD AS x FROM B3ADDRES
+      where B1_PER_ID1 + '-' + B1_PER_ID2 + '-' +  B1_PER_ID3 = '${obj.internal_record_id}'
+      order by B1_PRIMARY_ADDR_FLG desc, B1_ADDRESS_NBR desc `
+      return context.pool_accela.query(query)
+      .then((result) => {
+        return result.recordset[0].x;
+      })
+      .catch((err) => {
+        console.log(err);
+        throw new Error(`Got an error in PermitRT.x: ${err}`);
+      });
+    },
+    y(obj, args, context) {
+      const query = `select top 1 B1_Y_COORD AS y FROM B3ADDRES
+      where B1_PER_ID1 + '-' + B1_PER_ID2 + '-' +  B1_PER_ID3 = '${obj.internal_record_id}'
+      order by B1_PRIMARY_ADDR_FLG desc, B1_ADDRESS_NBR desc `
+      return context.pool_accela.query(query)
+      .then((result) => {
+        return result.recordset[0].y;
+      })
+      .catch((err) => {
+        console.log(err);
+        throw new Error(`Got an error in PermitRT.y: ${err}`);
+      });
+    },
     contractor_names(obj, args, context) {
       const query = `SELECT c.contractor_name
       FROM amd.permit_contractors c 
