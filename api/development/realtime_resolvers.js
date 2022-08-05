@@ -8,19 +8,31 @@ function convert_coords(x,y){
   return proj4(firstProjection,secondProjection,[x,y])
 }
 
+function get_xy(obj, args, context) {
+  return new Promise((resolve,reject) => {
+    const query = `select top 1 B1_X_COORD AS x, B1_Y_COORD AS y FROM B3ADDRES
+    where B1_PER_ID1 + '-' + B1_PER_ID2 + '-' +  B1_PER_ID3 = '${obj.internal_record_id}'
+    order by B1_PRIMARY_ADDR_FLG desc, B1_ADDRESS_NBR desc `
+    context.pool_accela.query(query)
+    .then((result) => {
+      let [cx,cy] = convert_coords(result.recordset[0].x, result.recordset[0].y);
+      resolve ([cx,cy]);
+    })
+    .catch((err) => {
+      console.log(err);
+      reject (new Error(`Got an error in PermitRT.xy: ${err}`));
+    });
+  });
+}
+
 const stdQuery = `
 SELECT
 A.permit_num permit_number, A.permit_group, A.permit_type, A.permit_subtype, A.permit_category, 
 A.permit_description, A.applicant_name, CONVERT(VARCHAR(19),A.applied_date,126) + 'Z' AS applied_date, A.status_current, 
 CONVERT(VARCHAR(19),A.status_date,126) + 'Z' AS status_date, A.technical_contact_name, A.technical_contact_email,
 A.created_by, A.building_value, CAST(A.job_value AS VARCHAR) AS job_value, A.total_project_valuation, A.total_sq_feet, 
-A.fees, A.paid, A.balance, A.invoiced_fee_total, A.civic_address_id, A.site_address AS address,
-coords.B1_X_COORD as x, coords.B1_Y_COORD as y, A.internal_record_id
+A.fees, A.paid, A.balance, A.invoiced_fee_total, A.civic_address_id, A.site_address AS address, A.internal_record_id
 FROM amd.permits A
-LEFT JOIN (
-  select B1_PER_ID1 + '-' + B1_PER_ID2 + '-' +  B1_PER_ID3 AS CapID, B1_X_COORD,B1_Y_COORD,B1_FULL_ADDRESS FROM B3ADDRES
-) coords
-on A.internal_record_id = coords.CapID
 WHERE A.permit_num not like '%TMP%' 
 `
 const resolvers = {
@@ -80,6 +92,14 @@ const resolvers = {
     },
   },
   PermitRT: {
+    async x(obj, args, context) {
+      const result = await get_xy(obj, args, context);
+      return result[0];
+    },
+    async y(obj, args, context) {
+      const result = await get_xy(obj, args, context);
+      return result[1];
+    },
     contractor_names(obj, args, context) {
       const query = `SELECT c.contractor_name
       FROM amd.permit_contractors c 
