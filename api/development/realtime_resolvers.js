@@ -26,7 +26,7 @@ function get_xy(obj, args, context) {
 }
 
 const stdQuery = `
-SELECT
+SELECT DISTINCT
 A.permit_num permit_number, A.permit_group, A.permit_type, A.permit_subtype, A.permit_category, 
 A.permit_description, A.applicant_name, CONVERT(VARCHAR(19),A.applied_date,126) + 'Z' AS applied_date, A.status_current, 
 CONVERT(VARCHAR(19),A.status_date,126) + 'Z' AS status_date, A.technical_contact_name, A.technical_contact_email,
@@ -41,7 +41,7 @@ const resolvers = {
       const logger = context.logger;
       const query = `${stdQuery}
       AND A.permit_num = '${args.permit_number}'
-      ORDER BY A.applied_date DESC
+      ORDER BY status_date DESC
       `;
 
       return context.pool_accela.query(query)
@@ -66,7 +66,7 @@ const resolvers = {
       const logger = context.logger;
       const query = `${stdQuery}
       AND A.civic_address_id = '${args.civicaddress_id}'
-      ORDER BY A.applied_date DESC
+      ORDER BY status_date DESC
       `;
 
       return context.pool_accela.query(query)
