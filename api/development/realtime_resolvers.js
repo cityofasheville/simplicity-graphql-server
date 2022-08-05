@@ -18,7 +18,16 @@ A.fees, A.paid, A.balance, A.invoiced_fee_total, A.civic_address_id, A.site_addr
 coords.B1_X_COORD as x, coords.B1_Y_COORD as y, A.internal_record_id
 FROM amd.permits A
 LEFT JOIN (
-  select B1_PER_ID1 + '-' + B1_PER_ID2 + '-' +  B1_PER_ID3 AS CapID, B1_X_COORD,B1_Y_COORD,B1_FULL_ADDRESS FROM B3ADDRES
+	select data.CapID, B1_X_COORD,B1_Y_COORD,B1_FULL_ADDRESS from (
+		select MAX(B1_ADDRESS_NBR) AS maxnum, B1_PER_ID1 + '-' + B1_PER_ID2 + '-' +  B1_PER_ID3 AS CapID FROM B3ADDRES
+		group by B1_PER_ID1 + '-' + B1_PER_ID2 + '-' +  B1_PER_ID3
+	) as mx
+	inner join (
+		select B1_ADDRESS_NBR, B1_PER_ID1 + '-' + B1_PER_ID2 + '-' +  B1_PER_ID3 AS CapID, B1_X_COORD,B1_Y_COORD,B1_FULL_ADDRESS --, B1_PRIMARY_ADDR_FLG
+		FROM B3ADDRES
+	) data
+	on mx.maxnum = data.B1_ADDRESS_NBR
+	and mx.CapID = data.CapID
 ) coords
 on A.internal_record_id = coords.CapID
 WHERE A.permit_num not like '%TMP%' 
