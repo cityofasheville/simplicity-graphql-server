@@ -49,7 +49,7 @@ const resolvers = {
       left outer join internal.coa_bc_address_master as B
       on ST_PointInsideCircle(ST_Point(A.x, A.y), B.address_x, B.address_y, $2)
       where b.civicaddress_id = $1 
-      `; // Future function name change - ST_PointInsideCircle
+      `;
 
       return context.pool.query(query, [civicaddressId, radius])
       .then(result => {

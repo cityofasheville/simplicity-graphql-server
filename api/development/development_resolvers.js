@@ -229,7 +229,7 @@ const resolvers = {
       LEFT JOIN internal.permit_comments AS B on A.permit_num = B.permit_num
       where M.civicaddress_id = $1
       AND A.permit_group <> 'Services'
-      `; // Future function name change - ST_PointInsideCircle
+      `;
       const qargs = [String(args.civicaddress_id), radius];
       let nextParam = '$3';
       if (args.before !== undefined) {
