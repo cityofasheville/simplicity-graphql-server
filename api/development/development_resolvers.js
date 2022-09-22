@@ -225,11 +225,11 @@ const resolvers = {
       let query = `${stdQuery}
       from simplicity.permits_xy_view as A
       left outer join internal.coa_bc_address_master as M
-      on ST_Point_Inside_Circle(ST_SetSRID(ST_Point(A.address_x, A.address_y),2264), M.address_x, M.address_y, $2)
+      on ST_PointInsideCircle(ST_SetSRID(ST_Point(A.address_x, A.address_y),2264), M.address_x, M.address_y, $2)
       LEFT JOIN internal.permit_comments AS B on A.permit_num = B.permit_num
       where M.civicaddress_id = $1
       AND A.permit_group <> 'Services'
-      `; // Future function name change - ST_PointInsideCircle
+      `;
       const qargs = [String(args.civicaddress_id), radius];
       let nextParam = '$3';
       if (args.before !== undefined) {
