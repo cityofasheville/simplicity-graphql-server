@@ -24,6 +24,7 @@ function prepareProperties(rows) {
         appraisal_area: itm.appraisalarea,
         acreage: itm.acreage,
         zoning: itm.zoning,
+        zoning_links: itm.zoning_links,
         deed_link: itm.deedurl,
         property_card_link: itm.propcard,
         plat_link: itm.platurl,
