@@ -17,6 +17,7 @@ type Property {
   appraisal_area: String
   acreage: Float
   zoning: String
+  zoning_links: String
   deed_link: String
   property_card_link: String
   plat_link: String

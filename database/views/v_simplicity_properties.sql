@@ -2,8 +2,8 @@
 
 -- DROP VIEW simplicity.v_simplicity_properties;
 
-CREATE OR REPLACE VIEW simplicity.v_simplicity_properties AS
- SELECT a.pin,
+CREATE OR REPLACE VIEW simplicity.v_simplicity_properties
+AS SELECT a.pin,
     a.pinext,
     a.pinnum,
     b.address_full AS address,
@@ -27,6 +27,7 @@ CREATE OR REPLACE VIEW simplicity.v_simplicity_properties AS
     b.latitude_wgs,
     b.longitude_wgs,
     b.zoning,
+    b.zoning_links,
     b.jurisdiction_type,
     b.owner_address,
     b.location_type,
@@ -35,6 +36,5 @@ CREATE OR REPLACE VIEW simplicity.v_simplicity_properties AS
     b.local_landmark
    FROM internal.bc_property a
      LEFT JOIN internal.coa_bc_address_master b ON a.pin::text = b.property_pin::text AND a.pinext::text = b.property_pinext::text
-  WHERE b.location_type = 1 OR b.location_type = 0 OR b.location_type = 4;
 
 

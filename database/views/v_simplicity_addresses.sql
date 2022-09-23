@@ -2,8 +2,8 @@
 
 -- DROP VIEW simplicity.v_simplicity_addresses;
 
-CREATE OR REPLACE VIEW simplicity.v_simplicity_addresses AS
- SELECT coa_bc_address_master.civicaddress_id,
+CREATE OR REPLACE VIEW simplicity.v_simplicity_addresses
+AS SELECT coa_bc_address_master.civicaddress_id,
     coa_bc_address_master.address_full,
     coa_bc_address_master.address_city,
     coa_bc_address_master.address_zipcode,
@@ -18,6 +18,7 @@ CREATE OR REPLACE VIEW simplicity.v_simplicity_addresses AS
     coa_bc_address_master.recycling_pickup_district,
     coa_bc_address_master.recycling_pickup_day,
     coa_bc_address_master.zoning,
+    coa_bc_address_master.zoning_links,
     coa_bc_address_master.owner_name,
     coa_bc_address_master.owner_address,
     coa_bc_address_master.owner_cityname,

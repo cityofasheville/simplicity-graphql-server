@@ -42,6 +42,7 @@ BEGIN
                     A.latitude_wgs,
                     A.longitude_wgs,
                     A.zoning,
+                    A.zoning_links,
 					A.jurisdiction_type,
                     A.owner_address,
                     A.location_type,
