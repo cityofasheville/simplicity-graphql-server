@@ -47,9 +47,9 @@ const resolvers = {
       A.offense_group_level, A.offense_group_short_description
       from simplicity.v_simplicity_crimes as A
       left outer join internal.coa_bc_address_master as B
-      on ST_Point_Inside_Circle(ST_Point(A.x, A.y), B.address_x, B.address_y, $2)
+      on ST_PointInsideCircle(ST_Point(A.x, A.y), B.address_x, B.address_y, $2)
       where b.civicaddress_id = $1 
-      `; // Future function name change - ST_PointInsideCircle
+      `;
 
       return context.pool.query(query, [civicaddressId, radius])
       .then(result => {

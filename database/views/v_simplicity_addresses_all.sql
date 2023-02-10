@@ -34,8 +34,8 @@ AS SELECT coa_bc_address_master.civicaddress_id,
     coa_bc_address_master.nbrhd_name,
     coa_bc_address_master.historic_district,
     coa_bc_address_master.local_landmark
-   FROM internal.coa_bc_address_master
-  WHERE coa_bc_address_master.location_type = 1 OR coa_bc_address_master.location_type = 4;
+   FROM internal.coa_bc_address_master;
+  -- WHERE coa_bc_address_master.location_type = 1 OR coa_bc_address_master.location_type = 4;
 
 
 
