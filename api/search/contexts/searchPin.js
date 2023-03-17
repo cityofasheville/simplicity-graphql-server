@@ -1,9 +1,13 @@
 function searchPin(searchString, context) {
   const logger = context.logger;
   const myQuery = `
-  SELECT pin, pinnum, pinext, 
-  regexp_replace(concat_ws(' ', housenumber, numbersuffix, direction, streetname, streettype), '\s+', ' ', 'g') as address, 
-  cityname, zipcode 
+  SELECT pin, pinnum, pinext,
+   housenumber || 
+   case when numbersuffix = '' then '' else ' ' || numbersuffix end  ||
+   case when direction = '' then '' else ' ' || direction  end ||
+   ' ' || streetname ||
+   case when streettype = '' then '' else ' ' || streettype end as address, 
+  cityname, zipcode
   FROM internal.bc_property
   where cast(pin as TEXT) = '${searchString}' OR 
   cast(pinnum as TEXT) = '${searchString}' limit 5;
