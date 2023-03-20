@@ -4,7 +4,7 @@ const pg = require('pg');
 const Pool = pg.Pool;
 const mssql = require('mssql');
 
-const resolvers = require("./api/realtime/realtime_resolvers")
+const resolvers = require("./api/development/realtime_resolvers")
 pg.defaults.poolSize = 1;
 
 const dbConfig = {
