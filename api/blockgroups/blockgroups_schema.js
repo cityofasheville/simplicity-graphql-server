@@ -1,7 +1,7 @@
 module.exports = `
 type Blockgroup {
 	geoid: String
-	name_1: String
+	name: String
 	below_pov: Float
 	bipoc: Float
 	totalhh: Int

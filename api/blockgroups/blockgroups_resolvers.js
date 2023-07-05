@@ -7,7 +7,7 @@ const resolvers = {
 
       var query_args = [];
       var query = `
-      SELECT geoid, name_1, below_pov, bipoc, totalhh, school_chi, bipoc_score, poverty_sc, acres, hvi_value, heat_score, 
+      SELECT geoid, name_1 name, below_pov, bipoc, totalhh, school_chi, bipoc_score, poverty_sc, acres, hvi_value, heat_score, 
       rpl_themes, cdc_score, avg_energy, hh_energy_, pct_hh_ene, energy_sco, resland, resflood, critland, 
       critflood, comflood, shape__len, shape__are, nemacscore, resiliency, cj_score, sum_scores, holc, red_score, wfirescore,
       st_astext(st_transform(shape, 4326)) AS polygon
@@ -23,7 +23,7 @@ const resolvers = {
           const p = convertToPolygons(itm.polygon);
           return {
           geoid: itm.geoid,
-          name_1: itm.name_1,
+          name: itm.name,
           below_pov: itm.below_pov,
           bipoc: itm.bipoc,
           totalhh: itm.totalhh,

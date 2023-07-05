@@ -535,7 +535,7 @@ query getMaintenanceQuery($centerline_ids: [Float]) {
 query blockgroups($geoid: [String]!) {
   blockgroups(geoid: $geoid) {
 	geoid
-	name_1
+	name
 	below_pov
 	bipoc
 	totalhh
