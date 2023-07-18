@@ -40,7 +40,7 @@ function processCandidate(c, result) {
     result.locName.push(`${c.attributes.StPreType} ${c.attributes.StName}`);
   }
   result.locType.push(c.attributes.StType);
-  result.locPrefix.push(c.attributes.StPreDir);
+  result.locPrefix.push(c.attributes.StPreType);
 
   result.locUnit.push(c.attributes.SubAddr);
   result.locZipcode.push(c.attributes.Postal);
