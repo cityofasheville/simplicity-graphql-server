@@ -43,6 +43,9 @@ const resolvers = {
           args.searchContexts.indexOf('street') >= 0) {
         geoCodeResponse[0] = callGeocoder(searchString, 'address', logger);
       }
+      if (args.searchContexts.indexOf('street') >= 0) {
+        geoCodeResponse[1] = callGeocoder(searchString, 'street', logger);
+      }
       return Promise.all(geoCodeResponse).then(results => {
         const result = results;
         return Promise.all(args.searchContexts.map((searchContext) => {

@@ -13,7 +13,7 @@ function searchProperty(searchString, geoCodeResponseIn, context) {
   }
 
   const fquery = 'SELECT DISTINCT property_pinnum '
-  + 'from simplicity.get_search_addresses($1, $2, $3, $4, $5, $6, $7)';
+  + 'from simplicity.get_search_addresses2($1, $2, $3, $4, $5, $6, $7)';
 
   const args = [
     geoCodeResponse.locNumber,

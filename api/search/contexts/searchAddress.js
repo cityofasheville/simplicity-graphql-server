@@ -14,7 +14,7 @@ function searchAddress(searchContext, searchString, geoCodeResponseIn, context) 
   const fquery = `SELECT A.civicaddress_id, A.address_full, A.address_city, A.address_zipcode,
   A.address_number, A.address_unit, A.address_street_prefix, A.address_street_name, A.address_street_type,
   A.centerline_id, A.jurisdiction_type, A.longitude_wgs, A.latitude_wgs, B.full_street_name, B.lzip, B.rzip
-  from simplicity.get_search_addresses($1, $2, $3, $4, $5, $6, $7) AS A
+  from simplicity.get_search_addresses2($1, $2, $3, $4, $5, $6, $7) AS A
   LEFT OUTER JOIN internal.bc_street AS B on A.centerline_id = B.centerline_id`;
   const args = [
     geoCodeResponse.locNumber,
@@ -25,13 +25,13 @@ function searchAddress(searchContext, searchString, geoCodeResponseIn, context) 
     geoCodeResponse.locZipcode,
     geoCodeResponse.locCity.map(c => { return ''; }), // eslint-disable-line no-unused-vars
   ];
-
   const idMap = {};
   return context.pool.query(fquery, args)
   .then(result => {
     if (searchContext === 'street') {
       const r = [];
       result.rows.forEach(row => {
+       
         let idx = `${row.full_street_name}.${row.lzip}`;
         if (!idMap.hasOwnProperty(idx)) {
           idMap[idx] = {

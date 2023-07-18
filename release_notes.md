@@ -2,6 +2,9 @@
 
 ## Current
 
+## 3.12.0
+* Added realtime permits by address.
+
 ## 3.11.0
 * Added realtime permits, pulling directly from Accela DB.
 
