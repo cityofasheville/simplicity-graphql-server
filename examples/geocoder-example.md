@@ -6,7 +6,7 @@ https://arcgis.ashevillenc.gov/arcgis/rest/services/Geolocators/BC_address_unit/
 
 ### PROBLEM: New version doesn't have a street variant, if you try a query with no street number it returns a street with no zip
 ## NEW VER:
-https://gis.ashevillenc.gov/server/rest/services/Geocoders/simplicity/GeocodeServer/findAddressCandidates?SingleLine=Court+Pl&outFields=AddNum%2C+StPreType%2C+StPreDir%2C+StName%2C+StType%2C+SubAddr%2C+City%2C+Postal
+https://gis.ashevillenc.gov/server/rest/services/Geocoders/simplicity/GeocodeServer/findAddressCandidates?SingleLine=S+Charlotte+St&outFields=AddNum%2C+StPreType%2C+StPreDir%2C+StName%2C+StType%2C+SubAddr%2C+City%2C+Postal
 
 ## ## Old geocoder => table fields
 AddNum => locNumber
@@ -23,7 +23,7 @@ City => locCity
 
 ## New Geocoder fields
 SubAddUnit - SubAddr
-ZIP Postal
+ZIP - Postal
 Single+Line+Input - SingleLine
 
 
@@ -45,4 +45,5 @@ select * from simplicity.get_search_addresses(
     locZipcode,
     locCity
 )    
+  
   

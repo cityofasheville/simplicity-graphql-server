@@ -1,17 +1,13 @@
 const axios = require('axios');
 
-function callGeocoder(searchString, searchContext = 'address', logger) {
+function callGeocoder(searchString, logger) {
 
   const startTime = new Date().getTime();
   const minCandidateScore = 0;
-  let geolocatorUrl;
-
-  if (searchContext === 'street') return null;
-  geolocatorUrl =
+  let geolocatorUrl =
     "https://gis.ashevillenc.gov/server/rest/services/Geocoders/simplicity/GeocodeServer/findAddressCandidates?SingleLine=" +
     encodeURIComponent(searchString) +
     "&outFields=AddNum%2C+StPreType%2C+StPreDir%2C+StName%2C+StType%2C+SubAddr%2C+City%2C+Postal&matchOutOfRange=true&f=pjson"
-
 
   return axios.get(geolocatorUrl, { timeout: 5000 })
     .then(response => {
@@ -34,11 +30,11 @@ function callGeocoder(searchString, searchContext = 'address', logger) {
 
 function processCandidate(c, result) {
   result.locNumber.push(c.attributes.AddNum);
-  if (c.attributes.StPreType === null || c.attributes.StPreType === '') {
+  // if (c.attributes.StPreType === null || c.attributes.StPreType === '') {
     result.locName.push(c.attributes.StName);
-  } else {
-    result.locName.push(`${c.attributes.StPreType} ${c.attributes.StName}`);
-  }
+  // } else {
+    // result.locName.push(`${c.attributes.StPreType} ${c.attributes.StName}`);
+  // }
   result.locType.push(c.attributes.StType);
   result.locPrefix.push(c.attributes.StPreType);
 
@@ -52,6 +48,7 @@ function processCandidate(c, result) {
   }
 }
 
+// called by searchStreet
 function mergeGeocoderResults(candidateSet) {
   const maxCandidates = 500;
   const result = {
@@ -79,6 +76,7 @@ function mergeGeocoderResults(candidateSet) {
   return result;
 }
 
+// called by searchAddress and searchProperty
 function convertGeocoderResults(candidates1, candidates2) {
   const maxCandidates = 500;
   const result = {
