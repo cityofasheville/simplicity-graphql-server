@@ -33,7 +33,7 @@ function searchStreet(searchContext, searchString, geoCodeResponseIn, context) {
     }
   });
   const fquery = 'SELECT centerline_id, full_street_name, left_zipcode, right_zipcode '
-  + 'from simplicity.get_search_streets2($1, $2, $3) ';
+  + 'from simplicity.get_search_streets($1, $2, $3) ';
   const args = [
     nmap.name,
     nmap.zip,
