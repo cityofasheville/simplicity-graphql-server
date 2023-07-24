@@ -17,25 +17,28 @@ function searchStreet(searchContext, searchString, geoCodeResponseIn, context) {
     name: [],
     city: [],
     zip: [],
+    prefix: [],
   };
   geoCodeResponse.locName.forEach((name, index) => {
     const zip = geoCodeResponse.locZipcode[index];
     const city = geoCodeResponse.locCity[index];
+    const prefix = geoCodeResponse.locPrefix[index];
     const test = `${name}-${zip}-${city}`;
-    if (!nmap.test.hasOwnProperty(test) && zip !== null && zip !== '') {
+    if (!nmap.test.hasOwnProperty(test) ) { // && zip !== null && zip !== '') {
       nmap.test[test] = true;
       nmap.name.push(name);
       nmap.city.push(city);
       nmap.zip.push(zip);
+      nmap.prefix.push(prefix);
     }
   });
   const fquery = 'SELECT centerline_id, full_street_name, left_zipcode, right_zipcode '
-  + 'from simplicity.get_search_streets($1, $2) ';
+  + 'from simplicity.get_search_streets2($1, $2, $3) ';
   const args = [
     nmap.name,
     nmap.zip,
+    nmap.prefix,
   ];
-
   const idMap = {};
   return context.pool.query(fquery, args)
   .then(result => {
@@ -88,7 +91,7 @@ function searchStreet(searchContext, searchString, geoCodeResponseIn, context) {
   .catch((err) => {
     if (err) {
       logger.error(`Got an error in street search: ${JSON.stringify(err)}`);
-      throw new Error(err);
+      throw err;
     }
   });
 }

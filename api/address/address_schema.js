@@ -32,5 +32,7 @@ type Address {
   owner_zipcode: String
   historic_district: String
   local_landmark: String
+  block_group: String
+  climate_justice_score: Int
 }
 `;

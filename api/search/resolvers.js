@@ -41,10 +41,7 @@ const resolvers = {
       if (args.searchContexts.indexOf('address') >= 0 ||
           args.searchContexts.indexOf('property') >= 0 ||
           args.searchContexts.indexOf('street') >= 0) {
-        geoCodeResponse[0] = callGeocoder(searchString, 'address', logger);
-      }
-      if (args.searchContexts.indexOf('street') >= 0) {
-        geoCodeResponse[1] = callGeocoder(searchString, 'street', logger);
+        geoCodeResponse[0] = callGeocoder(searchString, logger);
       }
       return Promise.all(geoCodeResponse).then(results => {
         const result = results;
@@ -54,7 +51,7 @@ const resolvers = {
           if (totalTime > 4.0) {
             logger.warn(`Search time (${searchContext}): ${totalTime} seconds`);
           }
-          return ret;
+          return ret; 
         }));
       })
       .catch((err) => {

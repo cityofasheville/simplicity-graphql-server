@@ -33,4 +33,5 @@ module.exports = merge(resolvers,
   require('./cip/cip_resolvers'),
   require('./finance/finance_resolvers'),
   require('./stats/stats_resolvers'),
+  require('./blockgroups/blockgroups_resolvers'),
 );

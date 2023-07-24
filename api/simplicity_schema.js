@@ -49,8 +49,10 @@ const baseSchema = `
     pcard_statements_status (before: String, after: String): [PCardStatementStatus]
     permit_realtime(permit_number: String): PermitRT
     permits_by_address_realtime(civicaddress_id: Int!): [PermitRT]
+    blockgroups (geoid: [String] ): [Blockgroup]
   }
 `;
+  
 const searchSchema = require('./search').schema;
 const municipalitiesSchema = require('./municipalities/municipalities_schema');
 const addressSchema = require('./address/address_schema');
@@ -63,6 +65,7 @@ const neighborhoodSchema = require('./neighborhood/neighborhood_schema');
 const cipSchema = require('./cip/cip_schema');
 const financeSchema = require('./finance/finance_schema');
 const statsSchema = require('./stats/stats_schema');
+const blockgroupsSchema = require('./blockgroups/blockgroups_schema');
 
 const schema = [
   baseSchema,
@@ -79,6 +82,7 @@ const schema = [
   cipSchema,
   financeSchema,
   statsSchema,
+  blockgroupsSchema,
 ];
 
 module.exports = schema;

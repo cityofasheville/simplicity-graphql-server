@@ -532,3 +532,54 @@ query getMaintenanceQuery($centerline_ids: [Float]) {
   "centerline_ids": ["9649502507"]
 }
 
+query blockgroups($geoid: [String]!) {
+  blockgroups(geoid: $geoid) {
+	geoid
+	name
+	below_pov
+	bipoc
+	totalhh
+	school_chi
+	bipoc_score
+	poverty_sc
+	acres
+	hvi_value
+	heat_score
+	rpl_themes
+	cdc_score
+	avg_energy
+	hh_energy_
+	pct_hh_ene
+	energy_sco
+	resland
+	resflood
+	critland
+	critflood
+	comflood
+	shape__len
+	shape__are
+	nemacscore
+	resiliency
+	cj_score
+	sum_scores
+	holc
+	red_score
+	wfirescore
+polygon {
+      outer {
+        points {
+          x
+          y
+        }
+      }
+      holes {
+        points {
+          x
+          y
+        }
+      }
+}
+  }
+}
+
+{"geoid":["1500000US370210025063"]}

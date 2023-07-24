@@ -1,45 +1,32 @@
--- View: simplicity.v_simplicity_crimes
+-- NEW Version 4/27/2023
+-- simplicity.v_simplicity_crimes source
 
--- DROP VIEW simplicity.v_simplicity_crimes;
-
- CREATE OR REPLACE VIEW simplicity.v_simplicity_crimes AS
- SELECT a.x,
+CREATE OR REPLACE VIEW simplicity.v_simplicity_crimes AS 
+SELECT a.x,
     a.y,
     st_x(st_transform(a.shape, 4326)) AS x_wgs,
     st_y(st_transform(a.shape, 4326)) AS y_wgs,
     a.incident_id,
-    a.agency,
+    a.agency::char(4) as agency,
     a.date_occurred,
     a.case_number,
     a.address,
-    a.geo_beat,
-    a.geo_report_area,
-    a.offense_short_description,
-    a.offense_long_description,
-    a.offense_code,
-    a.offense_group_code,
-    a.offense_group_level,
-    a.offense_group_short_description,
-    a.offense_group_long_description
-   FROM (SELECT st_setsrid(st_makepoint(coa_apd_incident_data.geo_x::double precision, coa_apd_incident_data.geo_y::double precision), 2264)::geometry(Point,2264) AS shape,
-    coa_apd_incident_data.incident_id,
-    coa_apd_incident_data.agency,
-    coa_apd_incident_data.date_occurred::timestamp without time zone AS date_occurred,
-    coa_apd_incident_data.case_number,
-    coa_apd_incident_data.address,
-    coa_apd_incident_data.geo_beat,
-    coa_apd_incident_data.geo_report_area,
-    coa_apd_incident_data.geo_x AS x,
-    coa_apd_incident_data.geo_y AS y,
-    coa_apd_incident_data.offense_short_description,
-    coa_apd_incident_data.offense_long_description,
-    coa_apd_incident_data.offense_code,
-    coa_apd_incident_data.offense_group_code,
-    coa_apd_incident_data.offense_group_level,
-    coa_apd_incident_data.offense_group_short_description,
-    coa_apd_incident_data.offense_group_long_description
-   FROM internal.coa_apd_incident_data
-  WHERE coa_apd_incident_data.agency::text = 'APD'::text
-  ) a;
-
-
+    null::char(4) as geo_beat,
+    null::char(4) as geo_report_area,
+    null::varchar(25) as offense_short_description,
+    null::varchar(60) as offense_long_description,
+    null::char(4) as offense_code,
+    null::varchar(50) as offense_group_code,
+    null::varchar(50) as offense_group_level,
+    null::varchar(100) as offense_group_short_description,
+    null::varchar(1000) as offense_group_long_description
+   FROM ( SELECT st_setsrid(st_makepoint(coa_apd_public_incidents.x::double precision, coa_apd_public_incidents.y::double precision), 2264)::geometry(Point,2264) AS shape,
+            coa_apd_public_incidents.incident_id,
+            coa_apd_public_incidents.agency,
+            coa_apd_public_incidents.date_occurred::timestamp without time zone AS date_occurred,
+            coa_apd_public_incidents.case_number,
+            coa_apd_public_incidents.address,
+            coa_apd_public_incidents.x,
+            coa_apd_public_incidents.y
+           FROM internal.coa_apd_public_incidents
+          WHERE coa_apd_public_incidents.agency::text = 'APD'::text) a;
