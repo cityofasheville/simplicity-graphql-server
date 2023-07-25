@@ -79,23 +79,23 @@ const resolvers = {
   SearchResult: {
     __resolveType(data, context, info) {
       if (data.type === 'civicAddressId') {
-        return info.schema.getType('AddressResult');
+        return ('AddressResult');
       } else if (data.type === 'address') {
-        return info.schema.getType('AddressResult');
+        return ('AddressResult');
       } else if (data.type === 'property') {
-        return info.schema.getType('PropertyResult');
+        return ('PropertyResult');
       } else if (data.type === 'pin') {
-        return info.schema.getType('PropertyResult');
+        return ('PropertyResult');
       } else if (data.type === 'street') {
-        return info.schema.getType('StreetResult');
+        return ('StreetResult');
       } else if (data.type === 'neighborhood') {
-        return info.schema.getType('NeighborhoodResult');
+        return ('NeighborhoodResult');
       } else if (data.type === 'owner') {
-        return info.schema.getType('OwnerResult');
+        return ('OwnerResult');
       } else if (data.type === 'place') {
-        return info.schema.getType('PlaceResult');
+        return ('PlaceResult');
       }
-      return info.schema.getType('SillyResult');
+      return ('SillyResult');
     },
   },
 };
