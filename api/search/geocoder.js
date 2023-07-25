@@ -13,7 +13,7 @@ function callGeocoder(searchString, logger) {
     .then(response => {
       const totalTime = (new Date().getTime() - startTime) / 1000.0;
       if (totalTime > 4) {
-        logger.warn(`Geocoder ${geoLocator} time: ${totalTime} sec`);
+        logger.warn(`Geocoder ${geolocatorUrl} time: ${totalTime} sec`);
       }
       const result = response.data.candidates.filter(c => {
         return (c.score >= minCandidateScore);

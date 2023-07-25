@@ -1,21 +1,49 @@
-const express = require('express');
-const { ApolloServer, gql } = require('apollo-server-express');
-const { ApolloServerPluginLandingPageGraphQLPlayground } = require('apollo-server-core');
+const typeDefs = require('./schema');
+const resolvers = require('./resolvers');
 
-const cors = require('cors');
+const { ApolloServer } = require('@apollo/server');
+const { startStandaloneServer } = require('@apollo/server/standalone');
 const Logger = require('coa-node-logging');
 require('dotenv').config();
 const pg = require('pg');
 const Pool = pg.Pool;
 const mssql = require('mssql');
 
+// const typeDefs = `type Query {
+//   numberSix: Int! # Should always return the number 6 when queried
+//   numberSeven: Int! # Should always return 7
+// }`
+// const resolvers = {
+//   Query: {
+//     numberSix() {
+//       return 6;
+//     },
+//     numberSeven() {
+//       return 7;
+//     },
+//   },
+// };
+
 pg.defaults.poolSize = 1;
 const logFile = process.env.logfile ? process.env.logfile : null;
 const logger = new Logger('simplicity', logFile);
-const typeDefs = require('./schema');
-const resolvers = require('./resolvers');
 
-const gqlTypeDefs = gql`${typeDefs}`
+// PLAYGROUND
+let debug = true;
+
+let introspection = false;
+let playground = false;
+if (debug) {
+  introspection = true;
+  playground = true;
+}
+
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  introspection,
+  playground,
+});
 
 const dbConfig = {
   host: process.env.dbhost,
@@ -26,8 +54,8 @@ const dbConfig = {
   ssl: false,
 };
 const dbConfig_accela = {
-  user: process.env.dbuser_accela, 
-  password: process.env.dbpassword_accela, 
+  user: process.env.dbuser_accela,
+  password: process.env.dbpassword_accela,
   server: process.env.dbhost_accela,
   domain: process.env.dbdomain_accela,
   database: process.env.database_accela,
@@ -35,49 +63,31 @@ const dbConfig_accela = {
   connectionTimeout: 30000,
   requestTimeout: 680000,
   trustServerCertificate: true,  // Acella has self-signed certs?
-}
+};
 
-async function startApolloServer() {
+(async () => {
   logger.info('Connect to database');
-
+  console.log('Connect connection initialized');
   const pool = new Pool(dbConfig);
   const pool_accela = await mssql.connect(dbConfig_accela);
+
 
   logger.info('Database connection initialized');
 
   const GRAPHQL_PORT = process.env.PORT || 8080;
-  ////////////////
-  const server = new ApolloServer({ 
-    typeDefs: gqlTypeDefs, 
-    resolvers,
-    introspection: true,
-    playground: true,
-    context: {
+
+  const { url } = await startStandaloneServer(server, {
+    context: () => {
+      return {
         pool,
         pool_accela,
         logger,
         user: null,
         employee: null,
-    },  plugins: [
-      ApolloServerPluginLandingPageGraphQLPlayground(),
-    ],
+      }
+    },
+    listen: { port: GRAPHQL_PORT },
   });
-  
-  await server.start();
 
-  const app = express();
-  app.use('*', cors());
-  app.use(express.json());
-
-  logger.info('Initialize graphql server');
-  
-  server.applyMiddleware({ app });
-
-  logger.info(`Start listening on port ${GRAPHQL_PORT}`);
-  
-  await new Promise(resolve => app.listen({ port: GRAPHQL_PORT }, resolve));
-  console.log(`SimpliCity: GraphQL Server is now running on http://localhost:${GRAPHQL_PORT}/graphql`);
-  return { server, app };
-}
-
-startApolloServer()
+  console.log(`SimpliCity: GraphQL Server is now running on ${url}`);
+})();
