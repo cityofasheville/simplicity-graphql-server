@@ -1,11 +1,6 @@
-const { merge } = require('lodash');
+const pcard_resolvers = require('./pcard/pcard_resolvers')
 
-const resolvers = {
-  Query: {
-  },
+module.exports = {
+  ...pcard_resolvers
 };
-
-module.exports = merge(resolvers,
-  require('./pcard/pcard_resolvers'),
-);
 

@@ -1,6 +1,4 @@
-const { merge } = require('lodash');
-
-module.exports = merge(
-  require('./workorders/workorders_resolvers'),
-
-);
+const workorders_resolvers = require('./workorders/workorders_resolvers')
+module.exports = {
+  ...workorders_resolvers,
+};

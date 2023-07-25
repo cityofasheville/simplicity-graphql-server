@@ -11,6 +11,8 @@ git clone git@github.com:cityofasheville/simplicity-graphql-server.git
 cd simplicity-graphql-server
 npm install
 ```
+## Create .env file
+Base on example.env
 
 ## Starting the server
 
@@ -18,7 +20,7 @@ npm install
 npm start
 ```
 
-The server will run on port 8080. You can change this by editing `server.js`.
+The server will run on port 8080. You can change this with the env varibale PORT.
 
 View the graphql data at http://localhost:8080/graphql
 

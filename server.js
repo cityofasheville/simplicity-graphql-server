@@ -9,21 +9,6 @@ const pg = require('pg');
 const Pool = pg.Pool;
 const mssql = require('mssql');
 
-// const typeDefs = `type Query {
-//   numberSix: Int! # Should always return the number 6 when queried
-//   numberSeven: Int! # Should always return 7
-// }`
-// const resolvers = {
-//   Query: {
-//     numberSix() {
-//       return 6;
-//     },
-//     numberSeven() {
-//       return 7;
-//     },
-//   },
-// };
-
 pg.defaults.poolSize = 1;
 const logFile = process.env.logfile ? process.env.logfile : null;
 const logger = new Logger('simplicity', logFile);
@@ -67,7 +52,6 @@ const dbConfig_accela = {
 
 (async () => {
   logger.info('Connect to database');
-  console.log('Connect connection initialized');
   const pool = new Pool(dbConfig);
   const pool_accela = await mssql.connect(dbConfig_accela);
 

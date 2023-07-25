@@ -1,4 +1,4 @@
-const { merge } = require('lodash');
+const mergeDeep = require('../mergeDeep');
 
 const resolvers = {
   Query: {
@@ -18,7 +18,7 @@ const resolvers = {
   },
 
 };
-module.exports = merge(resolvers,
+module.exports = mergeDeep(resolvers,
   require('./search/resolvers'),
   require('./internal/internal_resolvers'),
   require('./municipalities/municipalities_resolvers'),

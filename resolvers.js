@@ -1,4 +1,4 @@
-const { merge } = require('lodash');
+const mergeDeep = require('./mergeDeep');
 const { version } = require('./package.json');
 const resolverMap = {
   Query: {
@@ -8,7 +8,7 @@ const resolverMap = {
   },
 };
 
-module.exports = merge(
+module.exports = mergeDeep(
   resolverMap,
   require('./api').resolvers
 );

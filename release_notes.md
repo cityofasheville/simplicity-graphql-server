@@ -2,6 +2,9 @@
 
 ## Current
 
+## 3.14.0
+* Apollo 4, new Geocoder, add Blockgroups
+
 ## 3.12.0
 * Added realtime permits by address.
 
