@@ -44,34 +44,37 @@ const dbConfig_accela = {
   server: process.env.dbhost_accela,
   domain: process.env.dbdomain_accela,
   database: process.env.database_accela,
-  options: { enableArithAbort: true },
+  options: { enableArithAbort: true,  encrypt: false },
   connectionTimeout: 30000,
   requestTimeout: 680000,
   trustServerCertificate: true,  // Acella has self-signed certs?
 };
 
 (async () => {
-  logger.info('Connect to database');
-  const pool = new Pool(dbConfig);
-  const pool_accela = await mssql.connect(dbConfig_accela);
+  try {
+    logger.info('Connect to database');
+    const pool = new Pool(dbConfig);
+    const pool_accela = await mssql.connect(dbConfig_accela);
 
 
-  logger.info('Database connection initialized');
+    logger.info('Database connection initialized');
 
-  const GRAPHQL_PORT = process.env.PORT || 8080;
+    const GRAPHQL_PORT = process.env.PORT || 8080;
 
-  const { url } = await startStandaloneServer(server, {
-    context: () => {
-      return {
-        pool,
-        pool_accela,
-        logger,
-        user: null,
-        employee: null,
-      }
-    },
-    listen: { port: GRAPHQL_PORT },
-  });
-
-  console.log(`SimpliCity: GraphQL Server is now running on ${url}`);
+    const { url } = await startStandaloneServer(server, {
+      context: () => {
+        return {
+          pool,
+          pool_accela,
+          logger,
+          user: null,
+          employee: null,
+        }
+      },
+      listen: { port: GRAPHQL_PORT },
+    });
+    console.log(`SimpliCity: GraphQL Server is now running on ${url}`);
+  }  catch (err) {
+    console.log(err);
+  }
 })();
