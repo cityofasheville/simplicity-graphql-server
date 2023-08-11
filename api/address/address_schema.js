@@ -33,6 +33,7 @@ type Address {
   historic_district: String
   local_landmark: String
   block_group: String
+  block_group_name: String,
   climate_justice_score: Int
 }
 `;

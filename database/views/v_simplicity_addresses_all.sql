@@ -2,8 +2,8 @@
 
 -- DROP VIEW simplicity.v_simplicity_addresses_all;
 
-CREATE OR REPLACE VIEW simplicity.v_simplicity_addresses_all
-AS SELECT coa_bc_address_master.civicaddress_id,
+CREATE OR REPLACE VIEW simplicity.v_simplicity_addresses_all AS
+SELECT coa_bc_address_master.civicaddress_id,
     coa_bc_address_master.address_full,
     coa_bc_address_master.address_city,
     coa_bc_address_master.address_zipcode,
@@ -34,8 +34,11 @@ AS SELECT coa_bc_address_master.civicaddress_id,
     coa_bc_address_master.nbrhd_name,
     coa_bc_address_master.historic_district,
     coa_bc_address_master.local_landmark,
-    coa_bc_address_master.block_group
-   FROM internal.coa_bc_address_master;
+    coa_bc_address_master.block_group,
+    coa_climate_justice_index.name_1 block_group_name
+   FROM internal.coa_bc_address_master
+left join internal.coa_climate_justice_index
+on coa_bc_address_master.block_group = coa_climate_justice_index.geoid
   -- WHERE coa_bc_address_master.location_type = 1 OR coa_bc_address_master.location_type = 4;
 
 

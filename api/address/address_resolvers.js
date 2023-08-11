@@ -43,6 +43,7 @@ function prepareAddresses(rows) {
         local_landmark: itm.local_landmark,
         historic_district: itm.historic_district,
         block_group: itm.block_group,
+        block_group_name: itm.block_group_name,
         climate_justice_score: itm.climate_justice_score,
       };
     } else { // Multiple - pick best for street maintenance
@@ -91,7 +92,7 @@ const resolvers = {
       a.recycling_pickup_day, a.zoning, a.zoning_links, a.owner_name, a.owner_address, a.owner_cityname,
       a.owner_state, a.owner_zipcode, a.property_pin, a.property_pinext, a.centerline_id,
       a.jurisdiction_type, a.shape, a.brushweek, a.nbrhd_id, a.nbrhd_name, a.historic_district, a.local_landmark,
-      b.maintenance_entity, b.location, a.block_group, a.climate_justice_score 
+      b.maintenance_entity, b.location, a.block_group, a.block_group_name, a.climate_justice_score 
       FROM simplicity.v_simplicity_addresses_all AS a
       LEFT JOIN (
       select * from simplicity.v_address_maintenance as c where c.civicaddress_id = ANY ($1)
