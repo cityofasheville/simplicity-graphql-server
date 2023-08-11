@@ -1,6 +1,6 @@
 {
   "name": "simplicity-graphql-server",
-  "version": "3.13.0",
+  "version": "3.14.0",
   "description": "GraphQL server for SimpliCity II",
   "scripts": {
     "start": "nodemon ./server.js"
