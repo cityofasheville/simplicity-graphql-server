@@ -53,23 +53,25 @@ const baseSchema = `
   }
 `;
   
-const searchSchema = require('./search').schema;
-const municipalitiesSchema = require('./municipalities/municipalities_schema');
-const addressSchema = require('./address/address_schema');
-const propertySchema = require('./property/property_schema');
-const crimeSchema = require('./crime/crime_schema');
-const developmentSchema = require('./development/development_schema');
-const itProjectSchema = require('./internal');
-const streetSchema = require('./street/street_schema');
-const neighborhoodSchema = require('./neighborhood/neighborhood_schema');
-const cipSchema = require('./cip/cip_schema');
-const financeSchema = require('./finance/finance_schema');
-const statsSchema = require('./stats/stats_schema');
-const blockgroupsSchema = require('./blockgroups/blockgroups_schema');
+import searchSchema from './search/index.js';
+import municipalitiesSchema from './municipalities/municipalities_schema.js';
+import addressSchema from './address/address_schema.js';
+import propertySchema from './property/property_schema.js';
+import crimeSchema from './crime/crime_schema.js';
+import developmentSchema from './development/development_schema.js';
+import itProjectSchema from './internal/workorders/workorders_schema.js';
+import streetSchema from './street/street_schema.js';
+import neighborhoodSchema from './neighborhood/neighborhood_schema.js';
+import cipSchema from './cip/cip_schema.js';
+import financeSchema from './finance/finance_schema.js';
+import statsSchema from './stats/stats_schema.js';
+import blockgroupsSchema from './blockgroups/blockgroups_schema.js';
+import budgetSchema from './budget/budget_schema.js';
+import pcard_schema from './finance/pcard/pcard_schema.js';
 
 const schema = [
   baseSchema,
-  require('./budget/budget_schema.js'),
+  budgetSchema,
   itProjectSchema,
   developmentSchema,
   crimeSchema,
@@ -78,11 +80,12 @@ const schema = [
   streetSchema,
   propertySchema,
   neighborhoodSchema,
-  searchSchema,
+  searchSchema.schema,
   cipSchema,
   financeSchema,
   statsSchema,
   blockgroupsSchema,
+  pcard_schema,
 ];
 
-module.exports = schema;
+export default schema;

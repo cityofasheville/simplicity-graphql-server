@@ -1,4 +1,5 @@
-const { mergeGeocoderResults } = require('../geocoder');
+import geocoder from '../geocoder.js';
+const { mergeGeocoderResults } = geocoder;
 
 function searchStreet(searchContext, searchString, geoCodeResponseIn, context) {
   const logger = context.logger;
@@ -96,4 +97,4 @@ function searchStreet(searchContext, searchString, geoCodeResponseIn, context) {
   });
 }
 
-module.exports = searchStreet;
+export default searchStreet;

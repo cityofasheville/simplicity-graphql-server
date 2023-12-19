@@ -1,6 +1,6 @@
-const pcard_resolvers = require('./pcard/pcard_resolvers')
+import pcard_resolvers from './pcard/pcard_resolvers.js';
 
-module.exports = {
+export default {
   ...pcard_resolvers
 };
 

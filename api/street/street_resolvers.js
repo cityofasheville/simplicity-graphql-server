@@ -1,4 +1,4 @@
-const convertLines = require('../common/convert_lines').convertLines;
+import { convertLines } from '../common/convert_lines.js';
 
 const resolvers = {
   Query: {
@@ -61,4 +61,4 @@ const resolvers = {
   },
 };
 
-module.exports = resolvers;
+export default resolvers;

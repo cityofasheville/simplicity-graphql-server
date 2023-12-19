@@ -1,30 +1,18 @@
-const typeDefs = require('./schema');
-const resolvers = require('./resolvers');
+import typeDefs from './schema.js';
+import resolvers from './resolvers.js';
 
-const { ApolloServer } = require('@apollo/server');
-const { startStandaloneServer } = require('@apollo/server/standalone');
-const Logger = require('coa-node-logging');
-require('dotenv').config();
-const pg = require('pg');
-const Pool = pg.Pool;
-const mssql = require('mssql');
+import { ApolloServer } from '@apollo/server';
+import { startStandaloneServer } from '@apollo/server/standalone';
+import Logger from 'coa-node-logging';
+import "dotenv/config.js";
 
-// const typeDefs = `type Query {
-//   numberSix: Int! # Should always return the number 6 when queried
-//   numberSeven: Int! # Should always return 7
-// }`
-// const resolvers = {
-//   Query: {
-//     numberSix() {
-//       return 6;
-//     },
-//     numberSeven() {
-//       return 7;
-//     },
-//   },
-// };
+import pgpkg from 'pg';
+const { Pool, defaults } = pgpkg;
 
-pg.defaults.poolSize = 1;
+import mssqlpkg from 'mssql';
+const { connect } = mssqlpkg;
+
+defaults.poolSize = 1;
 const logFile = process.env.logfile ? process.env.logfile : null;
 const logger = new Logger('simplicity', logFile);
 
@@ -69,8 +57,7 @@ const dbConfig_accela = {
   try {
     logger.info('Connect to database');
     const pool = new Pool(dbConfig);
-    const pool_accela = await mssql.connect(dbConfig_accela);
-
+    const pool_accela = await connect(dbConfig_accela);
 
     logger.info('Database connection initialized');
 

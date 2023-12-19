@@ -1,4 +1,4 @@
-module.exports = `
+export default `
 type Municipality {
   jurisdiction: String
   cityname: String

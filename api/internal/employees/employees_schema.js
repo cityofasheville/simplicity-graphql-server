@@ -1,4 +1,4 @@
-module.exports = `
+export default `
 type Employee {
   employee_id: Int
   ad_username: String

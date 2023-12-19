@@ -1,12 +1,13 @@
-const { callGeocoder } = require('./geocoder');
-const searchCivicAddressId = require('./contexts/searchCivicAddressId');
-const searchPin = require('./contexts/searchPin');
-const searchNeighborhood = require('./contexts/searchNeighborhood');
-const searchOwner = require('./contexts/searchOwner');
-const searchProperty = require('./contexts/searchProperty');
-const searchStreet = require('./contexts/searchStreet');
-const searchAddress = require('./contexts/searchAddress');
-const searchPlace = require('./contexts/searchPlace');
+import geocoder from './geocoder.js';
+const { callGeocoder } = geocoder;
+import searchCivicAddressId from './contexts/searchCivicAddressId.js';
+import searchPin from './contexts/searchPin.js';
+import searchNeighborhood from './contexts/searchNeighborhood.js';
+import searchOwner from './contexts/searchOwner.js';
+import searchProperty from './contexts/searchProperty.js';
+import searchStreet from './contexts/searchStreet.js';
+import searchAddress from './contexts/searchAddress.js';
+import searchPlace from './contexts/searchPlace.js';
 
 // Context options: address, pin, neighborhood, property, civicAddressId, street, owner, google
 function performSearch(searchString, searchContext, geoCodeResponse, context) {
@@ -100,4 +101,4 @@ const resolvers = {
   },
 };
 
-module.exports = resolvers;
+export default resolvers;

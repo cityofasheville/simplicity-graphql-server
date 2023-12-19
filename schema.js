@@ -5,6 +5,6 @@ const baseSchema = `
   }
 `;
 
-const apiSchema = require('./api').schema;
+import { schema as apiSchema } from './api/index.js';
 
-module.exports = baseSchema.concat(apiSchema);
+export default baseSchema.concat(apiSchema);

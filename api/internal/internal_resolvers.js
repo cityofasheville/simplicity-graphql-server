@@ -1,4 +1,4 @@
-const workorders_resolvers = require('./workorders/workorders_resolvers')
-module.exports = {
+import workorders_resolvers from './workorders/workorders_resolvers.js';
+export default {
   ...workorders_resolvers,
 };

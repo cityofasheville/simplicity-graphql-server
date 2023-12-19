@@ -1,0 +1,18 @@
+query somePermits($permitNumber: String, $permitNumbers: [String]) {
+  version
+  permit_realtime( permit_number: $permitNumber) {
+    application_name
+    civic_address_id
+    applied_date
+  }
+  permits ( permit_numbers: $permitNumbers) {
+    application_name
+    civic_address_id
+    applied_date
+  }
+}
+
+{
+  "permitNumber": "21-01337",
+  "permitNumbers": ["21-01337"]
+}

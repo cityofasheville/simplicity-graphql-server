@@ -42,4 +42,4 @@ function searchPin(searchString, context) {
     });
 }
 
-module.exports = searchPin;
+export default searchPin;

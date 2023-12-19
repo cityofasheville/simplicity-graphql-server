@@ -1,5 +1,6 @@
+import pcard from "./pcard/pcard_schema.js";
 const schemas = [
-  require('./pcard/pcard_schema'),
+  pcard.default,
 ];
 
-module.exports = schemas.join('\n');
+export default schemas.join('\n');

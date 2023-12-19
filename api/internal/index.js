@@ -1,7 +1,7 @@
 
+import workorders from "./workorders/workorders_schema.js";
 const schema = [
-  require('./workorders/workorders_schema.js'),
-
+  workorders.default,
 ];
 
-module.exports = schema;
+export default schema;

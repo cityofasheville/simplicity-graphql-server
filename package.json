@@ -2,8 +2,10 @@
   "name": "simplicity-graphql-server",
   "version": "3.14.0",
   "description": "GraphQL server for SimpliCity II",
+  "type": "module",
   "scripts": {
-    "start": "nodemon ./server.js"
+    "start": "nodemon ./server.js",
+    "debug": "nodemon --inspect --trace-warnings --experimental-json-modules ./server.js"
   },
   "repository": {
     "type": "git",
@@ -25,7 +27,7 @@
     "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "graphql-tag": "^2.12.6",
-    "mssql": "^9.1.1",
+    "mssql": "^10.0.1",
     "pg": "^8.6.0",
     "proj4": "^2.7.4"
   },

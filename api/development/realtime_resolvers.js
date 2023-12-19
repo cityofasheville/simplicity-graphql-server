@@ -1,4 +1,4 @@
-const proj4 = require("proj4")
+import proj4 from "proj4";
 
 function convert_coords(x,y){
   //convert NC State Plane 2264 to Lat/Lon
@@ -154,4 +154,4 @@ const resolvers = {
   },
 };
 
-module.exports = resolvers;
+export default resolvers;

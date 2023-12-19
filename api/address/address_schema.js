@@ -1,4 +1,4 @@
-module.exports = `
+export default `
 type Address {
   civic_address_id: String
   address: String

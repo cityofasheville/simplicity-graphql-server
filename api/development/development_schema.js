@@ -1,6 +1,6 @@
-const dsdSlaSchema = require('./dsd_sla_schema');
-const realtime_schema = require('./realtime_schema');
-module.exports = `
+import dsdSlaSchema from './dsd_sla_schema.js';
+import realtime_schema from './realtime_schema.js';
+export default `
 type PermitComment {
   comment_seq_number: Int
   comment_date: String

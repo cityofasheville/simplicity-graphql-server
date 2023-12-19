@@ -1,4 +1,4 @@
-module.exports = `
+export default `
 type CrimeIncident {
   incident_id: Int
   agency: String

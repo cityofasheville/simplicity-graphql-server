@@ -1,4 +1,19 @@
-const mergeDeep = require('../mergeDeep');
+import merge_deep from './common/merge_deep.js';
+import searchresolvers from "./search/resolvers.js";
+import internal_resolvers from "./internal/internal_resolvers.js";
+import municipalities_resolvers from "./municipalities/municipalities_resolvers.js";
+import address_resolvers from "./address/address_resolvers.js";
+import street_resolvers from "./street/street_resolvers.js";
+import neighborhood_resolvers from "./neighborhood/neighborhood_resolvers.js";
+import property_resolvers from "./property/property_resolvers.js";
+import development_resolvers from "./development/development_resolvers.js";
+import realtime_resolvers from "./development/realtime_resolvers.js";
+import crime_resolvers from "./crime/crime_resolvers.js";
+import budget_resolvers from "./budget/budget_resolvers.js";
+import cip_resolvers from "./cip/cip_resolvers.js";
+import finance_resolvers from "./finance/finance_resolvers.js";
+import stats_resolvers from "./stats/stats_resolvers.js";
+import blockgroups_resolvers from "./blockgroups/blockgroups_resolvers.js";
 
 const resolvers = {
   Query: {
@@ -18,20 +33,21 @@ const resolvers = {
   },
 
 };
-module.exports = mergeDeep(resolvers,
-  require('./search/resolvers'),
-  require('./internal/internal_resolvers'),
-  require('./municipalities/municipalities_resolvers'),
-  require('./address/address_resolvers'),
-  require('./street/street_resolvers'),
-  require('./neighborhood/neighborhood_resolvers'),
-  require('./property/property_resolvers'),
-  require('./development/development_resolvers'),
-  require('./development/realtime_resolvers'),
-  require('./crime/crime_resolvers'),
-  require('./budget/budget_resolvers'),
-  require('./cip/cip_resolvers'),
-  require('./finance/finance_resolvers'),
-  require('./stats/stats_resolvers'),
-  require('./blockgroups/blockgroups_resolvers'),
+export default merge_deep(resolvers,
+searchresolvers,
+internal_resolvers,
+municipalities_resolvers,
+address_resolvers,
+street_resolvers,
+neighborhood_resolvers,
+property_resolvers,
+development_resolvers,
+realtime_resolvers,
+crime_resolvers,
+budget_resolvers,
+cip_resolvers,
+finance_resolvers,
+stats_resolvers,
+blockgroups_resolvers,
 );
+

@@ -1,5 +1,8 @@
-const mergeDeep = require('./mergeDeep');
-const { version } = require('./package.json');
+import merge_deep from './api/common/merge_deep.js';
+import * as fs from 'fs';
+const packagejson = JSON.parse(fs.readFileSync('./package.json'));
+const version = packagejson.version;
+import { resolvers } from './api/index.js';
 const resolverMap = {
   Query: {
     version(obj, args, context) {
@@ -8,7 +11,7 @@ const resolverMap = {
   },
 };
 
-module.exports = mergeDeep(
+export default merge_deep(
   resolverMap,
-  require('./api').resolvers
+  resolvers
 );

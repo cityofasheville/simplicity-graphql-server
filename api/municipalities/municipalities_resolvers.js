@@ -1,4 +1,4 @@
-const convertToPolygons = require('../common/convert_to_polygons').convertToPolgyons;
+import { convertToPolygons } from '../common/convert_to_polygons.js';
 
 function prepareJurisdictions(rows) {
   const jMap = {};
@@ -59,4 +59,4 @@ const resolvers = {
   },
 };
 
-module.exports = resolvers;
+export default resolvers;

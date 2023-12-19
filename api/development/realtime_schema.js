@@ -1,5 +1,5 @@
 
-module.exports = `
+export default `
 type PermitCommentRT {
   comment_seq_number: Int
   comment_date: String

@@ -1,4 +1,4 @@
-const convertToPolygons = require('../../common/convert_to_polygons').convertToPolgyons;
+import { convertToPolygons } from '../../common/convert_to_polygons.js';
 
 function searchNeighborhood(searchString, context) {
   const logger = context.logger;
@@ -34,4 +34,4 @@ function searchNeighborhood(searchString, context) {
   });
 }
 
-module.exports = searchNeighborhood;
+export default searchNeighborhood;

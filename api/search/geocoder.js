@@ -1,5 +1,5 @@
-const axios = require('axios');
-
+import axiospkg from 'axios';
+const { get } = axiospkg;
 function callGeocoder(searchString, logger) {
 
   const startTime = new Date().getTime();
@@ -9,7 +9,7 @@ function callGeocoder(searchString, logger) {
     encodeURIComponent(searchString) +
     "&outFields=AddNum%2C+StPreType%2C+StPreDir%2C+StName%2C+StType%2C+SubAddr%2C+City%2C+Postal&matchOutOfRange=true&f=pjson"
 
-  return axios.get(geolocatorUrl, { timeout: 5000 })
+  return get(geolocatorUrl, { timeout: 5000 })
     .then(response => {
       const totalTime = (new Date().getTime() - startTime) / 1000.0;
       if (totalTime > 4) {
@@ -105,4 +105,4 @@ function convertGeocoderResults(candidates1, candidates2) {
   return result;
 }
 
-module.exports = { callGeocoder, mergeGeocoderResults, convertGeocoderResults };
+export default { callGeocoder, mergeGeocoderResults, convertGeocoderResults };

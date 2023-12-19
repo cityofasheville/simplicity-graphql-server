@@ -1,4 +1,4 @@
-module.exports = `
+export default `
 type CIPProject {
   gis_id: String
   munis_project_number: String

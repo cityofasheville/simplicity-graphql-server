@@ -51,4 +51,4 @@ function searchOwner(searchString, context) {
   });
 }
 
-module.exports = searchOwner;
+export default searchOwner;

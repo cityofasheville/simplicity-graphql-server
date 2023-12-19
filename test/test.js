@@ -1,11 +1,12 @@
 
-require('dotenv').config();
-const pg = require('pg');
-const Pool = pg.Pool;
-const mssql = require('mssql');
+import { dotenv } from ('dotenv');
+dotenv.config();
+import { Pool as _Pool, defaults } from 'pg';
+const Pool = _Pool;
+import { connect } from 'mssql';
 
-const resolvers = require("./api/development/realtime_resolvers")
-pg.defaults.poolSize = 1;
+import { Query } from "../api/development/development_resolvers";
+defaults.poolSize = 1;
 
 const dbConfig = {
   host: process.env.dbhost,
@@ -28,21 +29,20 @@ const dbConfig_accela = {
 }
 
 async function startApolloServer() {
-  try{
-    const args = {
-      permit_num: '21-05505',
-    }
-    const pool = new Pool(dbConfig);
-    const pool_accela = await mssql.connect(dbConfig_accela);
-    const context = {
-      logger: null,
-      pool,
-      pool_accela
 
-    }
-    const x = await resolvers.Query.permit_realtime(null, args, context)
-    console.log(x)
-  }catch(err){console.log(err)}
+  const args = {
+    permit_numbers: ['21-05505'],
+  }
+  const pool = new Pool(dbConfig);
+  const pool_accela = await connect(dbConfig_accela);
+  const context = {
+    logger: null,
+    pool,
+    pool_accela
+
+  }
+  const x = await Query.permits(null, args, context)
+  console.log(x)
 }
 
 startApolloServer()

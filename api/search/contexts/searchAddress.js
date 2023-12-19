@@ -1,4 +1,5 @@
-const { convertGeocoderResults } = require('../geocoder');
+import geocoder from '../geocoder.js';
+const { convertGeocoderResults } = geocoder;
 
 function searchAddress(searchContext, searchString, geoCodeResponseIn, context) {
   const logger = context.logger;
@@ -115,4 +116,4 @@ function searchAddress(searchContext, searchString, geoCodeResponseIn, context) 
   });
 }
 
-module.exports = searchAddress;
+export default searchAddress;

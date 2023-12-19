@@ -1,4 +1,5 @@
-const { convertGeocoderResults } = require('../geocoder');
+import geocoder from '../geocoder.js';
+const { convertGeocoderResults } = geocoder;
 
 function searchProperty(searchString, geoCodeResponseIn, context) {
   const logger = context.logger;
@@ -70,4 +71,4 @@ function searchProperty(searchString, geoCodeResponseIn, context) {
   });
 }
 
-module.exports = searchProperty;
+export default searchProperty;

@@ -1,4 +1,5 @@
-const axios = require('axios');
+import axiospkg from 'axios';
+const { get } = axiospkg;
 
 let xyCache = null;
 let cacheDate = null;
@@ -75,11 +76,13 @@ const resolvers = {
     cip_projects(obj, args, context) {
       const logger = context.logger;
       const pool = context.pool;
-      let query = 'select A.*, B.*, C.display_order from internal.capital_projects_master as A '
-      + 'left join internal.capital_projects_master_categories as C '
-      + 'on A.category = C.category_name '
-      + 'left join simplicity.cip_ltd_view as B '
-      + 'on A.munis_project_number = B.project_id ';
+      let query = `
+      select A.*, B.*, C.display_order from internal.capital_projects_master as A
+      left join internal.capital_projects_master_categories as C
+      on A.category = C.category_name
+      left join simplicity.cip_ltd_view as B
+      on A.munis_project_number = B.project_id 
+      `;
       // let query = 'SELECT * FROM amd.coa_cip_project_information ';
       const names = args.names;
       if (names && names.length > 0) {
@@ -120,7 +123,7 @@ const resolvers = {
         if (cacheDate === null || (new Date()).getTime() - cacheDate.getTime() > timeout) {
           console.log('Updating CIP project XY cache');
           const fsUrl = 'https://services.arcgis.com/aJ16ENn1AaqdFlqx/ArcGIS/rest/services/CIP_Storymap/FeatureServer/0/query?where=1%3D1&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnGeometry=true&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=pjson&token=';
-          return axios.get(fsUrl, { timeout: 5000 })
+          return get(fsUrl, { timeout: 5000 })
           .then(xyResult => {
             xyCache = {};
             xyResult.data.features.forEach(feature => {
@@ -159,4 +162,4 @@ const resolvers = {
   },
 };
 
-module.exports = resolvers;
+export default resolvers;

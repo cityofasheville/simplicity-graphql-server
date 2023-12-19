@@ -32,4 +32,4 @@ function searchCivicAddressId(searchString, context) {
   });
 }
 
-module.exports = searchCivicAddressId;
+export default searchCivicAddressId;

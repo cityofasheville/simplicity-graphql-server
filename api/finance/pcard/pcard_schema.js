@@ -1,4 +1,4 @@
-module.exports = `
+export default `
 type PCardStatementStatus {
   dept_id: String
   department: String 

@@ -80,8 +80,8 @@ const schema = `
 `;
 
 
-const resolvers = require('./resolvers');
-module.exports = {
+import resolvers from './resolvers.js';
+export default {
   schema,
   resolvers,
 };

@@ -1,4 +1,4 @@
-module.exports = `
+export default `
 type FirstReviewSLAItem {
   record_id: String,
   first_date: Int,

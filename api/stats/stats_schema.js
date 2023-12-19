@@ -1,4 +1,4 @@
-module.exports = `
+export default `
 
 # A field in a generaic stats result
 type GenericStatsField {

@@ -1,4 +1,4 @@
-module.exports = `
+export default `
 type SimpleBudgetDetail {
   account_type: String,
   account_name: String,

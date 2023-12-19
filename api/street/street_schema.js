@@ -1,4 +1,4 @@
-module.exports = `
+export default `
 type Street {
   centerline_id: String
   address: String
