@@ -125,6 +125,7 @@ const resolvers = {
             xyCache = {};
             xyResult.data.features.forEach(feature => {
               const f = feature.attributes;
+              const g = feature.geometry;
               const fname = f.NAME.replace(/^\s+|\s+$/g, '');
               if (!xyCache.hasOwnProperty(fname)) {
                 xyCache[fname] = {
@@ -138,8 +139,8 @@ const resolvers = {
                   latitude: [],
                 };
               }
-              xyCache[fname].longitude.push(f.LONG);
-              xyCache[fname].latitude.push(f.LAT);
+              xyCache[fname].longitude.push(g.x);
+              xyCache[fname].latitude.push(g.y);
             });
             cacheDate = new Date();
             return result;
