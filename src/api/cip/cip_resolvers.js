@@ -3,6 +3,7 @@ const { get } = axiospkg;
 
 let xyCache = null;
 let cacheDate = null;
+let pool;
 
 function prepareProjects(rows) {
   if (rows.length === 0) return [];
@@ -52,7 +53,7 @@ function prepareProjects(rows) {
 const resolvers = {
   Query: {
     cip_project_categories(obj, args, context) {
-      const pool = context.pool;
+      pool = context.pool;
       const query = 'select C.category_name, C.display_order, '
       + 'COUNT(M.objectid) AS total_count, '
       + "SUM(CASE WHEN M.type = 'Bond' THEN 1 ELSE 0 END) AS bond_count "
@@ -75,7 +76,7 @@ const resolvers = {
     // one or both of categories & zipcodes
     cip_projects(obj, args, context) {
       const logger = context.logger;
-      const pool = context.pool;
+      pool = context.pool;
       let query = `
       select A.*, B.*, C.display_order from internal.capital_projects_master as A
       left join internal.capital_projects_master_categories as C

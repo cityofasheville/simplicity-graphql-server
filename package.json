@@ -4,8 +4,12 @@
   "description": "GraphQL server for SimpliCity II",
   "type": "module",
   "scripts": {
-    "start": "nodemon ./server.js",
-    "debug": "nodemon --inspect --trace-warnings ./server.js"
+    "start": "cd test; sam local invoke --event sam_event.json",
+    "clean": "rm -rf deploy/nodejs && rm -rf deploy/function && rm -rf deploy/.terraform && rm -rf deploy/.terraform.lock.hcl && rm -rf deploy/*.zip",
+    "build-layer": "cd deploy && mkdir -p nodejs && cp -R ../package*.json nodejs/ && cd nodejs && npm install --omit=dev",
+    "build-function": "cd deploy && mkdir -p function && cp -R ../src/* ../package*.json function/",
+    "deploy": "cd deploy && npm run build-layer && npm run build-function && pwd && terraform init && terraform apply -auto-approve -var-file=ca.tfvars",
+    "destroy": "cd deploy && mkdir -p nodejs && mkdir -p function && terraform init && terraform destroy -auto-approve -var-file=ca.tfvars"
   },
   "repository": {
     "type": "git",
@@ -21,18 +25,14 @@
   "dependencies": {
     "@apollo/server": "^4.7.5",
     "@as-integrations/aws-lambda": "^3.1.0",
+    "@aws-sdk/client-secrets-manager": "^3.485.0",
     "axios": "^1.6.3",
     "body-parser": "^1.19.0",
-    "coa-node-logging": "^3.1.1",
     "cors": "^2.8.5",
-    "dotenv": "^10.0.0",
     "express": "^4.17.1",
     "graphql-tag": "^2.12.6",
     "mssql": "^10.0.1",
     "pg": "^8.6.0",
     "proj4": "^2.7.4"
-  },
-  "devDependencies": {
-    "nodemon": "^3.0.1"
   }
 }
