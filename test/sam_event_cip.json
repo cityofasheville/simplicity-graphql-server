@@ -1,0 +1,17 @@
+{
+  "version": "2",
+  "headers": {
+    "content-type": "application/json"
+  },
+  "isBase64Encoded": false,
+  "rawQueryString": "",
+  "requestContext": {
+    "http": {
+      "method": "POST"
+    }
+
+  },
+  "rawPath": "/",
+  "routeKey": "/",
+  "body": "{\"query\":\"query cip_projects($zipcodes: [String]) {  cip_projects(zipcodes: $zipcodes) {    display_name    latitude    longitude    zip_code  }}\",\"variables\":{\"zipcodes\":\"28704\"},\"operationName\":\"cip_projects\"}"
+}

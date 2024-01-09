@@ -44,3 +44,5 @@ function/
 .terraform*
 *.zip
 
+# Terraform
+ca.tfvars

@@ -13,6 +13,7 @@
   },
   "rawPath": "/",
   "routeKey": "/",
-  "body": "{\"query\":\"query cip_projects($zipcodes: [String]) {  cip_projects(zipcodes: $zipcodes) {    display_name    latitude    longitude    zip_code  }}\",\"variables\":{\"zipcodes\":\"28704\"},\"operationName\":\"cip_projects\"}"
+  "body": "{\"query\":\"query getPermitsQuery($permit_number: String) {  permit_realtime(permit_number: $permit_number) {    permit_number    permit_group    permit_type    permit_subtype    permit_category    permit_description    applicant_name    application_name    status_current    status_date    technical_contact_name    contractor_names    __typename  }}\",\"variables\":{\"permit_number\":\"21-01337\"},\"operationName\":\"getPermitsQuery\"}"
 }
+
 

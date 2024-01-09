@@ -1,0 +1,12 @@
+region              = ""
+subnet_ids          = ["subnet-xxx", "subnet-yyy"]
+security_group_ids  = ["sg-zzz"]
+dbhost=""
+dbuser=""
+dbpassword=""
+database=""
+dbhost_accela=""
+dbuser_accela=""
+dbpassword_accela=""
+dbdomain_accela=""
+database_accela=""

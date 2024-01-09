@@ -1,8 +1,6 @@
 class Logger {
-  constructor(name, logFile, logToConsole = false) {
+  constructor(name) {
     this.name = name
-    this.logFile = logFile
-    this.logger = null
   }
 
   error(message, details = {}, tag = null) {
