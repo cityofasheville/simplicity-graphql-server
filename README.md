@@ -11,25 +11,14 @@ git clone git@github.com:cityofasheville/simplicity-graphql-server.git
 cd simplicity-graphql-server
 npm install
 ```
-## Create .env file
-Base on example.env
+## Create ca.tfvars file in deploy/
+Based on ca.tfvars.example
 
-## Starting the server
+## Running a test
 
 ```
 npm start
 ```
+This runs a local test with the "event" in test/sam_event.json
 
-The server will run on port 8080. You can change this with the env varibale PORT.
 
-View the graphql data at http://localhost:8080/graphql
-
-## Uploading data
-
-For the demo we need to upload a couple CSV files to the database, one for permits and one for review trips. Once the CSV files are prepared, edit the paths in create_permits_table.sql and create_trips_table.sql and run the following commands:
-
-  psql -h {database-host} -d {database-name} -U {database-user} -W -f create_permits_table
-  psql -h {database-host} -d {database-name} -U {database-user} -W -f create_trips_table
-
-## Acknowledgements
-Based on the Apollo [Hello World](https://github.com/apollostack/frontpage-server) example server.

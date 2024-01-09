@@ -45,8 +45,8 @@ resource "aws_lambda_function" "simplicity_graphql_server_dev" {
   filename = data.archive_file.simplicity_graphql_server_dev_zip.output_path
   source_code_hash = data.archive_file.simplicity_graphql_server_dev_zip.output_base64sha256
   layers = [aws_lambda_layer_version.simplicity_graphql_server_dev_layer.arn]
-  timeout          = 20
-  # memory_size      = 256
+  timeout          = 30
+  memory_size      = 180
   vpc_config {
     subnet_ids         = var.subnet_ids
     security_group_ids = var.security_group_ids

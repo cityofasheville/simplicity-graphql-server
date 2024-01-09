@@ -14,11 +14,6 @@ const { Pool, defaults } = pgpkg;
 import mssqlpkg from 'mssql';
 const { connect } = mssqlpkg;
 
-// import get_connection from './api/common/get_connection.js';
-
-// const db_connection = await get_connection('pubrecdb1/mdastore1/dbadmin');
-// const db_connection_accela = await get_connection('coa-acceladb/accela/mssqlgisadmin');
-
 defaults.poolSize = 1;
 const logger = new Logger('simplicity');
 
@@ -38,26 +33,6 @@ const server = new ApolloServer({
   introspection,
   playground,
 });
-
-// const dbConfig = {
-//   host: db_connection.host,
-//   user: db_connection.username,
-//   password: db_connection.password,
-//   database: db_connection.database,
-//   port: db_connection.port,
-//   ssl: false,
-// };
-// const dbConfig_accela = {
-//   user: db_connection_accela.username,
-//   password: db_connection_accela.password,
-//   server: db_connection_accela.host,
-//   domain: db_connection_accela.domain,
-//   database: db_connection_accela.database,
-//   options: { enableArithAbort: true, encrypt: false },
-//   connectionTimeout: 30000,
-//   requestTimeout: 680000,
-//   trustServerCertificate: true,  // Acella has self-signed certs?
-// };
 
 const dbConfig = {
   host: process.env.dbhost,
