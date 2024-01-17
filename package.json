@@ -1,15 +1,14 @@
 {
   "name": "simplicity-graphql-server",
-  "version": "3.14.0",
+  "version": "4.0.0",
   "description": "GraphQL server for SimpliCity II",
   "type": "module",
   "scripts": {
     "start": "cd test; sam local invoke --event sam_event.json",
-    "clean": "rm -rf deploy/nodejs && rm -rf deploy/function && rm -rf deploy/.terraform && rm -rf deploy/.terraform.lock.hcl && rm -rf deploy/*.zip",
-    "build-layer": "cd deploy && mkdir -p nodejs && cp -R ../package*.json nodejs/ && cd nodejs && npm install --omit=dev",
-    "build-function": "cd deploy && mkdir -p function && cp -R ../src/* ../package*.json function/",
-    "deploy": "cd deploy && npm run build-layer && npm run build-function && pwd && terraform init && terraform apply -auto-approve -var-file=ca.tfvars",
-    "destroy": "cd deploy && mkdir -p nodejs && mkdir -p function && terraform init && terraform destroy -auto-approve -var-file=ca.tfvars"
+    "clean": "rm -rf deploy/build && rm -rf deploy/.terraform && rm -rf deploy/.terraform.lock.hcl",
+    "runterraform": "cd deploy/build && terraform init && terraform apply -auto-approve -var-file=../../.env",
+    "deploy": "cd deploy && node deploy.js && npm install --prefix ./build/nodejs --omit-dev && npm run runterraform",
+    "destroy": "cd deploy/build && terraform init && terraform destroy -auto-approve -var-file=../../.env"
   },
   "repository": {
     "type": "git",
@@ -27,9 +26,6 @@
     "@as-integrations/aws-lambda": "^3.1.0",
     "@aws-sdk/client-secrets-manager": "^3.485.0",
     "axios": "^1.6.3",
-    "body-parser": "^1.19.0",
-    "cors": "^2.8.5",
-    "express": "^4.17.1",
     "graphql-tag": "^2.12.6",
     "mssql": "^10.0.1",
     "pg": "^8.6.0",

@@ -1,24 +1,17 @@
-# SimpliCity II GraphQL Server
+# SimpliCity GraphQL Server
 
-GraphQL Server for the new SimpliCity II system
+GraphQL backend Server for the SimpliCity system. 
 
-## Installation
+## Usage
+### Prerequisites
+- Requires a file ```.env``` in the root directory based on ```env.example```.
 
-Clone the repository and run `npm install`
+### Commands
+- Test Locally: ```npm start``` (runs Lambda locally with test/sam_event.json as event)
+- Deploy: ```npm run deploy```
+- Destroy: ```npm run destroy``` (removes all objects from AWS)
+- Clean: ```npm run clean``` (removes local temp files)
 
-```
-git clone git@github.com:cityofasheville/simplicity-graphql-server.git
-cd simplicity-graphql-server
-npm install
-```
-## Create ca.tfvars file in deploy/
-Based on ca.tfvars.example
 
-## Running a test
-
-```
-npm start
-```
-This runs a local test with the "event" in test/sam_event.json
 
 

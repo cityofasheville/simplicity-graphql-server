@@ -39,10 +39,9 @@ node_modules
 .node_repl_history
 
 # deployments
+build/
 nodejs/
-function/
+funcdir/
 .terraform*
 *.zip
 
-# Terraform
-ca.tfvars
