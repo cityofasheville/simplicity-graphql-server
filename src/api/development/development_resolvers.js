@@ -220,7 +220,7 @@ const resolvers = {
       });
     },
     permits_by_address(obj, args, context) {
-      const logger = context.logger;
+      
       const radius = args.radius ? Number(args.radius) : 10; // State plane units are feet
       let query = `${stdQuery}
       from simplicity.permits_xy_view as A
@@ -248,12 +248,12 @@ const resolvers = {
         return preparePermits(result.rows, args.before, args.after);
       })
       .catch((err) => {
-        logger.error(`Got an error in permits_by_address: ${err}`);
+        console.error(`Got an error in permits_by_address: ${err}`);
         throw new Error(`Got an error in permits_by_address: ${err}`);
       });
     },
     permits_by_street(obj, args, context) {
-      const logger = context.logger;
+      
       const radius = (args.radius) ? Number(args.radius) : 100; // State plane units are feet
       if (args.centerline_ids.length <= 0) return [];
       const query = 'SELECT A.*, M.address_full as address FROM simplicity.permits_along_streets_fn($1, $2) AS A ' // eslint-disable-line max-len
@@ -267,13 +267,13 @@ const resolvers = {
       })
       .catch((err) => {
         if (err) {
-          logger.error(`Got an error in permits_by_street: ${err}`);
+          console.error(`Got an error in permits_by_street: ${err}`);
           throw new Error(err);
         }
       });
     },
     permits_by_neighborhood(obj, args, context) {
-      const logger = context.logger;
+      
       if (args.nbrhd_ids.length <= 0) return [];
       const query = 'SELECT A.*, M.address_full as address '
       + 'FROM simplicity.permits_by_neighborhood_fn($1) AS A '
@@ -286,7 +286,7 @@ const resolvers = {
       })
       .catch((err) => {
         if (err) {
-          logger.error(`Got an error in permits_by_neighborhood: ${err}`);
+          console.error(`Got an error in permits_by_neighborhood: ${err}`);
           throw new Error(err);
         }
       });

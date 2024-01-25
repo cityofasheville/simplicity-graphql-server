@@ -37,7 +37,7 @@ const resolvers = {
       if (false && context.employee.employee_id <= 0) {
         throw new Error('You must be logged in as a City of Asheville employee to view this data');
       }
-      const logger = context.logger;
+      
       let query = 'SELECT * FROM internal.pcard_transaction ';
       const qargs = [];
       if (args.before !== undefined || args.after !== undefined) query += 'WHERE ';
@@ -57,7 +57,7 @@ const resolvers = {
         return result.rows;
       })
       .catch((err) => {
-        logger.error(`Got an error in pcard_transactions: ${err}`);
+        console.error(`Got an error in pcard_transactions: ${err}`);
         throw new Error(`Got an error in pcard_transactions: ${err}`);
       });
     },
@@ -67,7 +67,7 @@ const resolvers = {
       if (false && context.employee.employee_id <= 0) {
         throw new Error('You must be logged in as a City of Asheville employee to view this data');
       }
-      const logger = context.logger;
+      
       let query = 'SELECT * FROM internal.pcard_statement_status_history ';
       const qargs = [];
       if (args.before !== undefined || args.after !== undefined) query += 'WHERE ';
@@ -87,7 +87,7 @@ const resolvers = {
         return result.rows;
       })
       .catch((err) => {
-        logger.error(`Got an error in pcard_statements_status: ${err}`);
+        console.error(`Got an error in pcard_statements_status: ${err}`);
         throw new Error(`Got an error in pcard_statements_status: ${err}`);
       });
     },

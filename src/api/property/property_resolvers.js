@@ -66,7 +66,7 @@ function prepareProperties(rows) {
 const resolvers = {
   Query: {
     properties(obj, args, context) {
-      const logger = context.logger;
+      
       if (args.pins.length <= 0) return [];
       const query = 'SELECT DISTINCT * FROM simplicity.v_simplicity_properties '
       + 'WHERE pinnum = ANY ($1)';
@@ -75,12 +75,12 @@ const resolvers = {
         return prepareProperties(result.rows);
       })
       .catch(error => {
-        logger.error(`Error in properties endpoint: ${JSON.stringify(error)}`);
+        console.error(`Error in properties endpoint: ${JSON.stringify(error)}`);
         throw new Error(error);
       });
     },
     properties_by_street(obj, args, context) {
-      const logger = context.logger;
+      
       const radius = (args.radius) ? Number(args.radius) : 100; // State plane units are feet
       if (args.centerline_ids.length <= 0) return [];
       const query = 'SELECT DISTINCT * FROM simplicity.get_properties_along_streets($1, $2) '
@@ -91,13 +91,13 @@ const resolvers = {
       })
       .catch((err) => {
         if (err) {
-          logger.error(`Got an error in properties_by_street: ${JSON.stringify(err)}`);
+          console.error(`Got an error in properties_by_street: ${JSON.stringify(err)}`);
           throw new Error(err);
         }
       });
     },
     properties_by_neighborhood(obj, args, context) {
-      const logger = context.logger;
+      
       if (args.nbrhd_ids.length <= 0) return [];
       const query = 'SELECT DISTINCT * FROM simplicity.get_properties_by_neighborhood($1)';
       return context.pool.query(query, [args.nbrhd_ids])
@@ -106,7 +106,7 @@ const resolvers = {
       })
       .catch((err) => {
         if (err) {
-          logger.error(`Got an error in properties_by_neighborhood: ${JSON.stringify(err)}`);
+          console.error(`Got an error in properties_by_neighborhood: ${JSON.stringify(err)}`);
           throw new Error(err);
         }
       });

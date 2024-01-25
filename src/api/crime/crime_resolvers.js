@@ -37,7 +37,7 @@ function prepareCrimes(rows, before = null, after = null) {
 const resolvers = {
   Query: {
     crimes_by_address(obj, args, context) {
-      const logger = context.logger;
+      
       const civicaddressId = String(args.civicaddress_id);
       const radius = Number(args.radius); // State plane units are feet
       const query = `
@@ -56,12 +56,12 @@ const resolvers = {
         return prepareCrimes(result.rows, args.before, args.after);
       })
       .catch((err) => {
-        logger.error(`Got an error in crimes_by_address: ${err}`);
+        console.error(`Got an error in crimes_by_address: ${err}`);
         throw new Error(`Got an error in crimes_by_address: ${err}`);
       });
     },
     crimes_by_street(obj, args, context) {
-      const logger = context.logger;
+      
       const radius = (args.radius) ? Number(args.radius) : 100; // State plane units are feet
       const ids = args.centerline_ids;
       if (ids.length <= 0) return [];
@@ -76,13 +76,13 @@ const resolvers = {
       })
       .catch((err) => {
         if (err) {
-          logger.error(`Got an error in crimes_by_street: ${err}`);
+          console.error(`Got an error in crimes_by_street: ${err}`);
           throw new Error(err);
         }
       });
     },
     crimes_by_neighborhood(obj, args, context) {
-      const logger = context.logger;
+      
       if (args.nbrhd_ids.length <= 0) return [];
       const query = `
       SELECT incident_id, agency, TO_CHAR(date_occurred, 'YYYY-MM-DD') date_occurred, case_number,
@@ -98,13 +98,13 @@ const resolvers = {
       })
       .catch((err) => {
         if (err) {
-          logger.error(`Got an error in crimes_by_neighborhood: ${err}`);
+          console.error(`Got an error in crimes_by_neighborhood: ${err}`);
           throw new Error(err);
         }
       });
     },
     crimes(obj, args, context) {
-      const logger = context.logger;
+      
       if (args.incident_ids.length <= 0) return [];
       const query = `
       SELECT incident_id, agency, TO_CHAR(A.date_occurred, 'YYYY-MM-DD') date_occurred, case_number,
@@ -119,7 +119,7 @@ const resolvers = {
         return prepareCrimes(result.rows);
       })
       .catch((err) => {
-        logger.error(`ERROR: ${err}`);
+        console.error(`ERROR: ${err}`);
         throw new Error(`Got an error in crimes: ${err}`);
       });
     },

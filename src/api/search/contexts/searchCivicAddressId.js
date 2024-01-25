@@ -1,6 +1,6 @@
 function searchCivicAddressId(searchString, context) {
   const pool = context.pool;
-  const logger = context.logger;
+  
   const myQuery = 'SELECT civicaddress_id, property_pinnum, address_full '
   + 'FROM internal.coa_bc_address_master '
   + `WHERE cast(civicaddress_id as TEXT) = '${searchString}'  limit 5`;
@@ -26,7 +26,7 @@ function searchCivicAddressId(searchString, context) {
   })
   .catch((err) => {
     if (err) {
-      logger.error(`Got an error in searchCivicAddressID: ${JSON.stringify(err)}`);
+      console.error(`Got an error in searchCivicAddressID: ${JSON.stringify(err)}`);
       throw new Error(err);
     }
   });

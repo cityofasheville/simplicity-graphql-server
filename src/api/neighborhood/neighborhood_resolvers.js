@@ -3,7 +3,7 @@ import { convertToPolygons } from '../common/convert_to_polygons.js';
 const resolvers = {
   Query: {
     neighborhoods(obj, args, context) {
-      const logger = context.logger;
+      
 
       var query_args = [];
       var query = 'SELECT name, nbhd_id, abbreviation, narrative, '
@@ -30,7 +30,7 @@ const resolvers = {
         });
       })
       .catch(error => {
-        logger.error(`Error in neighborhoods endpoint: ${JSON.stringify(error)}`);
+        console.error(`Error in neighborhoods endpoint: ${JSON.stringify(error)}`);
         throw new Error(error);
       });
     },

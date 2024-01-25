@@ -3,7 +3,7 @@ import { convertLines } from '../common/convert_lines.js';
 const resolvers = {
   Query: {
     streets(obj, args, context) {
-      const logger = context.logger;
+      
       if (args.centerline_ids.length <= 0) return [];
       const query = `
       SELECT DISTINCT a.centerline_id, a.full_street_name, a.left_zipcode,
@@ -48,7 +48,7 @@ const resolvers = {
         return items;
       })
       .catch(error => {
-        logger.error(`Error in streets endpoint: ${JSON.stringify(error)}`);
+        console.error(`Error in streets endpoint: ${JSON.stringify(error)}`);
         throw new Error(error);
       });
     },

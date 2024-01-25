@@ -2,7 +2,7 @@ import geocoder from '../geocoder.js';
 const { mergeGeocoderResults } = geocoder;
 
 function searchStreet(searchContext, searchString, geoCodeResponseIn, context) {
-  const logger = context.logger;
+  
   const geoCodeResponse = mergeGeocoderResults(geoCodeResponseIn);
   if (geoCodeResponse.locName.length === 0) {
     return Promise.resolve(
@@ -91,7 +91,7 @@ function searchStreet(searchContext, searchString, geoCodeResponseIn, context) {
   })
   .catch((err) => {
     if (err) {
-      logger.error(`Got an error in street search: ${JSON.stringify(err)}`);
+      console.error(`Got an error in street search: ${JSON.stringify(err)}`);
       throw err;
     }
   });

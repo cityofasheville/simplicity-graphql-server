@@ -1,5 +1,5 @@
 function searchOwner(searchString, context) {
-  const logger = context.logger;
+  
   let query = 'SELECT formatted_owner_name, pinnum '
   + 'FROM internal.bc_property_pinnum_formatted_owner_names WHERE ';
 
@@ -45,7 +45,7 @@ function searchOwner(searchString, context) {
   })
   .catch((err) => {
     if (err) {
-      logger.error(`Got an error in searchOwner: ${JSON.stringify(err)}`);
+      console.error(`Got an error in searchOwner: ${JSON.stringify(err)}`);
       throw new Error(err);
     }
   });

@@ -75,7 +75,7 @@ const resolvers = {
     // Note: query can EITHER specify names OR it can specify
     // one or both of categories & zipcodes
     cip_projects(obj, args, context) {
-      const logger = context.logger;
+      
       pool = context.pool;
       let query = `
       select A.*, B.*, C.display_order from internal.capital_projects_master as A
@@ -156,7 +156,7 @@ const resolvers = {
         return prepareProjects(result.rows);
       })
       .catch(error => {
-        logger.error(`Error in cip_projects endpoint: ${error}`);
+        console.error(`Error in cip_projects endpoint: ${error}`);
         throw new Error(error);
       });
     },

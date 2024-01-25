@@ -82,7 +82,7 @@ function doQuery(query, args, queryName, context) {
 const resolvers = {
   Query: {
     addresses(obj, args, context) {
-      const logger = context.logger;
+      
       if (args.civicaddress_ids.length <= 0) return [];
       const query = `
       SELECT
@@ -103,14 +103,14 @@ const resolvers = {
     },
 
     addresses_by_neighborhood(obj, args, context) {
-      const logger = context.logger;
+      
       if (args.nbrhd_ids.length <= 0) return [];
       const query = 'SELECT * FROM simplicity.get_addresses_by_neighborhood($1)';
       return doQuery(query, [args.nbrhd_ids], 'addresses_by_neighborhood', context);
     },
 
     addresses_by_street(obj, args, context) {
-      const logger = context.logger;
+      
       if (args.centerline_ids.length <= 0) return [];
       const query = `
       SELECT a.*, b.maintenance_entity, b.location FROM simplicity.v_simplicity_addresses AS a

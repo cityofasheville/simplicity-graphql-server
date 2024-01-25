@@ -2,7 +2,7 @@ import geocoder from '../geocoder.js';
 const { convertGeocoderResults } = geocoder;
 
 function searchAddress(searchContext, searchString, geoCodeResponseIn, context) {
-  const logger = context.logger;
+  
   const geoCodeResponse = convertGeocoderResults(geoCodeResponseIn[0], null);
   if (geoCodeResponse.locName.length === 0) {
     return Promise.resolve(
@@ -110,7 +110,7 @@ function searchAddress(searchContext, searchString, geoCodeResponseIn, context) 
   })
   .catch((err) => {
     if (err) {
-      logger.error(`Got an error in address search: ${JSON.stringify(err)}`);
+      console.error(`Got an error in address search: ${JSON.stringify(err)}`);
       throw new Error(err);
     }
   });

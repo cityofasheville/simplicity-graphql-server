@@ -1,7 +1,7 @@
 const resolvers = {
   Query: {
     budgetSummary(obj, args, context) {
-      const logger = context.logger;
+      
       const pool = context.pool;
       const which = args.breakdown;
       let categoryColumn = 'department_name';
@@ -100,7 +100,7 @@ const resolvers = {
         })
         .catch((err) => {
           if (err) {
-            logger.error(`Got an error in budgetSumary: ${err}`);
+            console.error(`Got an error in budgetSumary: ${err}`);
           }
         });
       });
@@ -127,7 +127,7 @@ const resolvers = {
     },
 
     budgetHistory(obj, args, context) {
-      const logger = context.logger;
+      
       const pool = context.pool;
       return pool.query('SELECT * from simplicity.budget_parameters_view')
       .then(bp => {
@@ -200,14 +200,14 @@ const resolvers = {
         })
         .catch((err) => {
           if (err) {
-            logger.error(`Got an error in budget history: ${err}`);
+            console.error(`Got an error in budget history: ${err}`);
           }
         });
       });
     },
 
     budgetCashFlow(obj, args, context) {
-      const logger = context.logger;
+      
       const pool = context.pool;
       return pool.query('SELECT * from simplicity.budget_parameters_view')
       .then(bp => {
@@ -269,7 +269,7 @@ const resolvers = {
         })
         .catch((err) => {
           if (err) {
-            logger.error(`Got an error in property: ${err}`);
+            console.error(`Got an error in property: ${err}`);
           }
         });
       });

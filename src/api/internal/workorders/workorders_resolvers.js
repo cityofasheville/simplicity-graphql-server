@@ -1,7 +1,7 @@
 const resolvers = {
   Query: {
     projects(obj, args, context) {
-      const logger = context.logger;
+      
       const status = args.status;
       const reqType = args.req_type;
       const priorities = args.priorities;
@@ -103,7 +103,7 @@ const resolvers = {
         });
       })
       .catch((err) => {
-        logger.error(`Got an error in internal resolvers: ${err}`);
+        console.error(`Got an error in internal resolvers: ${err}`);
         throw new Error(`Got an error in internal resolvers: ${err}`);
       });
     },

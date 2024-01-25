@@ -34,15 +34,15 @@ function performSearch(searchString, searchContext, geoCodeResponse, context) {
 const resolvers = {
   Query: {
     search(obj, args, context) {
-      const logger = context.logger;
+      
       const geoCodeResponse = [Promise.resolve(null), Promise.resolve(null)];
       const startTime = new Date().getTime();
       const searchString = args.searchString.trim();
-      logger.info(`Search for '${searchString} in contexts ${args.searchContexts}`);
+      console.info(`Search for '${searchString} in contexts ${args.searchContexts}`);
       if (args.searchContexts.indexOf('address') >= 0 ||
           args.searchContexts.indexOf('property') >= 0 ||
           args.searchContexts.indexOf('street') >= 0) {
-        geoCodeResponse[0] = callGeocoder(searchString, logger);
+        geoCodeResponse[0] = callGeocoder(searchString);
       }
       return Promise.all(geoCodeResponse).then(results => {
         const result = results;
@@ -50,14 +50,14 @@ const resolvers = {
           const ret = performSearch(searchString, searchContext, result, context);
           const totalTime = (new Date().getTime() - startTime) / 1000.0;
           if (totalTime > 4.0) {
-            logger.warn(`Search time (${searchContext}): ${totalTime} seconds`);
+            console.warn(`Search time (${searchContext}): ${totalTime} seconds`);
           }
           return ret; 
         }));
       })
       .catch((err) => {
         if (err) {
-          logger.error(`Got an error in search: ${err}`);
+          console.error(`Got an error in search: ${err}`);
           throw new Error(err);
         }
       });

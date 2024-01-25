@@ -27,7 +27,7 @@ const resolvers = {
   Query: {
     municipalities(obj, args, context) {
       let sendArgs = null;
-      const logger = context.logger;
+      
       let query = 'SELECT DISTINCT cityname, jurisdiction_type, '
       + 'st_astext(st_transform(shape, 4326)) AS polygon FROM internal.coa_active_jurisdictions '
       + "WHERE jurisdiction_type != 'Defunct ETJ' ";
@@ -40,7 +40,7 @@ const resolvers = {
         return prepareJurisdictions(result.rows);
       })
       .catch(error => {
-        logger.error(`Error in jurisdictions endpoint: ${JSON.stringify(error)}`);
+        console.error(`Error in jurisdictions endpoint: ${JSON.stringify(error)}`);
         throw new Error(error);
       });
     },

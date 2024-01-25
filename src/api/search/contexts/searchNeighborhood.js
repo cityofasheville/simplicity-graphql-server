@@ -1,7 +1,7 @@
 import { convertToPolygons } from '../../common/convert_to_polygons.js';
 
 function searchNeighborhood(searchString, context) {
-  const logger = context.logger;
+  
   const myQuery = 'SELECT name, nbhd_id, abbreviation, narrative, '
   + 'st_astext(st_transform(shape, 4326)) AS polygon '
   + 'FROM internal.coa_asheville_neighborhoods '
@@ -28,7 +28,7 @@ function searchNeighborhood(searchString, context) {
   })
   .catch((err) => {
     if (err) {
-      logger.error(`Got an error in searchNeighborhood: ${JSON.stringify(err)}`);
+      console.error(`Got an error in searchNeighborhood: ${JSON.stringify(err)}`);
       throw new Error(err);
     }
   });

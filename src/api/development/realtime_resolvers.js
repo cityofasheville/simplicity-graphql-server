@@ -38,7 +38,7 @@ WHERE A.permit_num not like '%TMP%'
 const resolvers = {
   Query: {
     permit_realtime(obj, args, context) {
-      const logger = context.logger;
+      
       const query = `${stdQuery}
       AND A.permit_num = '${args.permit_number}'
       ORDER BY status_date DESC
@@ -58,12 +58,12 @@ const resolvers = {
         return ret;
       })
       .catch(error => {
-        //logger.error(`Error in permit_realtime endpoint: ${JSON.stringify(error)}`);
+        //console.error(`Error in permit_realtime endpoint: ${JSON.stringify(error)}`);
         throw new Error(error);
       });
     },
     permits_by_address_realtime(obj, args, context) {
-      const logger = context.logger;
+      
       const query = `${stdQuery}
       AND A.civic_address_id = '${args.civicaddress_id}'
       ORDER BY status_date DESC
@@ -86,7 +86,7 @@ const resolvers = {
         return ret;
       })
       .catch(error => {
-        //logger.error(`Error in permit_realtime endpoint: ${JSON.stringify(error)}`);
+        //console.error(`Error in permit_realtime endpoint: ${JSON.stringify(error)}`);
         throw new Error(error);
       });
     },

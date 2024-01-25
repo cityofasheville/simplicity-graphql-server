@@ -1,5 +1,5 @@
 function searchPin(searchString, context) {
-  const logger = context.logger;
+  
   const myQuery = `
   SELECT pin, pinnum, pinext,
    housenumber || 
@@ -36,7 +36,7 @@ function searchPin(searchString, context) {
     })
     .catch((err) => {
       if (err) {
-        logger.error(`Got an error in searchPin: ${JSON.stringify(err)}`);
+        console.error(`Got an error in searchPin: ${JSON.stringify(err)}`);
         throw new Error(err);
       }
     });

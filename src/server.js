@@ -6,7 +6,6 @@ import {
   startServerAndCreateLambdaHandler,
   handlers,
 } from '@as-integrations/aws-lambda';
-import Logger from './logger.js';
 
 import pgpkg from 'pg';
 const { Pool, defaults } = pgpkg;
@@ -15,7 +14,6 @@ import mssqlpkg from 'mssql';
 const { connect } = mssqlpkg;
 
 defaults.poolSize = 1;
-const logger = new Logger('simplicity');
 
 // PLAYGROUND
 let debug = true;
@@ -55,21 +53,21 @@ const dbConfig_accela = {
 };
 
 
-logger.info('Connect to database');
+console.info('Connect to database');
 const pool = new Pool(dbConfig);
 const pool_accela = await connect(dbConfig_accela);
 
-logger.info('Database connection initialized');
+console.info('Database connection initialized');
 
 export default startServerAndCreateLambdaHandler(
   server,
   handlers.createAPIGatewayProxyEventV2RequestHandler(),
   {
     context: async ({ event }) => {
+      console.log("request: ", event.body);
       return {
         pool,
         pool_accela,
-        logger,
         user: null,
         employee: null,
       };

@@ -1,6 +1,6 @@
 import axiospkg from 'axios';
 const { get } = axiospkg;
-function callGeocoder(searchString, logger) {
+function callGeocoder(searchString) {
 
   const startTime = new Date().getTime();
   const minCandidateScore = 0;
@@ -13,7 +13,7 @@ function callGeocoder(searchString, logger) {
     .then(response => {
       const totalTime = (new Date().getTime() - startTime) / 1000.0;
       if (totalTime > 4) {
-        logger.warn(`Geocoder ${geolocatorUrl} time: ${totalTime} sec`);
+        console.warn(`Geocoder ${geolocatorUrl} time: ${totalTime} sec`);
       }
       const result = response.data.candidates.filter(c => {
         return (c.score >= minCandidateScore);
@@ -22,7 +22,7 @@ function callGeocoder(searchString, logger) {
     })
     .catch((err) => {
       if (err) {
-        logger.error(`Got an error in geocoder lookup: ${JSON.stringify(err)}`);
+        console.error(`Got an error in geocoder lookup: ${JSON.stringify(err)}`);
         throw new Error(err);
       }
     });

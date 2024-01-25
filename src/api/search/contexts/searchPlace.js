@@ -2,7 +2,7 @@ import axiospkg from 'axios';
 const { get } = axiospkg;
 
 function searchPlace(searchString, context) {
-  const logger = context.logger;
+  
   const keyword = searchString.replace(/\s/g, '%20');
   const googleapikey = '';
   const url = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?key=${googleapikey}&location=35.5951,-82.5515&radius=50000&keyword=${keyword}`;
@@ -32,7 +32,7 @@ function searchPlace(searchString, context) {
   })
   .catch((err) => {
     if (err) {
-      logger.error(`Got an error in geocoder lookup: ${JSON.stringify(err)}`);
+      console.error(`Got an error in geocoder lookup: ${JSON.stringify(err)}`);
       throw new Error(err);
     }
   });

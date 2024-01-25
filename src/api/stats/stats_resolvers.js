@@ -146,7 +146,7 @@ function sumSubitemCounts(input_array, fields, sum_key) {
 const resolvers = {
   Query: {
     generic_stats(obj, args, context) {
-      const logger = context.logger;
+      
 
       if (typeof args.fields === typeof undefined) return [];
       if (typeof args.dataset === typeof undefined) return [];
@@ -239,7 +239,7 @@ const resolvers = {
         return prepareStats(result.rows, fields, groupBy);
       })
       .catch((err) => {
-        logger.error(`ERROR: ${err}`);
+        console.error(`ERROR: ${err}`);
         throw new Error(`Got an error in stats: ${err}`);
       });
     },
