@@ -115,13 +115,13 @@ const resolvers = {
         }
       }
       query += ' ORDER BY A.display_name';
-      console.log(query);
+      // console.log(query);
 
       return pool.query(query)
       .then(result => {
         const timeout = 1000 * 3600;
         if (cacheDate === null || (new Date()).getTime() - cacheDate.getTime() > timeout) {
-          console.log('Updating CIP project XY cache');
+          // console.log('Updating CIP project XY cache');
           const fsUrl = 'https://services.arcgis.com/aJ16ENn1AaqdFlqx/ArcGIS/rest/services/CIP_Storymap/FeatureServer/0/query?where=1%3D1&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnGeometry=true&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=pjson&token=';
           return get(fsUrl, { timeout: 5000 })
           .then(xyResult => {

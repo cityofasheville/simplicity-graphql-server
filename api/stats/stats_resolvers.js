@@ -233,7 +233,7 @@ const resolvers = {
         });
       }
 
-      console.log('QUERY', query);
+      // console.log('QUERY', query);
       return context.pool.query(query)
       .then((result) => {
         return prepareStats(result.rows, fields, groupBy);
