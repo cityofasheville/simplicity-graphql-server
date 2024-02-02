@@ -79,7 +79,7 @@ resource "aws_lambda_function_url" "${prog_name}_function_url" {
 
   cors {
     allow_credentials = false
-    allow_origins     = ["*"]
+    allow_origins     = ["https://development.d1thp43hcib1lz.amplifyapp.com","https://simplicity.ashevillenc.gov","http://localhost:3000"]
     allow_methods     = ["GET", "POST", "HEAD"]
     allow_headers     = ["date", "content-type"]
     max_age           = 86400
