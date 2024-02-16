@@ -4,7 +4,8 @@
   "description": "GraphQL server for SimpliCity II",
   "type": "module",
   "scripts": {
-    "start": "cd test; sam local invoke --event sam_event.json",
+    "start": "nodemon --exec node --experimental-modules src/local.server.js",
+    "test": "cd test; sam local invoke --event sam_event.json",
     "clean": "rm -rf deploy/build && rm -rf deploy/.terraform && rm -rf deploy/.terraform.lock.hcl",
     "runterraform": "cd deploy/build && terraform init && terraform apply -auto-approve -var-file=../../.env",
     "deploy": "cd deploy && node deploy.js && npm install --prefix ./build/nodejs --omit-dev && npm run runterraform",
@@ -30,5 +31,9 @@
     "mssql": "^10.0.1",
     "pg": "^8.6.0",
     "proj4": "^2.7.4"
+  },
+  "devDependencies": {
+    "dotenv": "^16.4.4",
+    "nodemon": "^3.0.3"
   }
 }
