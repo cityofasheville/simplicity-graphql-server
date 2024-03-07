@@ -27,13 +27,12 @@
     "@as-integrations/aws-lambda": "^3.1.0",
     "@aws-sdk/client-secrets-manager": "^3.485.0",
     "axios": "^1.6.3",
-    "graphql-tag": "^2.12.6",
     "mssql": "^10.0.1",
     "pg": "^8.6.0",
     "proj4": "^2.7.4"
   },
   "devDependencies": {
     "dotenv": "^16.4.4",
-    "nodemon": "^3.0.3"
+    "nodemon": "^3.1.0"
   }
 }

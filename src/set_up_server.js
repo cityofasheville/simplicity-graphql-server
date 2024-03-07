@@ -13,20 +13,16 @@ const { connect } = mssqlpkg;
 defaults.poolSize = 1;
 
 // PLAYGROUND
-let debug = true;
-
-let introspection = false;
-let playground = false;
-if (debug) {
-  introspection = true;
-  playground = true;
+let debug = false;
+if(process.env.debug === 'true') {
+  debug = true;
 }
 
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  introspection,
-  playground,
+  introspection: debug,
+  playground: debug,
 });
 
 const dbConfig = {
