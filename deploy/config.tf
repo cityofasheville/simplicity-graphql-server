@@ -40,7 +40,7 @@ resource "aws_lambda_function" "${prog_name}" {
   description      = "${prog_name}" 
   function_name    = "${prog_name}"
   role             = aws_iam_role.${prog_name}-role.arn
-  handler          = "server.default"
+  handler          = "lambda.default"
   runtime          = "nodejs20.x"
   filename = data.archive_file.${prog_name}_zip.output_path
   source_code_hash = data.archive_file.${prog_name}_zip.output_base64sha256

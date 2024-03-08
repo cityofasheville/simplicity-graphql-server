@@ -6,7 +6,7 @@ import {
   server,
   pool,
   pool_accela
-} from "./set_up_server.js";
+} from "./app.js";
 
 export default startServerAndCreateLambdaHandler(
   server,
