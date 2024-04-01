@@ -13,6 +13,16 @@ variable "security_group_ids" {
   description   = "Array of security_group_ids" 
 }
 
+variable "certificate_arn" {
+ type = string
+ description = "API Gateway Certificate ARN"
+}
+
+variable "domain_name" {
+ type = string
+ description = "API Gateway Domain Name"
+}
+
 variable "dbhost" {
  type = string
  description = "DB Env Var"
@@ -54,6 +64,16 @@ variable "dbdomain_accela" {
 }
 
 variable "database_accela" {
+ type = string
+ description = "DB Env Var"
+}
+
+variable "debug" {
+ type = string
+ description = "DB Env Var"
+}
+
+variable "prog_name" {
  type = string
  description = "DB Env Var"
 }

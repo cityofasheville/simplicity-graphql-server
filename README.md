@@ -15,4 +15,15 @@ GraphQL backend Server for the SimpliCity system.
 
 
 
-
+### IMPORTANT DEPLOYMENT NOTE:
+The API Server requires a second Route (/{proxy+} OPTIONS) that points to a separate Lambda return_204_for_options.
+This is not yet included in Terraform, but it is just a simple Lambda like this:
+```
+export const handler = async (event) => {
+  const response = {
+    statusCode: 204,
+    body: JSON.stringify('Hello from Lambda!'),
+  };
+  return response;
+};
+```

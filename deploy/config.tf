@@ -73,19 +73,56 @@ resource "aws_lambda_function" "${prog_name}" {
   }
 }
 
-resource "aws_lambda_function_url" "${prog_name}_function_url" {
-  function_name      = aws_lambda_function.${prog_name}.function_name
-  authorization_type = "NONE"
-
-  cors {
-    allow_credentials = false
-    allow_origins     = ["https://development.d1thp43hcib1lz.amplifyapp.com","https://simplicity.ashevillenc.gov","http://localhost:3000"]
-    allow_methods     = ["GET", "POST", "HEAD"]
-    allow_headers     = ["date", "content-type"]
-    max_age           = 86400
+resource "aws_apigatewayv2_api" "${prog_name}" {
+  name          = "${prog_name}"
+  protocol_type = "HTTP"
+  target        = aws_lambda_function.${prog_name}.arn
+  tags = {
+    Name          = "${prog_name}"
+    "coa:application" = "${prog_name}"
+    "coa:department"  = "information-technology"
+    "coa:owner"       = "jtwilson@ashevillenc.gov"
+    "coa:owner-team"  = "dev"
   }
+  cors_configuration {
+    allow_headers     = ["*"]
+    allow_methods     = ["POST", "GET"]
+    allow_origins     = ["*"]
+    expose_headers    = ["*"]
+    max_age           = 300
+  }
+}
+
+resource "aws_apigatewayv2_domain_name" "domain-name-${prog_name}" {
+  domain_name = var.domain_name
+  domain_name_configuration {
+    certificate_arn = var.certificate_arn
+    endpoint_type   = "REGIONAL"
+    security_policy = "TLS_1_2"
+  }
+}
+
+resource "aws_apigatewayv2_api_mapping" "apigw-map-${prog_name}" {
+  api_id      = aws_apigatewayv2_api.${prog_name}.id
+  domain_name = var.domain_name
+  stage       = "$default"
+}
+
+resource "aws_lambda_permission" "apigw-${prog_name}" {
+  action        = "lambda:InvokeFunction"
+	function_name = aws_lambda_function.${prog_name}.function_name
+	principal     = "apigateway.amazonaws.com"
+	source_arn = "${aws_apigatewayv2_api.${prog_name}.execution_arn}/*/*"
 }
 
 output "${prog_name}_arn" {
   value = aws_lambda_function.${prog_name}.arn
+}
+
+output "${prog_name}_api_url" {
+  value = aws_apigatewayv2_domain_name.domain-name-${prog_name}.domain_name
+}
+
+output "${prog_name}_api_id" {
+  value = aws_apigatewayv2_api.${prog_name}.id
 }
