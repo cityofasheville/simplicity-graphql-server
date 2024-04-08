@@ -44,6 +44,12 @@ query searchQuery($searchString: String!, $searchContexts: [String]) {
         types
         __typename
       }
+      ... on PermitResult {
+        type
+        permit_number
+        permit_description
+        __typename
+      }
       __typename
     }
     __typename
@@ -51,4 +57,4 @@ query searchQuery($searchString: String!, $searchContexts: [String]) {
 }
 WITH THESE VARIABLES:
 {"searchString": "100 Pearson Dr",
-"searchContexts": ["address", "civicAddressId", "pin", "property", "neighborhood", "street", "owner"]}
+"searchContexts": ["address", "civicAddressId", "pin", "property", "neighborhood", "street", "owner", "permit"]}

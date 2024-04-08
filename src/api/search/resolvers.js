@@ -8,6 +8,7 @@ import searchProperty from './contexts/searchProperty.js';
 import searchStreet from './contexts/searchStreet.js';
 import searchAddress from './contexts/searchAddress.js';
 import searchPlace from './contexts/searchPlace.js';
+import searchPermit from './contexts/searchPermit.js';
 
 // Context options: address, pin, neighborhood, property, civicAddressId, street, owner, google
 function performSearch(searchString, searchContext, geoCodeResponse, context) {
@@ -27,13 +28,15 @@ function performSearch(searchString, searchContext, geoCodeResponse, context) {
     return searchOwner(searchString, context);
   } else if (searchContext === 'place') {
     return searchPlace(searchString, context);
+  } else if (searchContext === 'permit') {
+    return searchPermit(searchString, context);
   }
   throw new Error(`Unknown search context ${searchContext}`);
 }
 
 const resolvers = {
   Query: {
-    search(obj, args, context) {
+    async search(obj, args, context) {
       
       const geoCodeResponse = [Promise.resolve(null), Promise.resolve(null)];
       const startTime = new Date().getTime();
@@ -44,23 +47,22 @@ const resolvers = {
           args.searchContexts.indexOf('street') >= 0) {
         geoCodeResponse[0] = callGeocoder(searchString);
       }
-      return Promise.all(geoCodeResponse).then(results => {
-        const result = results;
-        return Promise.all(args.searchContexts.map((searchContext) => {
-          const ret = performSearch(searchString, searchContext, result, context);
-          const totalTime = (new Date().getTime() - startTime) / 1000.0;
-          if (totalTime > 4.0) {
+      try {
+        const results = await Promise.all(geoCodeResponse);
+        return await Promise.all(args.searchContexts.map((searchContext) => {
+          const ret = performSearch(searchString, searchContext, results, context);
+          const totalTime = (new Date().getTime() - startTime) / 1000;
+          if (totalTime > 4) {
             console.warn(`Search time (${searchContext}): ${totalTime} seconds`);
           }
-          return ret; 
+          return ret;
         }));
-      })
-      .catch((err) => {
+      } catch (err) {
         if (err) {
           console.error(`Got an error in search: ${err}`);
           throw new Error(err);
         }
-      });
+      }
     },
   },
 
@@ -95,6 +97,8 @@ const resolvers = {
         return ('OwnerResult');
       } else if (data.type === 'place') {
         return ('PlaceResult');
+      } else if (data.type === 'permit') {
+        return ('PermitResult');
       }
       return ('SillyResult');
     },
