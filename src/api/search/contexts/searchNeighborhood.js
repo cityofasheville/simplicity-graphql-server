@@ -5,8 +5,8 @@ function searchNeighborhood(searchString, context) {
   const myQuery = 'SELECT name, nbhd_id, abbreviation, narrative, '
   + 'st_astext(st_transform(shape, 4326)) AS polygon '
   + 'FROM internal.coa_asheville_neighborhoods '
-  + `where name ILIKE '%${searchString}%' AND narrative IN ('Active', 'In transition')`;
-  return context.pool.query(myQuery)
+  + `where name ILIKE $1 AND narrative IN ('Active', 'In transition')`;
+  return context.pool.query(myQuery, ['%'+searchString+'%'])
   .then(result => {
     if (result.rows.length === 0) return { type: 'neighborhood', results: [] };
 

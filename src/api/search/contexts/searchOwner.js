@@ -5,10 +5,17 @@ function searchOwner(searchString, context) {
 
   const substrings = searchString.split(' ');
   substrings.forEach((itm, index) => {
-    query += `formatted_owner_name ILIKE '%${itm}%' `;
-    if (index < substrings.length - 1) query += 'AND ';
+    substrings[index] = '%' + itm + '%';
   });
-  return context.pool.query(query)
+  const params = substrings.map((itm, index) => {return '$' + (index + 1)});
+
+  substrings.forEach((itm, index) => {
+    query += `formatted_owner_name ILIKE ${params[index]} `;
+    if (index < substrings.length - 1) {
+      query += 'AND ';
+    }
+  });
+  return context.pool.query(query, substrings)
   .then(result => {
     if (result.rows.length === 0) return { type: 'owner', results: [] };
     const nameMap = {};

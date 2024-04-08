@@ -13,8 +13,12 @@ function searchProperty(searchString, geoCodeResponseIn, context) {
     );
   }
 
-  const fquery = 'SELECT DISTINCT property_pinnum '
-  + 'from simplicity.get_search_addresses($1, $2, $3, $4, $5, $6, $7)';
+  console.log(`searchProperty: ${JSON.stringify(geoCodeResponse)}`);
+
+  const fquery = `
+    SELECT DISTINCT property_pinnum
+    from simplicity.get_search_addresses($1, $2, $3, $4, $5, $6, $7)
+    `;
 
   const args = [
     geoCodeResponse.locNumber,
@@ -31,15 +35,16 @@ function searchProperty(searchString, geoCodeResponseIn, context) {
     if (result.rows.length === 0) {
       return Promise.resolve([]);
     }
-    const pinList = result.rows.map(row => {
-      return `'${row.property_pinnum}'`;
-    }).join(',');
+    const pinList = result.rows.map(row => row.property_pinnum);
 
-    const pQuery = 'SELECT pin, pinext, pinnum, address, cityname, '
-    + 'zipcode, civicaddress_id '
-    + 'FROM simplicity.v_simplicity_properties '
-        + `WHERE pinnum IN (${pinList})`;
-    return context.pool.query(pQuery)
+    console.log("pinlist", pinList)
+    const pQuery = `
+    SELECT pin, pinext, pinnum, address, cityname,
+    zipcode, civicaddress_id
+    FROM simplicity.v_simplicity_properties
+    WHERE pinnum IN ($1)
+    `;
+    return context.pool.query(pQuery, pinList)
     .then(props => {
       return props.rows.map(row => {
         return {

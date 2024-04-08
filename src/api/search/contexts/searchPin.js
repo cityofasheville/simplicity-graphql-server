@@ -9,11 +9,11 @@ function searchPin(searchString, context) {
    case when streettype = '' then '' else ' ' || streettype end as address, 
   cityname, zipcode
   FROM internal.bc_property
-  where cast(pin as TEXT) = '${searchString}' OR 
-  cast(pinnum as TEXT) = '${searchString}' limit 5;
+  where cast(pin as TEXT) = $1 OR 
+  cast(pinnum as TEXT) = $1 limit 5;
   `;
 
-  return context.pool.query(myQuery)
+  return context.pool.query(myQuery, [searchString])
     .then(result => {
       if (result.rows.length === 0) return { type: 'pin', results: [] };
 

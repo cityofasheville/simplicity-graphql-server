@@ -1,3 +1,4 @@
+// Not in use, but kept for reference
 const resolvers = {
   Query: {
     projects(obj, args, context) {

@@ -54,12 +54,14 @@ const resolvers = {
   Query: {
     cip_project_categories(obj, args, context) {
       pool = context.pool;
-      const query = 'select C.category_name, C.display_order, '
-      + 'COUNT(M.objectid) AS total_count, '
-      + "SUM(CASE WHEN M.type = 'Bond' THEN 1 ELSE 0 END) AS bond_count "
-      + 'from internal.capital_projects_master_categories C left outer join '
-      + 'internal.capital_projects_master M on M.category = C.category_name '
-      + 'group by C.category_name, C.display_order';
+      const query = `
+      select C.category_name, C.display_order, 
+            COUNT(M.objectid) AS total_count, 
+            SUM(CASE WHEN M.type = Bond THEN 1 ELSE 0 END) AS bond_count 
+            from internal.capital_projects_master_categories C left outer join 
+            internal.capital_projects_master M on M.category = C.category_name 
+            group by C.category_name, C.display_order;
+      `;
       return pool.query(query)
       .then(result => {
         return result.rows.map(itm => {

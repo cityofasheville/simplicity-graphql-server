@@ -3,8 +3,8 @@ function searchCivicAddressId(searchString, context) {
   
   const myQuery = 'SELECT civicaddress_id, property_pinnum, address_full '
   + 'FROM internal.coa_bc_address_master '
-  + `WHERE cast(civicaddress_id as TEXT) = '${searchString}'  limit 5`;
-  return pool.query(myQuery)
+  + `WHERE cast(civicaddress_id as TEXT) = $1  limit 5`;
+  return pool.query(myQuery, [searchString])
   .then((result) => {
     if (result.rows.length === 0) return { type: 'civicAddressId', results: [] };
 

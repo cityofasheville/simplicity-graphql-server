@@ -146,7 +146,7 @@ function sumSubitemCounts(input_array, fields, sum_key) {
 const resolvers = {
   Query: {
     generic_stats(obj, args, context) {
-      
+      return([{"groupTitle":"Generic Stats are Disabled"}]);
 
       if (typeof args.fields === typeof undefined) return [];
       if (typeof args.dataset === typeof undefined) return [];
