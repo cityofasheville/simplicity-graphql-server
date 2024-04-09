@@ -27,3 +27,6 @@ export const handler = async (event) => {
   return response;
 };
 ```
+To hook up a domain name through Route53, point the CNAME to the "API Gateway domain name", which can be found under API Gateway/Custom Domain Names/(your domain name)/Configurations.
+It looks like this:
+CNAME d-zq9uc0z1tg.execute-api.us-east-1.amazonaws.com

@@ -69,6 +69,7 @@ resource "aws_lambda_function" "${prog_name}" {
       "dbpassword_accela": var.dbpassword_accela
       "dbdomain_accela": var.dbdomain_accela
       "database_accela": var.database_accela
+      "debug": var.debug
     }
   }
 }
