@@ -1,82 +1,3 @@
-function preparePermits(rows, before = null, after = null) {
-  if (rows.length === 0) return [];
-  let curPermit = null;
-  let curContractors = {};
-  let curComments = {};
-  const fResults = [];
-  // We get a row per unique contractor per unique comment id, so we have
-  // to filter down to just the unique information.
-  rows.forEach(itm => {
-    if (curPermit === null || curPermit.permit_number !== itm.permit_num) {
-      curPermit = {
-        permit_number: itm.permit_num,
-        permit_group: itm.permit_group,
-        permit_type: itm.permit_type,
-        permit_subtype: itm.permit_subtype,
-        permit_category: itm.permit_category,
-        permit_description: itm.permit_description,
-        applicant_name: itm.applicant_name,
-        application_name: itm.applicant_name,
-        applied_date: itm.applied_date.toISOString(),
-        status_current: itm.status_current,
-        status_date: itm.status_date.toISOString(),
-        technical_contact_name: itm.technical_contact_name,
-        technical_contact_email: itm.technical_contact_email,
-        civic_address_id: itm.civic_address_id,
-        address: itm.address,
-        created_by: itm.created_by,
-        building_value: itm.building_value,
-        job_value: itm.job_value,
-        total_project_valuation: itm.total_project_valuation,
-        total_sq_feet: itm.total_sq_feet,
-        fees: itm.fees,
-        paid: itm.paid,
-        balance: itm.balance,
-        invoiced_fee_total: itm.invoiced_fee_total,
-        x: itm.x,
-        y: itm.y,
-        contractor_names: [],
-        contractor_license_numbers: [],
-        internal_record_id: itm.internal_record_id,
-        comments: [],
-        custom_fields: [],
-      };
-      curContractors = {};
-      curComments = {};
-      fResults.push(curPermit);
-    }
-    if (itm.contractor_name !== null &&
-        !curContractors.hasOwnProperty(itm.contractor_license_number)) {
-      curContractors[itm.contractor_name] = true;
-      curPermit.contractor_names.push(itm.contractor_name);
-      curPermit.contractor_license_numbers.push(itm.contractor_license_number);
-    }
-    if (itm.comment_seq_number !== null &&
-        !curComments.hasOwnProperty(itm.comment_seq_number)) {
-      curPermit.comments.push({
-        comment_seq_number: itm.comment_seq_number,
-        comment_date: itm.comment_date,
-        comments: itm.comments,
-      });
-      curComments[itm.comment_seq_number] = true;
-    }
-  });
-
-  const final = fResults.filter((item) => {
-    let keep = true;
-    if (after || before) {
-      const date1 = new Date(item.applied_date);
-      if (after && date1 < new Date(`${after} 00:00:00 GMT-0500`)) {
-        keep = false;
-      }
-      if (keep && before && date1 > new Date(`${before} 00:00:00 GMT-0500`)) {
-        keep = false;
-      }
-    }
-    return keep;
-  });
-  return final;
-}
 
 function preparePermitTasks(rows) {
   if (rows.length === 0) return [];
@@ -136,14 +57,6 @@ function prepareInspections(rows) {
   });
 }
 
-const stdQuery = `
-SELECT A.permit_num, A.permit_group, A.permit_type, A.permit_subtype, A.permit_category, 
-A.permit_description, A.applicant_name, A.applied_date, A.status_current, A.status_date, 
-A.technical_contact_name, A.technical_contact_email,
-A.created_by, A.building_value, A.job_value, A.total_project_valuation, A.total_sq_feet, 
-A.fees, A.paid, A.balance, A.invoiced_fee_total, A.civic_address_id, A.address, A.contractor_name,
- A.contractor_license_number, A.longitude as x, A.latitude as y, A.internal_record_id, 
- B.comment_seq_number, B.comment_date, B.comments `;
 const resolvers = {
   Query: {
     firstReviewSLASummary(obj, args, context) {
@@ -181,13 +94,13 @@ const resolvers = {
     },
     permits(obj, args, context) {
       const qargs = [];
-      let query = `${stdQuery}`
-      + `
-      FROM simplicity.permits_xy_view AS A
-      LEFT JOIN internal.permit_comments AS B on A.permit_num = B.permit_num `;
+      let query = `
+      select A.*
+      from simplicity.m_v_simplicity_permits as A 
+      `;
       if (args.permit_numbers && args.permit_numbers.length > 0) {
         qargs.push(args.permit_numbers);
-        query += 'WHERE A.permit_num = ANY ($1) ';
+        query += 'WHERE A.permit_number = ANY ($1) ';
       } else if (args.before || args.after || args.permit_groups) {
         const dateField = (args.date_field === 'status_date') ? 'status_date' : 'applied_date';
         let nextParam = '$1';
@@ -209,10 +122,10 @@ const resolvers = {
           qargs.push(args.permit_groups);
         }
       }
-      query += 'ORDER BY A.permit_num DESC, B.comment_seq_number ASC ';
+      query += 'ORDER BY A.permit_number DESC ';
       return context.pool.query(query, qargs)
       .then((result) => {
-        return preparePermits(result.rows);
+        return result.rows;
       })
       .catch((err) => {
         console.log(err);
@@ -222,13 +135,15 @@ const resolvers = {
     permits_by_address(obj, args, context) {
       
       const radius = args.radius ? Number(args.radius) : 10; // State plane units are feet
-      let query = `${stdQuery}
-      from simplicity.permits_xy_view as A
-      left outer join internal.coa_bc_address_master as M
-      on ST_PointInsideCircle(ST_SetSRID(ST_Point(A.address_x, A.address_y),2264), M.address_x, M.address_y, $2)
-      LEFT JOIN internal.permit_comments AS B on A.permit_num = B.permit_num
+      let query = `
+      select A.*
+      from simplicity.m_v_simplicity_permits as A
+      inner join internal.coa_bc_address_master as M
+      on ST_DWithin(
+			ST_Transform(ST_SetSRID(ST_Point(A.x, A.y),4326),2264), 
+			ST_Transform(ST_SetSRID(ST_Point(M.longitude_wgs, M.latitude_wgs),4326),2264), $2)
       where M.civicaddress_id = $1
-      AND A.permit_group <> 'Services'
+      AND A.permit_group <> 'Services' 
       `;
       const qargs = [String(args.civicaddress_id), radius];
       let nextParam = '$3';
@@ -241,11 +156,11 @@ const resolvers = {
         qargs.push(`'${args.after}'`);
         query += `and applied_date > ${nextParam} `;
       }
-      query += 'ORDER BY A.permit_num DESC, B.comment_seq_number ASC ';
+      query += 'ORDER BY A.permit_number DESC ';
 
       return context.pool.query(query, qargs)
       .then(result => {
-        return preparePermits(result.rows, args.before, args.after);
+        return result.rows;
       })
       .catch((err) => {
         console.error(`Got an error in permits_by_address: ${err}`);
@@ -253,17 +168,17 @@ const resolvers = {
       });
     },
     permits_by_street(obj, args, context) {
-      
       const radius = (args.radius) ? Number(args.radius) : 100; // State plane units are feet
       if (args.centerline_ids.length <= 0) return [];
-      const query = 'SELECT A.*, M.address_full as address FROM simplicity.permits_along_streets_fn($1, $2) AS A ' // eslint-disable-line max-len
-      + 'LEFT JOIN internal.coa_bc_address_master as M ON A.civic_address_id::INT = M.civicaddress_id '
-      + "WHERE permit_group <> 'Services'"
-      + 'ORDER BY permit_num DESC, comment_seq_number ASC ';
+      const query = `
+      SELECT DISTINCT A.* FROM simplicity.get_permits_along_streets($1, $2, $3, $4) AS A
+      WHERE permit_group <> 'Services'
+      ORDER BY permit_number DESC
+      `;
 
-      return context.pool.query(query, [args.centerline_ids, radius])
+      return context.pool.query(query, [args.centerline_ids, radius, args.after, args.before])
       .then(result => {
-        return preparePermits(result.rows, args.before, args.after);
+        return result.rows;
       })
       .catch((err) => {
         if (err) {
@@ -275,14 +190,15 @@ const resolvers = {
     permits_by_neighborhood(obj, args, context) {
       
       if (args.nbrhd_ids.length <= 0) return [];
-      const query = 'SELECT A.*, M.address_full as address '
-      + 'FROM simplicity.permits_by_neighborhood_fn($1) AS A '
-      + 'LEFT JOIN internal.coa_bc_address_master as M ON A.civic_address_id::INT = M.civicaddress_id '
-      + "WHERE permit_group <> 'Services' "
-      + 'ORDER BY permit_num DESC, comment_seq_number ASC ';
-      return context.pool.query(query, [args.nbrhd_ids])
+      const query = `
+      SELECT A.*
+      FROM simplicity.get_permits_by_neighborhood($1, $2, $3) AS A 
+      WHERE permit_group <> 'Services' 
+      ORDER BY permit_number DESC;
+      `
+      return context.pool.query(query, [args.nbrhd_ids, args.after, args.before])
       .then(result => {
-        return preparePermits(result.rows, args.before, args.after);
+        return result.rows;
       })
       .catch((err) => {
         if (err) {
@@ -384,9 +300,9 @@ const resolvers = {
   },
 
   Permit: {
-    comments(obj, args, context) { // eslint-disable-line no-unused-vars
-      return obj.comments;
-    },
+    // comments(obj, args, context) { // eslint-disable-line no-unused-vars
+    //   return obj.comments;
+    // },
     custom_fields(obj, args, context) {
       const query = `select type, name, value from internal.permit_custom_fields 
       where permit_num = $1`;
