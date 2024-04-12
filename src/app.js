@@ -24,9 +24,9 @@ const server = new ApolloServer({
   introspection: debug,
   playground: debug,
 });
-
+console.log("runlocal",process.env.runlocal);
 const dbConfig = {
-  host: process.env.dbhost,
+  host: process.env.runlocal==="true"?"localhost":process.env.dbhost,
   user: process.env.dbuser,
   password: process.env.dbpassword,
   database: process.env.database,
@@ -36,7 +36,7 @@ const dbConfig = {
 const dbConfig_accela = {
   user: process.env.dbuser_accela,
   password: process.env.dbpassword_accela,
-  server: process.env.dbhost_accela,
+  server: process.env.runlocal==="true"?"localhost":process.env.dbhost_accela,
   domain: process.env.dbdomain_accela,
   database: process.env.database_accela,
   options: { enableArithAbort: true,  encrypt: false },
