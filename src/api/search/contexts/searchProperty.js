@@ -13,7 +13,7 @@ function searchProperty(searchString, geoCodeResponseIn, context) {
     );
   }
 
-  console.log(`searchProperty: ${JSON.stringify(geoCodeResponse)}`);
+  // console.log(`searchProperty: ${JSON.stringify(geoCodeResponse)}`);
 
   const fquery = `
     SELECT DISTINCT property_pinnum
@@ -37,14 +37,14 @@ function searchProperty(searchString, geoCodeResponseIn, context) {
     }
     const pinList = result.rows.map(row => row.property_pinnum);
 
-    console.log("pinlist", pinList)
+    // console.log("pinlist", pinList);
     const pQuery = `
     SELECT pin, pinext, pinnum, address, cityname,
     zipcode, civicaddress_id
     FROM simplicity.v_simplicity_properties
-    WHERE pinnum IN ($1)
+    WHERE pinnum = ANY($1)
     `;
-    return context.pool.query(pQuery, pinList)
+    return context.pool.query(pQuery, [pinList])
     .then(props => {
       return props.rows.map(row => {
         return {
