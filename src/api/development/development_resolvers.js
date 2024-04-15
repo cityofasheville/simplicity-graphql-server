@@ -133,7 +133,6 @@ const resolvers = {
       });
     },
     permits_by_address(obj, args, context) {
-      
       const radius = args.radius ? Number(args.radius) : 10; // State plane units are feet
       let query = `
       select A.*
@@ -297,6 +296,14 @@ const resolvers = {
         throw new Error(`Got an error in inspections: ${JSON.stringify(err)}`);
       });
     },
+    async permit_realtime(obj, args, context) { // deprecated
+      const newargs = { permit_numbers: [ args.permit_number ] };
+      let x = await resolvers.Query.permits(obj, newargs, context);
+      return x[0];
+    },
+    async permits_by_address_realtime(obj, args, context) { // deprecated
+      return await resolvers.Query.permits_by_address(obj, args, context);
+    },
   },
 
   Permit: {
@@ -315,7 +322,13 @@ const resolvers = {
         throw new Error(`Got an error in Permit.custom_fields: ${err}`);
       });
     },
+
   },
+  PermitRT: { // deprecated
+    custom_fields(obj, args, context) {
+      return resolvers.Permit.custom_fields(obj, args, context);
+    },    
+  }
 };
 
 export default resolvers;

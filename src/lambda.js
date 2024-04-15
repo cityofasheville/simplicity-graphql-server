@@ -5,7 +5,6 @@ import {
 import { 
   server,
   pool,
-  pool_accela
 } from "./app.js";
 
 export default startServerAndCreateLambdaHandler(
@@ -16,7 +15,6 @@ export default startServerAndCreateLambdaHandler(
       console.log("request: ", event.body);
       return {
         pool,
-        pool_accela,
         user: null,
         employee: null,
       };

@@ -47,8 +47,8 @@ const baseSchema = `
     projects (status: [String], priority: [String], reqtype: String, after: String, before: String): [ITProject]
     pcard_transactions (before: String, after: String): [PCardTransaction]
     pcard_statements_status (before: String, after: String): [PCardStatementStatus]
-    permit_realtime(permit_number: String): PermitRT
-    permits_by_address_realtime(civicaddress_id: Int!): [PermitRT]
+    permit_realtime(permit_number: String): PermitRT @deprecated(reason: "Use permits instead")
+    permits_by_address_realtime(civicaddress_id: Int!): [PermitRT] @deprecated(reason: "Use permits_by_address instead")
     blockgroups (geoid: [String] ): [Blockgroup]
   }
 `;

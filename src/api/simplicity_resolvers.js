@@ -7,7 +7,6 @@ import street_resolvers from "./street/street_resolvers.js";
 import neighborhood_resolvers from "./neighborhood/neighborhood_resolvers.js";
 import property_resolvers from "./property/property_resolvers.js";
 import development_resolvers from "./development/development_resolvers.js";
-import realtime_resolvers from "./development/realtime_resolvers.js";
 import crime_resolvers from "./crime/crime_resolvers.js";
 import budget_resolvers from "./budget/budget_resolvers.js";
 import cip_resolvers from "./cip/cip_resolvers.js";
@@ -42,7 +41,6 @@ street_resolvers,
 neighborhood_resolvers,
 property_resolvers,
 development_resolvers,
-realtime_resolvers,
 crime_resolvers,
 budget_resolvers,
 cip_resolvers,

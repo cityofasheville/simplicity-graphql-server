@@ -64,11 +64,6 @@ resource "aws_lambda_function" "${prog_name}" {
       "dbuser": var.dbuser
       "dbpassword": var.dbpassword
       "database": var.database
-      "dbhost_accela": var.dbhost_accela
-      "dbuser_accela": var.dbuser_accela
-      "dbpassword_accela": var.dbpassword_accela
-      "dbdomain_accela": var.dbdomain_accela
-      "database_accela": var.database_accela
       "debug": var.debug
     }
   }

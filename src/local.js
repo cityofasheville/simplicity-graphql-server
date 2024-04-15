@@ -3,7 +3,6 @@ import { startStandaloneServer } from '@apollo/server/standalone';
 import { 
   server,
   pool,
-  pool_accela
 } from "./app.js";
 
 (async () => {
@@ -14,7 +13,6 @@ import {
       context: () => {
         return {
           pool,
-          pool_accela,
           user: null,
           employee: null,
         }

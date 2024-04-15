@@ -43,31 +43,6 @@ variable "database" {
  description = "DB Env Var"
 }
 
-variable "dbhost_accela" {
- type = string
- description = "DB Env Var"
-}
-
-variable "dbuser_accela" {
- type = string
- description = "DB Env Var"
-}
-
-variable "dbpassword_accela" {
- type = string
- description = "DB Env Var"
-}
-
-variable "dbdomain_accela" {
- type = string
- description = "DB Env Var"
-}
-
-variable "database_accela" {
- type = string
- description = "DB Env Var"
-}
-
 variable "debug" {
  type = string
  description = "DB Env Var"
