@@ -45,3 +45,5 @@ funcdir/
 .terraform*
 *.zip
 
+# Local sensitive files
+*NOGITHUB*
