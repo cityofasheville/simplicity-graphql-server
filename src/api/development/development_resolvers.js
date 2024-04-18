@@ -136,13 +136,11 @@ const resolvers = {
       const radius = args.radius ? Number(args.radius) : 10; // State plane units are feet
       let query = `
       select A.*
-      from simplicity.m_v_simplicity_permits as A
-      inner join internal.coa_bc_address_master as M
-      on ST_DWithin(
-			ST_Transform(ST_SetSRID(ST_Point(A.x, A.y),4326),2264), 
-			ST_Transform(ST_SetSRID(ST_Point(M.longitude_wgs, M.latitude_wgs),4326),2264), $2)
+      from simplicity.m_v_simplicity_permits as A,
+      internal.coa_bc_address_master M
       where M.civicaddress_id = $1
-      AND A.permit_group <> 'Services' 
+      AND A.permit_group <> 'Services'
+      and ST_DWithin(M.shape, ST_Transform(ST_SetSRID(ST_Point(A.x, A.y),4326),2264), $2)
       `;
       const qargs = [String(args.civicaddress_id), radius];
       let nextParam = '$3';
