@@ -1,5 +1,5 @@
 -- 
-drop materialized view simplicity.m_v_simplicity_permits cascade;
+drop materialized view simplicity.m_v_simplicity_permits;
 
 
 -- simplicity.m_v_simplicity_permits source

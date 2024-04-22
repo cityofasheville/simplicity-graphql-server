@@ -57,6 +57,27 @@ function prepareInspections(rows) {
   });
 }
 
+// To work around the 6MB limit on Lambda response size, we truncate the data.
+// This is a temporary solution to a pathological query. 
+// It will fail again as the data grows. Pagination would work better.
+// "Permits all-time by neighborhood" is not a very useful feature of Simplicity, 
+// except as a download, which is handled by the open data portal.
+function truncateLargeData(rows) {
+  const dataLength = JSON.stringify(rows).length;
+  if (dataLength > 6_000_000) {
+    rows.forEach((row) => {  // temp remove comments to get under 6MB
+      row.comments = [];
+    });
+    const dataLength2 = JSON.stringify(rows).length;
+    if (dataLength2 > 6_000_000) {
+      rows.forEach((row) => {  // temp truncate description to get under 6MB
+        row.permit_description = row.permit_description?row.permit_description.substring(0, 10):null;
+      });
+    }
+  }
+  return rows;
+}
+
 const resolvers = {
   Query: {
     firstReviewSLASummary(obj, args, context) {
@@ -70,27 +91,27 @@ const resolvers = {
         q += ` where task in (${tasks})`;
       }
       return pool.query(q)
-      .then(result => {
-        if (result.rows.length === 0) return [];
-        return result.rows.map(item => {
-          const total = Number(item.met_sla) + Number(item.past_sla);
-          const pct = 100.0 * Number(item.met_sla) / total;
-          return {
-            task: item.task,
-            met_sla: item.met_sla,
-            past_sla: item.past_sla,
-            met_sla_percent: pct.toPrecision(5),
-            month: item.month,
-            year: item.year,
-          };
+        .then(result => {
+          if (result.rows.length === 0) return [];
+          return result.rows.map(item => {
+            const total = Number(item.met_sla) + Number(item.past_sla);
+            const pct = 100.0 * Number(item.met_sla) / total;
+            return {
+              task: item.task,
+              met_sla: item.met_sla,
+              past_sla: item.past_sla,
+              met_sla_percent: pct.toPrecision(5),
+              month: item.month,
+              year: item.year,
+            };
+          });
+        })
+        .catch(err => {
+          if (err) {
+            console.log(`Error in firstReviewSLASummary: ${JSON.stringify(err)}`);
+          }
+          return [];
         });
-      })
-      .catch(err => {
-        if (err) {
-          console.log(`Error in firstReviewSLASummary: ${JSON.stringify(err)}`);
-        }
-        return [];
-      });
     },
     permits(obj, args, context) {
       const qargs = [];
@@ -124,7 +145,7 @@ const resolvers = {
       }
       query += 'ORDER BY A.permit_number DESC ';
       return context.pool.query(query, qargs)
-      .then((result) => {
+        .then((result) => {
         return result.rows;
       })
       .catch((err) => {
@@ -156,13 +177,13 @@ const resolvers = {
       query += 'ORDER BY A.permit_number DESC ';
 
       return context.pool.query(query, qargs)
-      .then(result => {
-        return result.rows;
-      })
-      .catch((err) => {
-        console.error(`Got an error in permits_by_address: ${err}`);
-        throw new Error(`Got an error in permits_by_address: ${err}`);
-      });
+        .then(result => {
+          return result.rows;
+        })
+        .catch((err) => {
+          console.error(`Got an error in permits_by_address: ${err}`);
+          throw new Error(`Got an error in permits_by_address: ${err}`);
+        });
     },
     permits_by_street(obj, args, context) {
       const radius = (args.radius) ? Number(args.radius) : 100; // State plane units are feet
@@ -174,51 +195,57 @@ const resolvers = {
       `;
 
       return context.pool.query(query, [args.centerline_ids, radius, args.after, args.before])
-      .then(result => {
-        return result.rows;
-      })
-      .catch((err) => {
-        if (err) {
-          console.error(`Got an error in permits_by_street: ${err}`);
-          throw new Error(err);
-        }
-      });
+        .then(result => {
+          return result.rows;
+        })
+        .catch((err) => {
+          if (err) {
+            console.error(`Got an error in permits_by_street: ${err}`);
+            throw new Error(err);
+          }
+        });
     },
     permits_by_neighborhood(obj, args, context) {
-      
+
       if (args.nbrhd_ids.length <= 0) return [];
       const query = `
-      SELECT A.*
+			SELECT permit_number, permit_group, permit_type, permit_subtype, permit_category, permit_description, 
+      -- substring(A.permit_description,0,20) as permit_description, 
+			applicant_name, application_name, applied_date, status_current, status_date, technical_contact_name, 
+			technical_contact_email, created_by, building_value, job_value, total_project_valuation, total_sq_feet, 
+			fees, paid, balance, invoiced_fee_total, civic_address_id, address, city, zip, pinnum, x, y, 
+			internal_record_id, contractor_names, contractor_license_numbers, "comments"
       FROM simplicity.get_permits_by_neighborhood($1, $2, $3) AS A 
       WHERE permit_group <> 'Services' 
       ORDER BY permit_number DESC;
       `
       return context.pool.query(query, [args.nbrhd_ids, args.after, args.before])
-      .then(result => {
-        return result.rows;
-      })
-      .catch((err) => {
-        if (err) {
-          console.error(`Got an error in permits_by_neighborhood: ${err}`);
-          throw new Error(err);
-        }
-      });
+        .then(result => {
+          const rows = truncateLargeData(result.rows);
+          return rows;
+        })
+        .catch((err) => {
+          if (err) {
+            console.error(`Got an error in permits_by_neighborhood: ${err}`);
+            throw new Error(err);
+          }
+        });
     },
     firstReviewSLAItems(obj, args, context) {
       const pool = context.pool;
       return pool.query(
         'SELECT * from internal.dsd_first_review_sla'
       )
-      .then((result) => {
-        if (result.rows.length === 0) return null;
-        const p = result.rows;
-        return p;
-      })
-      .catch((err) => {
-        if (err) {
-          console.log(`Got an error in firstReviewSLAItems: ${JSON.stringify(err)}`);
-        }
-      });
+        .then((result) => {
+          if (result.rows.length === 0) return null;
+          const p = result.rows;
+          return p;
+        })
+        .catch((err) => {
+          if (err) {
+            console.log(`Got an error in firstReviewSLAItems: ${JSON.stringify(err)}`);
+          }
+        });
     },
     permit_tasks(obj, args, context) {
       const qargs = [];
@@ -249,13 +276,13 @@ const resolvers = {
       }
       query += 'ORDER BY A.permit_num DESC ';
       return context.pool.query(query, qargs)
-      .then((result) => {
-        return preparePermitTasks(result.rows);
-      })
-      .catch((err) => {
-        console.log(err);
-        throw new Error(`Got an error in permit_tasks: ${JSON.stringify(err)}`);
-      });
+        .then((result) => {
+          return preparePermitTasks(result.rows);
+        })
+        .catch((err) => {
+          console.log(err);
+          throw new Error(`Got an error in permit_tasks: ${JSON.stringify(err)}`);
+        });
     },
     inspections(obj, args, context) {
       const qargs = [];
@@ -286,16 +313,16 @@ const resolvers = {
       }
       query += 'ORDER BY A.permit_num DESC ';
       return context.pool.query(query, qargs)
-      .then((result) => {
-        return prepareInspections(result.rows);
-      })
-      .catch((err) => {
-        console.log(err);
-        throw new Error(`Got an error in inspections: ${JSON.stringify(err)}`);
-      });
+        .then((result) => {
+          return prepareInspections(result.rows);
+        })
+        .catch((err) => {
+          console.log(err);
+          throw new Error(`Got an error in inspections: ${JSON.stringify(err)}`);
+        });
     },
     async permit_realtime(obj, args, context) { // deprecated
-      const newargs = { permit_numbers: [ args.permit_number ] };
+      const newargs = { permit_numbers: [args.permit_number] };
       let x = await resolvers.Query.permits(obj, newargs, context);
       return x[0];
     },
@@ -311,21 +338,21 @@ const resolvers = {
     custom_fields(obj, args, context) {
       const query = `select type, name, value from internal.permit_custom_fields 
       where permit_num = $1`;
-      return context.pool.query(query,[obj.permit_number])
-      .then((result) => {
-        return result.rows;
-      })
-      .catch((err) => {
-        console.log(err);
-        throw new Error(`Got an error in Permit.custom_fields: ${err}`);
-      });
+      return context.pool.query(query, [obj.permit_number])
+        .then((result) => {
+          return result.rows;
+        })
+        .catch((err) => {
+          console.log(err);
+          throw new Error(`Got an error in Permit.custom_fields: ${err}`);
+        });
     },
 
   },
   PermitRT: { // deprecated
     custom_fields(obj, args, context) {
       return resolvers.Permit.custom_fields(obj, args, context);
-    },    
+    },
   }
 };
 

@@ -10,14 +10,14 @@ DECLARE
 BEGIN
 	for i in 1..array_length(cid,1) loop
     	FOR r IN
-			SELECT permit_number, permit_group, permit_type, permit_subtype, permit_category, permit_description, 
+			SELECT A.permit_number, permit_group, permit_type, permit_subtype, permit_category, permit_description, 
 			applicant_name, application_name, applied_date::text, status_current, status_date::text, technical_contact_name, 
 			technical_contact_email, created_by, building_value, job_value, total_project_valuation, total_sq_feet, 
 			fees, paid, balance, invoiced_fee_total, civic_address_id, address, city, zip, pinnum, x, y, 
 			internal_record_id, contractor_names, contractor_license_numbers, "comments"
-            FROM simplicity.m_v_simplicity_permits AS A
-            LEFT JOIN internal.bc_street AS B
-            ON ST_DWithin(B.shape, ST_Transform(ST_SetSRID(ST_Point(A.x, A.y),4326),2264), ldist)
+			FROM simplicity.m_v_simplicity_permits AS A
+			inner join simplicity.m_v_link_permits_along_street B
+			on A.permit_number = B.permit_number
             WHERE B.centerline_id = cid[i]
             and applied_date between afterdate and beforedate
 		LOOP
