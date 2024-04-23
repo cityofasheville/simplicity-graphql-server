@@ -60,8 +60,6 @@ function prepareInspections(rows) {
 // To work around the 6MB limit on Lambda response size, we truncate the data.
 // This is a temporary solution to a pathological query. 
 // It will fail again as the data grows. Pagination would work better.
-// "Permits all-time by neighborhood" is not a very useful feature of Simplicity, 
-// except as a download, which is handled by the open data portal.
 function truncateLargeData(rows) {
   const dataLength = JSON.stringify(rows).length;
   if (dataLength > 6_000_000) {
@@ -71,7 +69,7 @@ function truncateLargeData(rows) {
     const dataLength2 = JSON.stringify(rows).length;
     if (dataLength2 > 6_000_000) {
       rows.forEach((row) => {  // temp truncate description to get under 6MB
-        row.permit_description = row.permit_description?row.permit_description.substring(0, 10):null;
+        row.permit_description = row.permit_description ? row.permit_description.substring(0, 10) : null;
       });
     }
   }
@@ -146,12 +144,12 @@ const resolvers = {
       query += 'ORDER BY A.permit_number DESC ';
       return context.pool.query(query, qargs)
         .then((result) => {
-        return result.rows;
-      })
-      .catch((err) => {
-        console.log(err);
-        throw new Error(`Got an error in permits: ${JSON.stringify(err)}`);
-      });
+          return result.rows;
+        })
+        .catch((err) => {
+          console.log(err);
+          throw new Error(`Got an error in permits: ${JSON.stringify(err)}`);
+        });
     },
     permits_by_address(obj, args, context) {
       const radius = args.radius ? Number(args.radius) : 10; // State plane units are feet
@@ -178,7 +176,8 @@ const resolvers = {
 
       return context.pool.query(query, qargs)
         .then(result => {
-          return result.rows;
+          const rows = truncateLargeData(result.rows);
+          return rows;
         })
         .catch((err) => {
           console.error(`Got an error in permits_by_address: ${err}`);
