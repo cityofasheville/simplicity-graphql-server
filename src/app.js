@@ -5,9 +5,7 @@ import { ApolloServer } from '@apollo/server';
 import "dotenv/config.js";
 
 import pgpkg from 'pg';
-const { Pool, defaults } = pgpkg;
-
-defaults.poolSize = 1;
+const { Pool } = pgpkg;
 
 // PLAYGROUND
 let debug = false;
@@ -28,6 +26,7 @@ const dbConfig = {
   database: process.env.database,
   port: 5432,
   ssl: false,
+  max: 1
 };
 
 console.info('Connect to database');
