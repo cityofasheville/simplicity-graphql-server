@@ -155,11 +155,13 @@ const resolvers = {
       const radius = args.radius ? Number(args.radius) : 10; // State plane units are feet
       let query = `
       select A.*
-      from simplicity.m_v_simplicity_permits as A,
-      internal.coa_bc_address_master M
-      where M.civicaddress_id = $1
+      from internal.coa_bc_address_master M1
+      inner join internal.coa_bc_address_master M2
+      on ST_DWithin(M1.shape, M2.shape, $2) --uses index!
+      inner join simplicity.m_v_simplicity_permits A
+      on M2.civicaddress_id::text = A.civic_address_id
+      where M1.civicaddress_id = $1
       AND A.permit_group <> 'Services'
-      and ST_DWithin(M.shape, ST_Transform(ST_SetSRID(ST_Point(A.x, A.y),4326),2264), $2)
       `;
       const qargs = [String(args.civicaddress_id), radius];
       let nextParam = '$3';
@@ -180,7 +182,7 @@ const resolvers = {
           return rows;
         })
         .catch((err) => {
-          console.error(`Got an error in permits_by_address: ${err}`);
+          console.error(`Got an error in permits_by_address: ${err} ${query} ${qargs}`);
           throw new Error(`Got an error in permits_by_address: ${err}`);
         });
     },
