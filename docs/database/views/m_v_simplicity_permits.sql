@@ -88,6 +88,7 @@ WITH DATA;
 -- View indexes:
 CREATE INDEX m_v_simplicity_permits_civic_address_id_idx ON simplicity.m_v_simplicity_permits USING btree (civic_address_id);
 CREATE UNIQUE INDEX m_v_simplicity_permits_permit_num_idx ON simplicity.m_v_simplicity_permits USING btree (permit_number);
+CREATE INDEX m_v_simplicity_permits_applied_date_idx ON simplicity.m_v_simplicity_permits (applied_date,permit_number);
 
 
 -- To refresh the materialized view

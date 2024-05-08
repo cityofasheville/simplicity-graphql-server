@@ -141,7 +141,7 @@ const resolvers = {
           qargs.push(args.permit_groups);
         }
       }
-      query += 'ORDER BY A.permit_number DESC ';
+      query += 'ORDER BY A.applied_date DESC, A.permit_number DESC ';
       return context.pool.query(query, qargs)
         .then((result) => {
           return result.rows;
@@ -174,7 +174,7 @@ const resolvers = {
         qargs.push(`'${args.after}'`);
         query += `and applied_date > ${nextParam} `;
       }
-      query += 'ORDER BY A.permit_number DESC ';
+      query += 'ORDER BY A.applied_date DESC, A.permit_number DESC ';
 
       return context.pool.query(query, qargs)
         .then(result => {
@@ -192,7 +192,7 @@ const resolvers = {
       const query = `
       SELECT DISTINCT A.* FROM simplicity.get_permits_along_streets($1, $2, $3, $4) AS A
       WHERE permit_group <> 'Services'
-      ORDER BY permit_number DESC
+      ORDER BY A.applied_date DESC, A.permit_number DESC
       `;
 
       return context.pool.query(query, [args.centerline_ids, radius, args.after, args.before])
@@ -218,7 +218,7 @@ const resolvers = {
 			internal_record_id, contractor_names, contractor_license_numbers, "comments"
       FROM simplicity.get_permits_by_neighborhood($1, $2, $3) AS A 
       WHERE permit_group <> 'Services' 
-      ORDER BY permit_number DESC;
+      ORDER BY A.applied_date DESC, A.permit_number DESC;
       `
       return context.pool.query(query, [args.nbrhd_ids, args.after, args.before])
         .then(result => {
@@ -275,7 +275,7 @@ const resolvers = {
           qargs.push(args.permit_groups);
         }
       }
-      query += 'ORDER BY A.permit_num DESC ';
+      query += 'ORDER BY A.applied_date DESC, A.permit_number DESC ';
       return context.pool.query(query, qargs)
         .then((result) => {
           return preparePermitTasks(result.rows);
