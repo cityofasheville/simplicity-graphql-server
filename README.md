@@ -7,11 +7,15 @@ GraphQL backend Server for the SimpliCity system.
 - Requires a file ```.env``` in the root directory based on ```env.example```.
 
 ### Commands
-- Test Locally: start server: ```npm start``` 
 - Test Locally, run one: ```npm test``` (runs Lambda locally with test/sam_event.json as event)
-- Deploy: ```npm run deploy```
-- Destroy: ```npm run destroy``` (removes all objects from AWS)
-- Clean: ```npm run clean``` (removes local temp files)
+- Test Locally: npm start
+- Deploy: 
+  - npm run deploy prod
+  - npm run deploy dev
+- Destroy: (removes all objects from AWS)
+  - npm run destroy prod
+  - npm run destroy dev 
+- Clean: npm run clean (removes local temp files)
 
 
 

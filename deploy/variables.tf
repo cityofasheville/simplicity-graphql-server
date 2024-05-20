@@ -48,7 +48,12 @@ variable "debug" {
  description = "DB Env Var"
 }
 
-variable "prog_name" {
- type = string
- description = "DB Env Var"
+# Name of Lambda
+variable "production_name" {
+  type          = string
+  description   = "Name of Program"
+}
+variable "development_name" {
+  type          = string
+  description   = "Name of Program"
 }
