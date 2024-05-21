@@ -45,6 +45,7 @@ type Permit {
   internal_record_id: String
   comments: [PermitComment]
   custom_fields: [PermitCustomField]
+  address_info: Address
 }
 
 type PermitTask {

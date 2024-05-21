@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "export runlocal=true&&nodemon --exec node src/local.js",
+    "startlan": "nodemon --exec node src/local.js",
     "test": "cd test; sam local invoke --event sam_event.json",
     "clean": "rm -rf deploy/build && rm -rf node_modules/",
     "deploy": "cd deploy && node deploy.js",

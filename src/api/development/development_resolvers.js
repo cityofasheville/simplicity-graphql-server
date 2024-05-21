@@ -1,3 +1,5 @@
+import addressresolver from '../address/address_resolvers.js';
+import addressschema from '../address/address_schema.js';
 
 function preparePermitTasks(rows) {
   if (rows.length === 0) return [];
@@ -348,6 +350,12 @@ const resolvers = {
           throw new Error(`Got an error in Permit.custom_fields: ${err}`);
         });
     },
+    async address_info(obj, args, context) {
+      const civicaddress_ids = [obj.civic_address_id];
+      args.civicaddress_ids = civicaddress_ids;
+      const ret = await addressresolver.Query.addresses(obj, args, context);
+      return ret[0];
+    }
 
   },
   PermitRT: { // deprecated

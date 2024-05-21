@@ -8,14 +8,15 @@ GraphQL backend Server for the SimpliCity system.
 
 ### Commands
 - Test Locally, run one: ```npm test``` (runs Lambda locally with test/sam_event.json as event)
-- Test Locally: npm start
+- Test Locally: ```npm start``` (or ```npm run startlan``` from the City network)
 - Deploy: 
-  - npm run deploy prod
-  - npm run deploy dev
+  - ```npm run deploy prod```
+  - ```npm run deploy dev```
 - Destroy: (removes all objects from AWS)
-  - npm run destroy prod
-  - npm run destroy dev 
-- Clean: npm run clean (removes local temp files)
+  - ```npm run destroy prod```
+  - ```npm run destroy dev ```
+- Clean:  (removes local temp files)
+  - ```npm run clean```
 
 
 
