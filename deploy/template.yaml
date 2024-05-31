@@ -1,0 +1,13 @@
+# This file is used to run a SAM deploy, which is needed to cross compile some Python packages with native dependencies.
+AWSTemplateFormatVersion : '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Description: SAM Local
+Resources:
+  program:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Runtime: python3.12
+      Handler: index.handler
+      Timeout: 60

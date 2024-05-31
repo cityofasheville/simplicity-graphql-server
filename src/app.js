@@ -2,7 +2,6 @@ import typeDefs from './schema.js';
 import resolvers from './resolvers.js';
 
 import { ApolloServer } from '@apollo/server';
-import "dotenv/config.js";
 
 import pgpkg from 'pg';
 const { Pool } = pgpkg;

@@ -1,12 +1,10 @@
 {
   "name": "simplicity-graphql-server",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "GraphQL server for SimpliCity II",
   "type": "module",
   "scripts": {
-    "start": "export runlocal=true&&nodemon --exec node src/local.js",
-    "startlan": "nodemon --exec node src/local.js",
-    "test": "cd test; sam local invoke --event sam_event.json",
+    "start": "nodemon --exec node --env-file=.env src/local.js",
     "clean": "rm -rf deploy/build && rm -rf node_modules/",
     "deploy": "cd deploy && node deploy.js",
     "destroy": "cd deploy && node destroy.js"
@@ -30,7 +28,7 @@
     "pg": "^8.6.0"
   },
   "devDependencies": {
-    "dotenv": "^16.4.4",
-    "nodemon": "^3.1.0"
+    "nodemon": "^3.1.0",
+    "yaml": "^2.4.2"
   }
 }

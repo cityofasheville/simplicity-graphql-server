@@ -40,10 +40,7 @@ node_modules
 
 # deployments
 build/
-nodejs/
-funcdir/
-.terraform*
-*.zip
+deploy.yaml
 
 # Local sensitive files
 *NOGITHUB*

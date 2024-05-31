@@ -7,8 +7,8 @@ import {
   pool,
 } from "./app.js";
 
-export default startServerAndCreateLambdaHandler(
-  server,
+let handler = startServerAndCreateLambdaHandler(
+    server,
   handlers.createAPIGatewayProxyEventV2RequestHandler(),
   {
     context: async ({ event }) => {
@@ -22,4 +22,5 @@ export default startServerAndCreateLambdaHandler(
   },
 );
 console.log(`SimpliCity: GraphQL Server is now running`);
+export { handler };
 

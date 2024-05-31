@@ -13,21 +13,17 @@ try {
 
   let buildDir = 'build/';
 
-  // get Lambda name from .env variables
-  let env = await fs.readFile('../.env', 'utf8');
-  let lambdaName;
   if (deployType === 'prod') {
-    lambdaName = env.split('\n').find(line => line.startsWith('production_name')).split('=')[1].replace(/"| /g, '');
     buildDir += deployType;
   } else if (deployType === 'dev') {
-    lambdaName = env.split('\n').find(line => line.startsWith('development_name')).split('=')[1].replace(/"| /g, '');
     buildDir += deployType;
   } else {
     console.error('Usage: npm run destroy prod|dev');
     process.exit(1);
   }
 
-  execSync(`cd ${buildDir} && terraform init && terraform destroy -auto-approve -var-file=../../../.env`, { stdio: 'inherit' });
+  execSync(`cd ${buildDir} && terraform init && terraform destroy -auto-approve`, { stdio: 'inherit' });
+
 }
 catch (err) {
   console.log(err);

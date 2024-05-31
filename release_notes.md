@@ -2,6 +2,15 @@
 
 ## Current
 
+## 4.1.1
+* Using terraform_template v2 to deploy
+
+## 4.1.0
+* Using terraform_template to deploy: separate deploy prod/dev
+
+## 4.0.0
+* Moved code to AWS Lambda
+
 ## 3.14.0
 * Apollo 4, new Geocoder, add Blockgroups
 
