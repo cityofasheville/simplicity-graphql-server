@@ -8,7 +8,9 @@ GraphQL backend Server for the SimpliCity system.
 
 ### Commands
 - Test Locally, run one: ```npm test``` (runs Lambda locally with test/sam_event.json as event)
-- Test Locally: ```npm start``` (or ```npm run startlan``` from the City network)
+- Test Locally: 
+  - ```npm start``` To use Bastion Server set runlocal=true in .env
+                    From the City network runlocal=false
 - Deploy: 
   - ```npm run deploy prod```
   - ```npm run deploy dev```

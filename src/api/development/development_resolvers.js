@@ -116,9 +116,49 @@ const resolvers = {
     permits(obj, args, context) {
       const qargs = [];
       let query = `
-      select A.*
-      from simplicity.m_v_simplicity_permits as A 
-      `;
+      select *
+      from simplicity.m_v_simplicity_permits AS A
+      `
+      if(args.trc) { // Limit to just large permits
+        query = `
+        select * from (
+          select *
+          from simplicity.m_v_simplicity_permits
+          where 
+          permit_group = 'Planning' and
+          permit_type = 'Development' and
+          permit_subtype = 'Level I'
+            union 
+          select *
+          from simplicity.m_v_simplicity_permits
+          where 
+          permit_group = 'Planning' and
+          permit_type = 'Subdivision' and
+          permit_subtype = 'Major'
+            union 
+          select *
+          from simplicity.m_v_simplicity_permits
+          where 
+          permit_group = 'Planning' and
+          permit_type = 'Development' and
+          permit_subtype = 'Level II' 
+            union 
+          select *
+          from simplicity.m_v_simplicity_permits
+          where 
+          permit_group = 'Planning' and
+          permit_type = 'Development' and
+          permit_subtype = 'Conditional Zoning'
+            union 
+          select *
+          from simplicity.m_v_simplicity_permits
+          where 
+          permit_group = 'Planning' and
+          permit_type = 'Development' and
+          permit_subtype = 'Conditional Use' 
+        ) as A
+        `;
+      }
       if (args.permit_numbers && args.permit_numbers.length > 0) {
         qargs.push(args.permit_numbers);
         query += 'WHERE A.permit_number = ANY ($1) ';
