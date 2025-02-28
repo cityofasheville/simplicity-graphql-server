@@ -47,28 +47,25 @@ try {
 
   // Set domain name and certificate for API Gateway
   if (config.lambda_options.api_gateway === 'true') {
+    let prodDomain = config.api_gateway_settings.production_domain_name;
+    let prodCertificateArn = config.api_gateway_settings.production_certificate_arn;
+    let devDomain = config.api_gateway_settings.development_domain_name;
+    let devCertificateArn = config.api_gateway_settings.development_certificate_arn;
+  
     if (deploy_type === 'production' || deploy_type === 'main') {
-      config.domain_name = config.api_gateway_settings.production_domain_name;
-      config.certificate_arn = config.api_gateway_settings.production_certificate_arn;
+      config.domain_name = prodDomain;
+      config.certificate_arn = prodCertificateArn;
     } else if (deploy_type === 'development') {
-      if (config.api_gateway_settings.development_domain_name === null) {
-        config.domain_name = 'dev-' + config.api_gateway_settings.production_domain_name;
-        config.certificate_arn = config.api_gateway_settings.production_certificate_arn;
-      } else {
-        config.domain_name = 'dev-' + config.api_gateway_settings.development_domain_name;
-        config.certificate_arn = config.api_gateway_settings.development_certificate_arn;
-      }
+      config.domain_name = `dev-${devDomain}` ?? `dev-${prodDomain}`;
+      config.certificate_arn = devCertificateArn ?? prodCertificateArn;
     } else {
-      if (config.api_gateway_settings.development_domain_name === null) {
-        config.domain_name = deploy_type + '-' + config.api_gateway_settings.production_domain_name;
-        config.certificate_arn = config.api_gateway_settings.production_certificate_arn;
-      } else {
-        config.domain_name = deploy_type + '-' + config.api_gateway_settings.development_domain_name;
-        config.certificate_arn = config.api_gateway_settings.development_certificate_arn;
-      }
+      config.domain_name = `${deploy_type}-${devDomain}` ?? `${deploy_type}-${prodDomain}`;
+      config.certificate_arn = devCertificateArn ?? prodCertificateArn;
     }
+    
   } else {
     config.domain_name = '';
+    config.certificate_arn = '';
   }
 
   // vpc settings
