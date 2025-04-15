@@ -12,17 +12,19 @@ GraphQL backend Server for the SimpliCity system.
   - ```npm start``` To use Bastion Server set runlocal=true in .env
                     From the City network runlocal=false
 - Deploy: 
-  - ```npm run deploy prod```
-  - ```npm run deploy dev```
+  - ```npm run deploy```
 - Destroy: (removes all objects from AWS)
-  - ```npm run destroy prod```
-  - ```npm run destroy dev ```
+  - ```npm run destroy```
 - Clean:  (removes local temp files)
   - ```npm run clean```
 
 
 
-### IMPORTANT DEPLOYMENT NOTE:
+### IMPORTANT DEPLOYMENT NOTES:
+The Deploy/Destroy commands use the name of the active GitHub branch when creating AWS resources.
+For example, if the active GitHub branch is "feature" and the name of the resource is "template", the resource is
+named "template_feature". For API gateway domains, it's "feature-template.ashevillenc.gov". Production (or main) branches do not get a prefix/suffix.
+
 The API Server requires a second Route (/{proxy+} OPTIONS) that points to a separate Lambda return_204_for_options.
 This is not yet included in Terraform, but it is just a simple Lambda like this:
 ```
