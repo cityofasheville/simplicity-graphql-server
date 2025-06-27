@@ -117,32 +117,32 @@ const resolvers = {
         haveWhere = true;
       }
 
-        if (categories && categories.length > 0) {
-          const cList = categories.map(p => {
-            return `'${p}'`;
-          }).join(',');
-          // query += `WHERE category in (${cList})`;
-          if (haveWhere) {
-            query += 'AND ';
-          } else {
-            query += 'WHERE ';
-          }
-          query += `category in (${cList})`;
-          haveWhere = true;
+      if (categories && categories.length > 0) {
+        const cList = categories.map(p => {
+          return `'${p}'`;
+        }).join(',');
+        // query += `WHERE category in (${cList})`;
+        if (haveWhere) {
+          query += 'AND ';
+        } else {
+          query += 'WHERE ';
         }
+        query += `category in (${cList})`;
+        haveWhere = true;
+      }
 
-        if (zipcodes && zipcodes.length > 0) {
-          const zList = zipcodes.map(p => {
-            return `'${p}'`;
-          }).join(',');
-          if (haveWhere) {
-            query += 'AND ';
-          } else {
-            query += 'WHERE ';
-          }
-          query += `zip_code in (${zList})`;
+      if (zipcodes && zipcodes.length > 0) {
+        const zList = zipcodes.map(p => {
+          return `'${p}'`;
+        }).join(',');
+        if (haveWhere) {
+          query += 'AND ';
+        } else {
+          query += 'WHERE ';
         }
-      
+        query += `zip_code in (${zList})`;
+      }
+    
       query += ' ORDER BY A.display_name';
       // console.log("this is the query", query);
 
