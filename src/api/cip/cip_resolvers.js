@@ -88,12 +88,20 @@ const resolvers = {
       `;
       // let query = 'SELECT * FROM amd.coa_cip_project_information ';
       const names = args.names;
+      console.log(args)
+      const ids = args.ids
       if (names && names.length > 0) {
         if (names.length <= 0) return [];
         const namesList = names.map(p => {
           return `'${p}'`;
         }).join(',');
         query += `WHERE project in (${namesList})`;
+      } else if (ids && ids.length > 0) {
+        if (ids.length <= 0) return [];
+        const idList = ids.map(p => {
+          return `'${p}'`;
+        }).join(',');
+        query += `WHERE gis_id in (${idList})`;
       } else {
         const categories = args.categories;
         const zipcodes = args.zipcodes;
