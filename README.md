@@ -7,10 +7,10 @@ GraphQL backend Server for the SimpliCity system.
 - Requires a file ```.env``` in the root directory based on ```env.example```.
 
 ### Commands
-- Test Locally, run one: ```npm test``` (runs Lambda locally with test/sam_event.json as event)
 - Test Locally: 
   - ```npm start``` To use Bastion Server set runlocal=true in .env
                     From the City network runlocal=false
+    - Endpoint will be the relevant port
 - Deploy: 
   - ```npm run deploy```
 - Destroy: (removes all objects from AWS)
@@ -18,6 +18,9 @@ GraphQL backend Server for the SimpliCity system.
 - Clean:  (removes local temp files)
   - ```npm run clean```
 
+Before deploying, you need to create a copy of the example.deploy.yaml file and rename it to deploy.yaml. For a better example of the deploy.yaml file, check out the "Secrets files for Apps that use Terraform Template" google doc.
+
+If you deploy and hit errors, aws resources **may still be created.** Don't forget to destroy them.
 
 
 ### IMPORTANT DEPLOYMENT NOTES:
