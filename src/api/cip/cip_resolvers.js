@@ -88,31 +88,49 @@ const resolvers = {
       `;
       // let query = 'SELECT * FROM amd.coa_cip_project_information ';
       const names = args.names;
-      console.log(args)
-      const ids = args.ids
+      const ids = args.ids;
+      const categories = args.categories;
+      const zipcodes = args.zipcodes;
+      let haveWhere = false;
+
       if (names && names.length > 0) {
         if (names.length <= 0) return [];
         const namesList = names.map(p => {
           return `'${p}'`;
         }).join(',');
         query += `WHERE project in (${namesList})`;
-      } else if (ids && ids.length > 0) {
+        haveWhere = true;
+      } 
+      
+      if (ids && ids.length > 0) {
         if (ids.length <= 0) return [];
         const idList = ids.map(p => {
           return `'${p}'`;
         }).join(',');
-        query += `WHERE gis_id in (${idList})`;
-      } else {
-        const categories = args.categories;
-        const zipcodes = args.zipcodes;
-        let haveWhere = false;
+        // query += `WHERE gis_id in (${idList})`;
+        if (haveWhere) {
+          query += 'AND ';
+        } else {
+          query += 'WHERE ';
+        }
+        query += `gis_id in (${idList})`;
+        haveWhere = true;
+      }
+
         if (categories && categories.length > 0) {
           const cList = categories.map(p => {
             return `'${p}'`;
           }).join(',');
-          query += `WHERE category in (${cList})`;
+          // query += `WHERE category in (${cList})`;
+          if (haveWhere) {
+            query += 'AND ';
+          } else {
+            query += 'WHERE ';
+          }
+          query += `category in (${cList})`;
           haveWhere = true;
         }
+
         if (zipcodes && zipcodes.length > 0) {
           const zList = zipcodes.map(p => {
             return `'${p}'`;
@@ -124,9 +142,9 @@ const resolvers = {
           }
           query += `zip_code in (${zList})`;
         }
-      }
+      
       query += ' ORDER BY A.display_name';
-      // console.log(query);
+      // console.log("this is the query", query);
 
       return pool.query(query)
       .then(result => {
