@@ -84,22 +84,21 @@ const resolvers = {
       left join internal.capital_projects_master_categories as C
       on A.category = C.category_name
       left join simplicity.cip_ltd_view as B
-      on A.munis_project_number = B.project_id 
+      on A.munis_project_number = B.project_id
+      WHERE 1 = 1
       `;
-      // let query = 'SELECT * FROM amd.coa_cip_project_information ';
+      
       const names = args.names;
       const ids = args.ids;
       const categories = args.categories;
       const zipcodes = args.zipcodes;
-      let haveWhere = false;
 
       if (names && names.length > 0) {
         if (names.length <= 0) return [];
         const namesList = names.map(p => {
           return `'${p}'`;
         }).join(',');
-        query += `WHERE project in (${namesList})`;
-        haveWhere = true;
+        query += ` AND project in (${namesList})`;
       } 
       
       if (ids && ids.length > 0) {
@@ -107,44 +106,26 @@ const resolvers = {
         const idList = ids.map(p => {
           return `'${p}'`;
         }).join(',');
-        // query += `WHERE gis_id in (${idList})`;
-        if (haveWhere) {
-          query += 'AND ';
-        } else {
-          query += 'WHERE ';
-        }
-        query += `gis_id in (${idList})`;
-        haveWhere = true;
+        query += ` AND gis_id in (${idList})`;
       }
 
       if (categories && categories.length > 0) {
         const cList = categories.map(p => {
           return `'${p}'`;
         }).join(',');
-        // query += `WHERE category in (${cList})`;
-        if (haveWhere) {
-          query += 'AND ';
-        } else {
-          query += 'WHERE ';
-        }
-        query += `category in (${cList})`;
-        haveWhere = true;
+        query += ` AND category in (${cList})`;
       }
 
       if (zipcodes && zipcodes.length > 0) {
         const zList = zipcodes.map(p => {
           return `'${p}'`;
         }).join(',');
-        if (haveWhere) {
-          query += 'AND ';
-        } else {
-          query += 'WHERE ';
-        }
-        query += `zip_code in (${zList})`;
+
+        query += ` AND zip_code in (${zList})`;
       }
     
       query += ' ORDER BY A.display_name';
-      // console.log("this is the query", query);
+      console.log("this is the query", query);
 
       return pool.query(query)
       .then(result => {
