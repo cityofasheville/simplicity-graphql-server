@@ -87,7 +87,7 @@ const resolvers = {
       on A.munis_project_number = B.project_id
       WHERE 1 = 1
       `;
-      
+
       const names = args.names;
       const ids = args.ids;
       const categories = args.categories;
@@ -125,7 +125,6 @@ const resolvers = {
       }
     
       query += ' ORDER BY A.display_name';
-      console.log("this is the query", query);
 
       return pool.query(query)
       .then(result => {
