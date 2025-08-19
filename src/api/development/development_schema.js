@@ -11,7 +11,6 @@ type PermitCustomField {
   type: String
   name: String
   value: String
-  recdate: String
 }
 
 type Permit {
