@@ -379,7 +379,7 @@ const resolvers = {
     //   return obj.comments;
     // },
     custom_fields(obj, args, context) {
-      const query = `select type, name, value from internal.permit_custom_fields 
+      const query = `select type, name, value,recdate from simplicity.permit_custom_fields 
       where permit_num = $1`;
       return context.pool.query(query, [obj.permit_number])
         .then((result) => {
