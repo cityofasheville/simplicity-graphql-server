@@ -209,12 +209,12 @@ const resolvers = {
       let nextParam = '$3';
       if (args.before !== undefined) {
         qargs.push(`'${args.before}'`);
-        query += `and applied_date < ${nextParam} `;
+        query += `and applied_date <= ${nextParam} `;
         nextParam = '$4';
       }
       if (args.after !== undefined) {
         qargs.push(`'${args.after}'`);
-        query += `and applied_date > ${nextParam} `;
+        query += `and applied_date >= ${nextParam} `;
       }
       query += 'ORDER BY A.applied_date DESC, A.permit_number DESC ';
 
