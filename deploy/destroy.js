@@ -3,7 +3,7 @@ import { promises as fs } from 'fs';
 import { execSync } from 'child_process';
 
 try {
-  const gitBranch = execSync('git branch --show-current').toString().trim();
+  const gitBranch = execSync('git branch --show-current').toString().trim().split('/').pop();
 
   let deployType = gitBranch;
 
@@ -18,7 +18,7 @@ try {
   }
 
 
-  execSync(`cd ${buildDir} && terraform init && terraform destroy -auto-approve`, { stdio: 'inherit' });
+  execSync(`cd ${buildDir} && terraform init && terraform destroy`, { stdio: 'inherit' });
 
 }
 catch (err) {
