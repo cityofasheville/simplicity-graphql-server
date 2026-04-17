@@ -6,17 +6,19 @@ import { ApolloServer } from '@apollo/server';
 import pgpkg from 'pg';
 const { Pool } = pgpkg;
 
-// PLAYGROUND
+// Set NODE_ENV based on debug flag
 let debug = false;
 if(process.env.debug === 'true') {
   debug = true;
+  process.env.NODE_ENV = 'development';
+} else {
+  process.env.NODE_ENV = 'production';
 }
 
 const server = new ApolloServer({
   typeDefs,
   resolvers,
   introspection: debug,
-  playground: debug,
 });
 const dbConfig = {
   host: process.env.runlocal==="true"?"localhost":process.env.dbhost,
