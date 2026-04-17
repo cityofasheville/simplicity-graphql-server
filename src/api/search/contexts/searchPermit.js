@@ -2,7 +2,7 @@ function searchPermit(searchString, context) {
   
   const myQuery = `
   SELECT *
-  FROM simplicity.m_v_simplicity_permits
+  FROM simplicity.m_v_simplicity_permits_clariti
   where cast(permit_number as TEXT) LIKE $1;
   `;
 

@@ -117,41 +117,41 @@ const resolvers = {
       const qargs = [];
       let query = `
       select *
-      from simplicity.m_v_simplicity_permits AS A
+      from simplicity.m_v_simplicity_permits_clariti AS A
       `
       if(args.trc) { // Limit to just large permits
         query = `
         select * from (
           select *
-          from simplicity.m_v_simplicity_permits
+          from simplicity.m_v_simplicity_permits_clariti
           where 
           permit_group = 'Planning' and
           permit_type = 'Development' and
           permit_subtype = 'Level I'
             union 
           select *
-          from simplicity.m_v_simplicity_permits
+          from simplicity.m_v_simplicity_permits_clariti
           where 
           permit_group = 'Planning' and
           permit_type = 'Subdivision' and
           permit_subtype = 'Major'
             union 
           select *
-          from simplicity.m_v_simplicity_permits
+          from simplicity.m_v_simplicity_permits_clariti
           where 
           permit_group = 'Planning' and
           permit_type = 'Development' and
           permit_subtype = 'Level II' 
             union 
           select *
-          from simplicity.m_v_simplicity_permits
+          from simplicity.m_v_simplicity_permits_clariti
           where 
           permit_group = 'Planning' and
           permit_type = 'Development' and
           permit_subtype = 'Conditional Zoning'
             union 
           select *
-          from simplicity.m_v_simplicity_permits
+          from simplicity.m_v_simplicity_permits_clariti
           where 
           permit_group = 'Planning' and
           permit_type = 'Development' and
@@ -200,7 +200,7 @@ const resolvers = {
       from internal.coa_bc_address_master M1
       inner join internal.coa_bc_address_master M2
       on ST_DWithin(M1.shape, M2.shape, $2) --uses index!
-      inner join simplicity.m_v_simplicity_permits A
+      inner join simplicity.m_v_simplicity_permits_clariti A
       on M2.civicaddress_id::text = A.civic_address_id
       where M1.civicaddress_id = $1
       AND A.permit_group <> 'Services'
