@@ -1,5 +1,5 @@
 export default `
-type Blockgroup {
+type Climate {
 	geoid: String
 	name: String
 	totalhh: Int

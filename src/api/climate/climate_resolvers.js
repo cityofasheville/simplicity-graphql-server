@@ -2,7 +2,7 @@ import { convertToPolygons } from '../common/convert_to_polygons.js';
 
 const resolvers = {
   Query: {
-    blockgroups(obj, args, context) {
+    climate(obj, args, context) {
       var query_args = [];
       var query = `
       SELECT geoid, name_1, totalhh, heat_score, cdc_score, avg_energy, sum_scores, holc, red_score, wfirescore,
@@ -47,12 +47,12 @@ const resolvers = {
           });
         })
         .catch((error) => {
-          console.error(`Error in blockgroup endpoint: ${JSON.stringify(error)}`);
+          console.error(`Error in climate endpoint: ${JSON.stringify(error)}`);
           throw new Error(error);
         });
     },
   },
-  Blockgroup: {
+  Climate: {
     polygon(obj) {
       return obj.polygon;
     },
