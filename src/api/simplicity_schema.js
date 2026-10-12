@@ -50,9 +50,10 @@ const baseSchema = `
     permit_realtime(permit_number: String): PermitRT @deprecated(reason: "Use permits instead")
     permits_by_address_realtime(civicaddress_id: Int!): [PermitRT] @deprecated(reason: "Use permits_by_address instead")
     blockgroups (geoid: [String] ): [Blockgroup]
+    climate (geoid: [String] ): [Climate]
   }
 `;
-  
+
 import searchSchema from './search/index.js';
 import municipalitiesSchema from './municipalities/municipalities_schema.js';
 import addressSchema from './address/address_schema.js';
@@ -68,6 +69,7 @@ import statsSchema from './stats/stats_schema.js';
 import blockgroupsSchema from './blockgroups/blockgroups_schema.js';
 import budgetSchema from './budget/budget_schema.js';
 import pcard_schema from './finance/pcard/pcard_schema.js';
+import climateSchema from './climate/climate_schema.js';
 
 const schema = [
   baseSchema,
@@ -86,6 +88,7 @@ const schema = [
   statsSchema,
   blockgroupsSchema,
   pcard_schema,
+  climateSchema,
 ];
 
 export default schema;
