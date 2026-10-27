@@ -4,7 +4,7 @@ let pool;
 
 function prepareProjects(rows) {
   if (rows.length === 0) return [];
-  return rows.map(itm => {
+  return rows.map((itm) => {
     let latitude = [];
     let longitude = [];
     if (xyCache.hasOwnProperty(itm.project)) {
@@ -59,9 +59,8 @@ const resolvers = {
             internal.capital_projects_master M on M.category = C.category_name 
             group by C.category_name, C.display_order;
       `;
-      return pool.query(query)
-      .then(result => {
-        return result.rows.map(itm => {
+      return pool.query(query).then((result) => {
+        return result.rows.map((itm) => {
           return {
             category_name: itm.category_name,
             category_number: itm.display_order,
@@ -74,7 +73,6 @@ const resolvers = {
     // Note: query can EITHER specify names OR it can specify
     // one or both of categories & zipcodes
     cip_projects(obj, args, context) {
-      
       pool = context.pool;
       let query = `
       select A.*, B.*, C.display_order from internal.capital_projects_master as A
@@ -85,86 +83,87 @@ const resolvers = {
       WHERE 1 = 1
       `;
 
-      const names = args.names;
-      const ids = args.ids;
-      const categories = args.categories;
-      const zipcodes = args.zipcodes;
+      const names = args.names || [];
+      const ids = args.ids || [];
+      const categories = args.categories || [];
+      const zipcodes = args.zipcodes || [];
+      const conditions = [];
+      const values = [];
 
-      if (names && names.length > 0) {
-        if (names.length <= 0) return [];
-        const namesList = names.map(p => {
-          return `'${p}'`;
-        }).join(',');
-        query += ` AND project in (${namesList})`;
-      } 
-      
-      if (ids && ids.length > 0) {
-        if (ids.length <= 0) return [];
-        const idList = ids.map(p => {
-          return `'${p}'`;
-        }).join(',');
-        query += ` AND gis_id in (${idList})`;
+      if (names.length > 0) {
+        conditions.push(`project = ANY($${values.length + 1})`);
+        values.push(names);
       }
 
-      if (categories && categories.length > 0) {
-        const cList = categories.map(p => {
-          return `'${p}'`;
-        }).join(',');
-        query += ` AND category in (${cList})`;
+      if (ids.length > 0) {
+        conditions.push(`gis_id = ANY($${values.length + 1})`);
+        values.push(ids);
       }
 
-      if (zipcodes && zipcodes.length > 0) {
-        const zList = zipcodes.map(p => {
-          return `'${p}'`;
-        }).join(',');
-
-        query += ` AND zip_code in (${zList})`;
+      if (categories.length > 0) {
+        conditions.push(`category = ANY($${values.length + 1})`);
+        values.push(categories);
       }
-    
+
+      if (zipcodes.length > 0) {
+        conditions.push(`zip_code = ANY($${values.length + 1})`);
+        values.push(zipcodes);
+      }
+
+      if (conditions.length > 0) {
+        query += ` AND ${conditions.join(' AND ')}`;
+      }
+
       query += ' ORDER BY A.display_name';
 
-      return pool.query(query)
-      .then(result => {
-        const timeout = 1000 * 3600;
-        if (cacheDate === null || (new Date()).getTime() - cacheDate.getTime() > timeout) {
-          // console.log('Updating CIP project XY cache');
-          const fsUrl = 'https://services.arcgis.com/aJ16ENn1AaqdFlqx/ArcGIS/rest/services/CIP_Storymap/FeatureServer/0/query?where=1%3D1&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnGeometry=true&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=pjson&token=';
-          return fetch(fsUrl)
-          .then(response => response.json())
-          .then(xyData => {
-            xyCache = {};
-            xyData.features.forEach(feature => {
-              const f = feature.attributes;
-              const g = feature.geometry;
-              const fname = f.NAME.replace(/^\s+|\s+$/g, '');
-              if (!xyCache.hasOwnProperty(fname)) {
-                xyCache[fname] = {
-                  name: fname,
-                  tab_name: f.TAB_NAME,
-                  short_desc: f.SHORT_DESC,
-                  website: f.WEBSITE,
-                  pic_url: f.PIC_URL,
-                  thumb_url: f.THUMB_URL,
-                  longitude: [],
-                  latitude: [],
-                };
-              }
-              xyCache[fname].longitude.push(g.x);
-              xyCache[fname].latitude.push(g.y);
-            });
-            cacheDate = new Date();
-            return result;
-          });
-        }
-        return Promise.resolve(result);
-      })
-      .then(result => {
-        return prepareProjects(result.rows);
-      })
-      .catch(error => {
-        console.error(`Error in cip_projects endpoint: ${error}`);
-        throw new Error(error);
-      });
+      return pool
+        .query(query, values)
+        .then((result) => {
+          const timeout = 1000 * 3600;
+          if (cacheDate === null || new Date().getTime() - cacheDate.getTime() > timeout) {
+            // console.log('Updating CIP project XY cache');
+            const fsUrl =
+              'https://services.arcgis.com/aJ16ENn1AaqdFlqx/ArcGIS/rest/services/CIP_Storymap/FeatureServer/0/query?where=1%3D1&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&resultType=none&distance=0.0&units=esriSRUnit_Meter&returnGeodetic=false&outFields=*&returnGeometry=true&multipatchOption=xyFootprint&maxAllowableOffset=&geometryPrecision=&outSR=&datumTransformation=&applyVCSProjection=false&returnIdsOnly=false&returnCountOnly=false&returnExtentOnly=false&returnDistinctValues=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&having=&resultOffset=&resultRecordCount=&returnZ=false&returnM=false&returnExceededLimitFeatures=true&quantizationParameters=&sqlFormat=none&f=pjson&token=';
+            return fetch(fsUrl)
+              .then((response) => response.json())
+              .then((xyData) => {
+                xyCache = {};
+                xyData.features.forEach((feature) => {
+                  const f = feature.attributes;
+                  const g = feature.geometry;
+                  const fname = f.NAME.replace(/^\s+|\s+$/g, '');
+                  if (!xyCache.hasOwnProperty(fname)) {
+                    xyCache[fname] = {
+                      name: fname,
+                      tab_name: f.TAB_NAME,
+                      short_desc: f.SHORT_DESC,
+                      website: f.WEBSITE,
+                      pic_url: f.PIC_URL,
+                      thumb_url: f.THUMB_URL,
+                      longitude: [],
+                      latitude: [],
+                    };
+                  }
+                  xyCache[fname].longitude.push(g.x);
+                  xyCache[fname].latitude.push(g.y);
+                });
+                cacheDate = new Date();
+                return result;
+              })
+              .catch((err) => {
+                console.error(`Error fetching CIP XY cache from ArcGIS: ${err.message || err}`);
+                return result;
+              });
+          }
+          return Promise.resolve(result);
+        })
+        .then((result) => {
+          return prepareProjects(result.rows);
+        })
+        .catch((error) => {
+          console.error(`Error in cip_projects endpoint: ${error}`);
+          throw new Error(error);
+        });
     },
   },
 };

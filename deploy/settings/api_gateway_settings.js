@@ -1,5 +1,5 @@
 const api_gateway_settings = (config) => {
-return `\n
+  return `\n
 resource "aws_apigatewayv2_api" "${config.prog_name}" {
   name          = "${config.prog_name}"
   protocol_type = "HTTP"
@@ -13,7 +13,7 @@ resource "aws_apigatewayv2_api" "${config.prog_name}" {
   }
   cors_configuration {
     allow_headers     = ["*"]
-    allow_methods     = ["POST", "GET"]
+    allow_methods     = ["GET", "POST", "OPTIONS"]
     allow_origins     = ["*"]
     expose_headers    = ["*"]
     max_age           = 300
@@ -49,6 +49,6 @@ output "${config.prog_name}_api_url" {
 output "${config.prog_name}_api_id" {
   value = aws_apigatewayv2_api.${config.prog_name}.id
 }
-`
-}
-export {api_gateway_settings};
+`;
+};
+export { api_gateway_settings };
